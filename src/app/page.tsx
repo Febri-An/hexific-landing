@@ -244,10 +244,10 @@ export default function Page() {
               Protect your DeFi protocol from exploits before they happen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <button className="bg-lime-400 text-black px-8 py-4 rounded-lg text-lg font-bold hover:bg-lime-300 transition-all pulse-glow">
+              <button className="bg-lime-400 text-black px-8 py-4 rounded-lg text-lg font-bold hover:bg-lime-300 transition-all pulse-glow cursor-pointer">
                 Start Free Audit
               </button>
-              <button className="glass-effect px-8 py-4 rounded-lg text-lg font-semibold hover:bg-lime-400/20 transition-all">
+              <button className="glass-effect px-8 py-4 rounded-lg text-lg font-semibold hover:bg-lime-400/20 transition-all cursor-pointer">
                 View Sample Report
               </button>
             </div>
@@ -546,7 +546,7 @@ export default function Page() {
                   <span>Email support</span>
                 </li>
               </ul>
-              <button className="w-full border border-lime-400 text-lime-400 py-3 rounded-lg hover:bg-lime-400 hover:text-black transition-all">
+              <button className="w-full border border-lime-400 text-lime-400 py-3 rounded-lg hover:bg-lime-400 hover:text-black transition-all cursor-pointer">
                 Choose Starter
               </button>
             </div>
@@ -604,7 +604,7 @@ export default function Page() {
                   <span>Priority support</span>
                 </li>
               </ul>
-              <button className="w-full bg-lime-400 text-black py-3 rounded-lg hover:bg-lime-300 transition-all font-bold">
+              <button className="w-full bg-lime-400 text-black py-3 rounded-lg hover:bg-lime-300 transition-all font-bold cursor-pointer">
                 Choose Professional
               </button>
             </div>
@@ -659,7 +659,7 @@ export default function Page() {
                   <span>SLA guarantees</span>
                 </li>
               </ul>
-              <button className="w-full border border-lime-400 text-lime-400 py-3 rounded-lg hover:bg-lime-400 hover:text-black transition-all">
+              <button className="w-full border border-lime-400 text-lime-400 py-3 rounded-lg hover:bg-lime-400 hover:text-black transition-all cursor-pointer">
                 Contact Sales
               </button>
             </div>
@@ -727,14 +727,14 @@ export default function Page() {
               <div>
                 <h3 className="text-2xl font-bold mb-4">Start Free Audit</h3>
                 <p className="text-gray-300 mb-4">Get started with our AI-powered vulnerability detection for free.</p>
-                <button className="bg-lime-400 text-black px-8 py-3 rounded-lg font-bold hover:bg-lime-300 transition-all pulse-glow">
+                <button className="bg-lime-400 text-black px-8 py-3 rounded-lg font-bold hover:bg-lime-300 transition-all pulse-glow cursor-pointer">
                   Upload Contract
                 </button>
               </div>
               <div>
                 <h3 className="text-2xl font-bold mb-4">Book Consultation</h3>
                 <p className="text-gray-300 mb-4">Speak with our security experts about your specific needs.</p>
-                <button className="border border-lime-400 text-lime-400 px-8 py-3 rounded-lg hover:bg-lime-400 hover:text-black transition-all">
+                <button className="border border-lime-400 text-lime-400 px-8 py-3 rounded-lg hover:bg-lime-400 hover:text-black transition-all cursor-pointer">
                   Schedule Call
                 </button>
               </div>
