@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -22,8 +23,8 @@ export default function Page() {
 
     const matrixChars = '01アイウエオ…ワヲン';
     const fontSize = 14;
-    let columns = Math.floor(canvas.width / fontSize);
-    let drops = Array(columns).fill(1);
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
 
     const drawMatrix = () => {
       ctx.fillStyle = 'rgba(0, 14, 27, 0.04)';
@@ -211,8 +212,8 @@ export default function Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-lime-400 rounded-lg flex items-center justify-center">
-                {/* <Image src="./logo.svg" alt="Hexific Logo" width={24} height={24} /> */}
-                <img src="/logo.svg" alt="My Logo" className="w-6 h-6" />
+                <Image src="./logo.svg" alt="Hexific Logo" width={24} height={24} />
+                {/* <img src="/logo.svg" alt="My Logo" className="w-6 h-6" /> */}
               </div>
               <span className="text-2xl font-bold gradient-text">Hexific</span>
             </div>
@@ -671,12 +672,12 @@ export default function Page() {
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-bold gradient-text mb-6">Trusted by Leaders</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Top DeFi protocols trust Hexific to protect their smart contracts and users' funds.
+              Top DeFi protocols trust Hexific to protect their smart contracts and users&#39; funds.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="glass-effect rounded-2xl p-8">
-              <p className="text-lg mb-6">"Hexific found critical vulnerabilities that other auditors missed. Their AI-powered analysis combined with expert review is unmatched."</p>
+              <p className="text-lg mb-6">&quot;Hexific found critical vulnerabilities that other auditors missed. Their AI-powered analysis combined with expert review is unmatched.&quot;</p>
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-lime-400/20 rounded-full flex items-center justify-center mr-4">
                   <span className="text-lime-400 font-bold text-lg">A</span>
@@ -688,7 +689,7 @@ export default function Page() {
               </div>
             </div>
             <div className="glass-effect rounded-2xl p-8">
-              <p className="text-lg mb-6">"The real-time dashboard and continuous monitoring gave us confidence to launch. Best audit experience we've had."</p>
+              <p className="text-lg mb-6">&quot;The real-time dashboard and continuous monitoring gave us confidence to launch. Best audit experience we&#39;ve had.&quot;</p>
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-lime-400/20 rounded-full flex items-center justify-center mr-4">
                   <span className="text-lime-400 font-bold text-lg">S</span>
@@ -700,7 +701,7 @@ export default function Page() {
               </div>
             </div>
             <div className="glass-effect rounded-2xl p-8">
-              <p className="text-lg mb-6">"Their emergency response team saved us $2M when a vulnerability was discovered post-launch. Incredible service."</p>
+              <p className="text-lg mb-6">&quot;Their emergency response team saved us $2M when a vulnerability was discovered post-launch. Incredible service.&quot;</p>
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-lime-400/20 rounded-full flex items-center justify-center mr-4">
                   <span className="text-lime-400 font-bold text-lg">M</span>
@@ -719,7 +720,7 @@ export default function Page() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-6xl font-bold gradient-text mb-6">Ready to Secure Your Protocol?</h2>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join hundreds of projects that trust Hexific to protect their smart contracts and users' funds.
+            Join hundreds of projects that trust Hexific to protect their smart contracts and users&#39; funds.
           </p>
           <div className="glass-effect rounded-2xl p-8 mb-8">
             <div className="grid md:grid-cols-2 gap-8">
