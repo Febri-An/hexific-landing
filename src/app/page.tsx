@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -749,7 +750,7 @@ export default function Page() {
                 </svg>
               </div>
               <h4 className="font-bold mb-2">Email</h4>
-              <p className="text-gray-400">security@Hexific.ai</p>
+              <p className="text-gray-400">security@Hexific.com</p>
             </div>
             <div>
               <div className="w-12 h-12 bg-lime-400/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -810,8 +811,16 @@ export default function Page() {
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><a href="#" className="hover:text-lime-400 transition-colors">About Us</a></li>
                 <li><a href="#" className="hover:text-lime-400 transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-lime-400 transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-lime-400 transition-colors">Terms of Service</a></li>
+                <li>
+                  <Link href="/privacy-policy" className="hover:text-lime-400 transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms-of-service" className="hover:text-lime-400 transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
