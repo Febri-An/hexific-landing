@@ -52,8 +52,9 @@ export default function Page() {
 
   // Animate stats counters
   useEffect(() => {
+    if (countersStarted) return;
+
     const animateCounters = () => {
-      if (countersStarted) return;
       setCountersStarted(true);
       const counters = [
         { id: 'contracts-audited', target: 500, suffix: '+' },
@@ -79,20 +80,23 @@ export default function Page() {
       });
     };
 
-    const slideObserver = new IntersectionObserver((entries) => {
+    const slideObserver = new IntersectionObserver((entries, observer) => {
       entries.forEach(entry => {
+        if (entry.isIntersecting && entry.target.id === 'contracts-audited') {
+          animateCounters();
+          observer.disconnect(); // stop after first trigger
+        }
         if (entry.isIntersecting) {
           entry.target.classList.add('slide-up');
-          if (entry.target.id === 'contracts-audited') {
-            animateCounters();
-          }
         }
       });
     }, { threshold: 0.3 });
 
-    document.querySelectorAll<HTMLElement>('.feature-card, #contracts-audited').forEach(el => {
-      slideObserver.observe(el);
-    });
+    document
+      .querySelectorAll<HTMLElement>('.feature-card, #contracts-audited')
+      .forEach(el => {
+        slideObserver.observe(el);
+      });
 
     return () => slideObserver.disconnect();
   }, [countersStarted]);
@@ -101,10 +105,12 @@ export default function Page() {
   useEffect(() => {
     const processSection = document.getElementById('process');
     if (!processSection) return;
-
+    let progressStarted = false;
     const processObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !progressStarted) {
+          progressStarted = true; // prevent re-run
+
           document.querySelectorAll<HTMLElement>('.audit-progress').forEach(bar => {
             // Set background color
             bar.style.backgroundColor = 'rgb(55, 65, 81)'; // bg-gray-700 equivalent
@@ -118,6 +124,7 @@ export default function Page() {
               bar.style.setProperty('--progress', prog);
             }, 500);
           });
+          processObserver.disconnect(); // stop observing after first trigger
         }
       });
     }, { threshold: 0.3 });
