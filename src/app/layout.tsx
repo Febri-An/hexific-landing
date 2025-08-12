@@ -13,14 +13,33 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hexific",
-  description: "Smart Contract Auditing Platform",
+  title: "Smart Contract Audit | HEXIFIC",
+  description: "HEXIFIC provides professional smart contract audits, security consulting, and monitoring for blockchain projects.",
+  keywords: ["smart contract audit", "blockchain security", "HEXIFIC", "web3 security"],
   icons: {
-    icon: [
-      '/favicon3.svg',
+    icon: ['/favicon.svg'],
+  },
+  openGraph: {
+    title: "Smart Contract Audit | HEXIFIC",
+    description: "Professional and trusted smart contract audits for blockchain projects.",
+    url: "https://hexific.com",
+    siteName: "HEXIFIC",
+    images: [
+      {
+        url: "https://hexific.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+      },
     ],
+    locale: "en_US",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
+
 
 export default function RootLayout({
   children,
