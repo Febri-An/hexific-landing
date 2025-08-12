@@ -2,6 +2,7 @@
 
 import React from "react";
 import Head from "next/head";
+import Link from 'next/link';
 import "./styles.css";
 
 const TermsOfService: React.FC = () => {
@@ -26,7 +27,7 @@ const TermsOfService: React.FC = () => {
       {/* Header */}
       <header>
         <div className="header-content">
-          <div className="logo"><a href="/">HEXIFIC</a></div>
+          <div className="logo"><Link href="/">HEXIFIC</Link></div>
           <div className="status-badge">Legal Framework</div>
         </div>
       </header>
@@ -53,8 +54,8 @@ const TermsOfService: React.FC = () => {
         <div className="content-card important-card">
           <h2>1. Acceptance of Terms</h2>
           <p>
-            By accessing or using the services provided at hexific.com ("Site")
-            you agree to be bound by these Terms of Service ("Terms"). If you do
+            By accessing or using the services provided at hexific.com (&quot;Site&quot;)
+            you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you do
             not agree, you may not use our services.
           </p>
         </div>
@@ -63,7 +64,7 @@ const TermsOfService: React.FC = () => {
         <div className="content-card">
           <h2>2. Services Provided</h2>
           <p>
-            Hexific ("we," "our," or "us") provides smart contract auditing
+            Hexific (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) provides smart contract auditing
             services, including automated analysis (AI-assisted) and manual
             reviews, as described on our Site or in an individual engagement
             agreement.

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Head from "next/head";
+import Link from 'next/link';
 import "./styles.css";
 
 const PrivacyPolicy: React.FC = () => {
@@ -24,7 +25,7 @@ const PrivacyPolicy: React.FC = () => {
       {/* Header */}
       <header>
         <div className="header-content">
-          <div className="logo"><a href="/">HEXIFIC</a></div>
+          <div className="logo"><Link href="/">HEXIFIC</Link></div>
           <div className="status-badge">Privacy Protected</div>
         </div>
       </header>
@@ -40,7 +41,7 @@ const PrivacyPolicy: React.FC = () => {
         {/* Introduction */}
         <div className="content-card">
           <p className="intro-text">
-            Hexific ("we," "our," or "us") is committed to protecting your
+            Hexific (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your
             privacy. This Privacy Policy explains how we collect, use, disclose,
             and safeguard your information when you visit our website,
             hexific.com, and use our services, including AI-assisted smart
