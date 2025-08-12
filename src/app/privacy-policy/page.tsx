@@ -145,8 +145,8 @@ const PrivacyPolicy: React.FC = () => {
         <div className="contact-section">
           <h2>Contact Us</h2>
           <p>To exercise these rights or for any privacy-related questions:</p>
-          <a href="mailto:hello@hexific.com" className="contact-email">
-            hello@hexific.com
+          <a href="mailto:admin@hexific.com" className="contact-email">
+            admin@hexific.com
           </a>
         </div>
       </div>

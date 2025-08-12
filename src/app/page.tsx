@@ -757,7 +757,7 @@ export default function Page() {
                 </svg>
               </div>
               <h4 className="font-bold mb-2">Email</h4>
-              <p className="text-gray-400">security@Hexific.com</p>
+              <p className="text-gray-400">admin@hexific.com</p>
             </div>
             <div>
               <div className="w-12 h-12 bg-lime-400/20 rounded-full flex items-center justify-center mx-auto mb-4">

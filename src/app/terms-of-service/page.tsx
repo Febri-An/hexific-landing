@@ -217,8 +217,8 @@ const TermsOfService: React.FC = () => {
             For any questions about these Terms of Service or our auditing
             process:
           </p>
-          <a href="mailto:hello@hexific.com" className="contact-email">
-            hello@hexific.com
+          <a href="mailto:admin@hexific.com" className="contact-email">
+            admin@hexific.com
           </a>
         </div>
       </div>
