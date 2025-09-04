@@ -260,10 +260,16 @@ export default function Page() {
               Protect your DeFi protocol from exploits before they happen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <button className="bg-lime-400 text-black px-8 py-4 rounded-lg text-lg font-bold hover:bg-lime-300 transition-all pulse-glow cursor-pointer">
+              <button 
+              onClick={() => {
+                document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="bg-lime-400 text-black px-8 py-4 rounded-lg text-lg font-bold hover:bg-lime-300 transition-all pulse-glow cursor-pointer">
                 Start Free Audit
               </button>
-              <button className="glass-effect px-8 py-4 rounded-lg text-lg font-semibold hover:bg-lime-400/20 transition-all cursor-pointer">
+              <button
+              onClick={() => window.open("https://github.com/Hexific/audit-reports", "_blank")}
+              className="glass-effect px-8 py-4 rounded-lg text-lg font-semibold hover:bg-lime-400/20 transition-all cursor-pointer">
                 View Sample Report
               </button>
             </div>
