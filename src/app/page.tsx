@@ -274,19 +274,20 @@ export default function Page() {
               </button>
             </div>
             {/* Live Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-              <div className="glass-effect rounded-xl p-6 scan-line">
+            {/* adjusted to 2 columns for temporary */}
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* <div className="glass-effect rounded-xl p-6 scan-line">
                 <div className="text-3xl font-bold gradient-text mb-2" id="contracts-audited">500+</div>
                 <div className="text-gray-400">Contracts Audited</div>
-              </div>
+              </div> */}
               <div className="glass-effect rounded-xl p-6 scan-line">
-                <div className="text-3xl font-bold gradient-text mb-2" id="vulnerabilities">2,847</div>
+                <div className="text-3xl font-bold gradient-text mb-2" id="vulnerabilities">28</div>
                 <div className="text-gray-400">Vulnerabilities Found</div>
               </div>
-              <div className="glass-effect rounded-xl p-6 scan-line">
+              {/* <div className="glass-effect rounded-xl p-6 scan-line">
                 <div className="text-3xl font-bold gradient-text mb-2" id="saved-funds">$50M+</div>
                 <div className="text-gray-400">Funds Protected</div>
-              </div>
+              </div> */}
               <div className="glass-effect rounded-xl p-6 scan-line">
                 <div className="text-3xl font-bold gradient-text mb-2" id="response-time">24h</div>
                 <div className="text-gray-400">Avg Response</div>
@@ -304,7 +305,8 @@ export default function Page() {
               Our platform combines cutting-edge AI analysis with expert human review to catch vulnerabilities others miss.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* adjusted to 2 columns for temporary */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
             {/* AI-Powered Analysis */}
             <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
               <div className="w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-lime-400/30 transition-colors">
@@ -378,7 +380,7 @@ export default function Page() {
               </div>
             </div>
             {/* Continuous Monitoring */}
-            <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
+            {/* <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
               <div className="w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-lime-400/30 transition-colors">
                 <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -401,7 +403,7 @@ export default function Page() {
                   <span>Instant Alerts</span>
                 </div>
               </div>
-            </div>
+            </div> */}
             {/* Compliance Reports */}
             <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
               <div className="w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-lime-400/30 transition-colors">
@@ -427,7 +429,7 @@ export default function Page() {
               </div>
             </div>
             {/* Emergency Response */}
-            <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
+            {/* <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
               <div className="w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-lime-400/30 transition-colors">
                 <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -449,7 +451,7 @@ export default function Page() {
                   <span>Post-Incident Analysis</span>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
@@ -520,7 +522,7 @@ export default function Page() {
         </div>
       </section>
       {/* Pricing Section */}
-      <section id="pricing" className="py-20">
+      {/* <section id="pricing" className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-bold gradient-text mb-6">Transparent Pricing</h2>
@@ -528,9 +530,9 @@ export default function Page() {
               Choose the plan that fits your needs. All plans include our comprehensive security analysis.
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"> */}
             {/* Starter Plan */}
-            <div className="glass-effect rounded-2xl p-8 relative">
+            {/* <div className="glass-effect rounded-2xl p-8 relative">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold mb-4">Starter</h3>
                 <div className="text-4xl font-bold gradient-text mb-2">$2,500</div>
@@ -571,9 +573,9 @@ export default function Page() {
               <button className="w-full border border-lime-400 text-lime-400 py-3 rounded-lg hover:bg-lime-400 hover:text-black transition-all cursor-pointer">
                 Choose Starter
               </button>
-            </div>
+            </div> */}
             {/* Professional Plan */}
-            <div className="glass-effect rounded-2xl p-8 relative neon-border">
+            {/* <div className="glass-effect rounded-2xl p-8 relative neon-border">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-lime-400 text-black px-4 py-1 rounded-full text-sm font-bold">
                 MOST POPULAR
               </div>
@@ -629,9 +631,9 @@ export default function Page() {
               <button className="w-full bg-lime-400 text-black py-3 rounded-lg hover:bg-lime-300 transition-all font-bold cursor-pointer">
                 Choose Professional
               </button>
-            </div>
+            </div> */}
             {/* Enterprise Plan */}
-            <div className="glass-effect rounded-2xl p-8 relative">
+            {/* <div className="glass-effect rounded-2xl p-8 relative">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold mb-4">Enterprise</h3>
                 <div className="text-4xl font-bold gradient-text mb-2">Custom</div>
@@ -687,7 +689,7 @@ export default function Page() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
       {/* Testimonials Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-6">
