@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import FreeAuditUpload from '@/components/FreeAuditUpload';
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -236,7 +237,7 @@ export default function Page() {
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="hover:text-lime-400 transition-colors">Features</a>
               <a href="#process" className="hover:text-lime-400 transition-colors">Process</a>
-              <a href="#pricing" className="hover:text-lime-400 transition-colors">Pricing</a>
+              {/* <a href="#pricing" className="hover:text-lime-400 transition-colors">Pricing</a> */}
               <a href="#contact" className="bg-lime-400 text-black px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold">Get Audit</a>
             </div>
             <button className="md:hidden text-lime-400">
@@ -764,6 +765,7 @@ export default function Page() {
               </div>
             </div>
           </div>
+          <FreeAuditUpload />
           {/* Contact Info */}
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div>
