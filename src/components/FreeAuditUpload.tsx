@@ -1,7 +1,19 @@
-// components/FreeAuditUpload.tsx
 'use client';
 
 import { useState } from 'react';
+
+interface DetailedFinding {
+  type: string;
+  impact: string;
+  confidence: string;
+  description: string;
+  location: {
+    filename?: string;
+    lines?: number[];
+    start?: number;
+    length?: number;
+  } | null;
+}
 
 interface AuditResult {
   success: boolean;
@@ -15,7 +27,7 @@ interface AuditResult {
       informational: number;
       optimization: number;
     };
-    detailedFindings: any[];
+    detailedFindings: DetailedFinding[];
     rawOutput: string;
   };
   error?: string;
@@ -74,7 +86,7 @@ export default function FreeAuditUpload() {
     } catch (error) {
       setResult({
         success: false,
-        error: 'Failed to submit audit request',
+        error: `Failed to submit audit request: ${error}`,
       });
     } finally {
       setLoading(false);

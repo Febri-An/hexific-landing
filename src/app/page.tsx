@@ -156,7 +156,7 @@ export default function Page() {
     const buttons = document.querySelectorAll<HTMLElement>('button');
     const scaleUp = function (this: HTMLElement) { this.style.transform = 'scale(1.05)'; };
     const scaleDown = function (this: HTMLElement) { this.style.transform = 'scale(1)'; };
-    const onClick = function (this: HTMLElement, e: Event) {
+    const onClick = function (this: HTMLElement) {
       const txt = this.textContent || '';
       if (txt.includes('Upload') || txt.includes('Schedule')) {
         const orig = this.textContent!;

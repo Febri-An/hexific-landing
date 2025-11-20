@@ -12,6 +12,34 @@ const execAsync = promisify(exec);
 const UPLOAD_DIR = path.join(process.cwd(), 'temp_audits');
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
+interface SlitherDetector {
+  check?: string;
+  impact?: string;
+  confidence?: string;
+  description?: string;
+  elements?: Array<{
+    source_mapping?: {
+      filename?: string;
+      lines?: number[];
+      start?: number;
+      length?: number;
+    };
+  }>;
+}
+
+interface DetailedFinding {
+  type: string;
+  impact: string;
+  confidence: string;
+  description: string;
+  location: {
+    filename?: string;
+    lines?: number[];
+    start?: number;
+    length?: number;
+  } | null;
+}
+
 interface AuditResult {
   success: boolean;
   projectId: string;
@@ -24,7 +52,7 @@ interface AuditResult {
       informational: number;
       optimization: number;
     };
-    detailedFindings: any[];
+    detailedFindings: DetailedFinding[];
     rawOutput: string;
   };
   error?: string;
@@ -109,12 +137,13 @@ export async function POST(request: NextRequest) {
     };
 
     return NextResponse.json(auditResult, { status: 200 });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Audit error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred during the audit';
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'An error occurred during the audit',
+        error: errorMessage,
       },
       { status: 500 }
     );
@@ -146,12 +175,14 @@ async function runSlitherAnalysis(projectPath: string): Promise<string> {
 
     // Slither outputs to stderr by default, so combine both
     return stdout + stderr;
-  } catch (error: any) {
+  } catch (error) {
     // Slither returns non-zero exit code even on successful analysis with findings
-    if (error.stdout || error.stderr) {
-      return error.stdout + error.stderr;
+    if (error && typeof error === 'object' && 'stdout' in error && 'stderr' in error) {
+      const execError = error as { stdout: string; stderr: string };
+      return execError.stdout + execError.stderr;
     }
-    throw new Error(`Slither execution failed: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Slither execution failed: ${errorMessage}`);
   }
 }
 
@@ -163,7 +194,7 @@ function parseSlitherOutput(output: string): {
     informational: number;
     optimization: number;
   };
-  detailedFindings: any[];
+  detailedFindings: DetailedFinding[];
   rawOutput: string;
 } {
   const summary = {
@@ -174,7 +205,7 @@ function parseSlitherOutput(output: string): {
     optimization: 0,
   };
 
-  const detailedFindings: any[] = [];
+  const detailedFindings: DetailedFinding[] = [];
 
   try {
     // Try to extract JSON output
@@ -183,7 +214,7 @@ function parseSlitherOutput(output: string): {
       const jsonOutput = JSON.parse(jsonMatch[0]);
 
       if (jsonOutput.results && jsonOutput.results.detectors) {
-        jsonOutput.results.detectors.forEach((detector: any) => {
+        jsonOutput.results.detectors.forEach((detector: SlitherDetector) => {
           const impact = detector.impact?.toLowerCase() || 'informational';
 
           // Count by severity
