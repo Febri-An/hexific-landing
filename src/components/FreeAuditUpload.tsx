@@ -1,3 +1,4 @@
+// /components/FreeAuditUpload.tsx
 'use client';
 
 import { useState } from 'react';
@@ -31,6 +32,113 @@ interface AuditResult {
     rawOutput: string;
   };
   error?: string;
+}
+
+interface VPSDetector {
+  elements: Array<{
+    type: string;
+    name: string;
+    source_mapping: {
+      start: number;
+      length: number;
+      filename_relative: string;
+      filename_absolute: string;
+      filename_short: string;
+      is_dependency: boolean;
+      lines: number[];
+      starting_column: number;
+      ending_column: number;
+    };
+  }>;
+  description: string;
+  markdown: string;
+  first_markdown_element: string;
+  id: string;
+  check: string;
+  impact: string;
+  confidence: string;
+}
+
+interface VPSResponse {
+  analysis_id: string;
+  filename: string;
+  timestamp: string;
+  results: {
+    success: boolean;
+    error: string | null;
+    results: {
+      detectors: VPSDetector[];
+    };
+  };
+  exit_code: number;
+}
+
+
+function adaptVPSResponse(vpsData: VPSResponse): AuditResult {
+  // Check for errors
+  if (!vpsData.results.success || vpsData.results.error) {
+    return {
+      success: false,
+      error: vpsData.results.error || 'Analysis failed',
+    };
+  }
+
+  const summary = {
+    high: 0,
+    medium: 0,
+    low: 0,
+    informational: 0,
+    optimization: 0,
+  };
+  
+  const detailedFindings: DetailedFinding[] = [];
+
+  // Parse Slither detectors
+  try {
+    const detectors = vpsData.results.results.detectors;
+    
+    detectors.forEach((detector: VPSDetector) => {
+      const impact = detector.impact.toLowerCase();
+      
+      // Count by severity
+      if (impact === 'high') summary.high++;
+      else if (impact === 'medium') summary.medium++;
+      else if (impact === 'low') summary.low++;
+      else if (impact === 'optimization') summary.optimization++;
+      else summary.informational++;
+
+      // Store detailed finding
+      detailedFindings.push({
+        type: detector.check,
+        impact: detector.impact,
+        confidence: detector.confidence,
+        description: detector.description,
+        location: detector.elements[0]?.source_mapping ? {
+          filename: detector.elements[0].source_mapping.filename_short,
+          lines: detector.elements[0].source_mapping.lines,
+          start: detector.elements[0].source_mapping.start,
+          length: detector.elements[0].source_mapping.length,
+        } : null,
+      });
+    });
+  } catch (e) {
+    console.error('Error parsing VPS response:', e);
+    return {
+      success: false,
+      error: 'Failed to parse audit results',
+    };
+  }
+
+  return {
+    success: true,
+    projectId: vpsData.analysis_id,
+    timestamp: vpsData.timestamp,
+    results: {
+      summary,
+      detailedFindings,
+      rawOutput: JSON.stringify(vpsData.results.results, null, 2),
+    },
+  };
 }
 
 export default function FreeAuditUpload() {
@@ -74,15 +182,18 @@ export default function FreeAuditUpload() {
 
     try {
       const formData = new FormData();
-      formData.append('foundryProject', file);
+      formData.append('file', file); // VPS expects 'file', not 'foundryProject'
 
-      const response = await fetch('/api/audit', {
+      const response = await fetch('https://api.hexific.com/audit', {
         method: 'POST',
         body: formData,
       });
 
-      const data = await response.json();
-      setResult(data);
+      const vpsData = await response.json();
+      
+      // Adapt VPS response to match your frontend structure
+      const adaptedResult = adaptVPSResponse(vpsData);
+      setResult(adaptedResult);
     } catch (error) {
       setResult({
         success: false,
