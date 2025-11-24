@@ -207,35 +207,35 @@ export default function FreeAuditUpload() {
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
       case 'high':
-        return 'text-red-600 bg-red-50';
+        return 'text-red-400 bg-red-950/50 border-red-500/30';
       case 'medium':
-        return 'text-orange-600 bg-orange-50';
+        return 'text-orange-400 bg-orange-950/50 border-orange-500/30';
       case 'low':
-        return 'text-yellow-600 bg-yellow-50';
+        return 'text-yellow-400 bg-yellow-950/50 border-yellow-500/30';
       case 'informational':
-        return 'text-blue-600 bg-blue-50';
+        return 'text-blue-400 bg-blue-950/50 border-blue-500/30';
       case 'optimization':
-        return 'text-green-600 bg-green-50';
+        return 'text-lime-400 bg-lime-950/50 border-lime-500/30';
       default:
-        return 'text-gray-600 bg-gray-50';
+        return 'text-gray-400 bg-gray-950/50 border-gray-500/30';
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-3xl font-bold mb-2">Free Smart Contract Audit</h2>
-        <p className="text-gray-600 mb-6">
+      <div className="glass-effect rounded-2xl shadow-lg p-8 border border-lime-400/20">
+        <h2 className="text-3xl font-bold mb-2 gradient-text">Free Smart Contract Audit</h2>
+        <p className="text-gray-300 mb-6">
           Upload your Foundry project and get instant security analysis powered by Slither
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* File Upload Area */}
           <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${
               dragActive
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400'
+                ? 'border-lime-400 bg-lime-400/10 scale-[1.02]'
+                : 'border-lime-400/30 hover:border-lime-400/50 hover:bg-lime-400/5'
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -252,26 +252,28 @@ export default function FreeAuditUpload() {
             />
             <label htmlFor="file-upload" className="cursor-pointer">
               <div className="space-y-2">
-                <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
-                  stroke="currentColor"
-                  fill="none"
-                  viewBox="0 0 48 48"
-                >
-                  <path
-                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <div className="text-gray-600">
-                  <span className="text-blue-600 hover:text-blue-700 font-semibold">
+                <div className="mx-auto w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-4">
+                  <svg
+                    className="h-8 w-8 text-lime-400"
+                    stroke="currentColor"
+                    fill="none"
+                    viewBox="0 0 48 48"
+                  >
+                    <path
+                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div className="text-gray-300">
+                  <span className="text-lime-400 hover:text-lime-300 font-semibold transition-colors">
                     Click to upload
                   </span>{' '}
                   or drag and drop
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-400">
                   ZIP file of your Foundry project (max 100MB)
                 </p>
               </div>
@@ -279,24 +281,26 @@ export default function FreeAuditUpload() {
           </div>
 
           {file && (
-            <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+            <div className="flex items-center justify-between glass-effect p-4 rounded-lg border border-lime-400/20 slide-up">
               <div className="flex items-center space-x-3">
-                <svg
-                  className="h-8 w-8 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
+                <div className="w-12 h-12 bg-lime-400/20 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="h-6 w-6 text-lime-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                </div>
                 <div>
-                  <p className="font-medium text-gray-900">{file.name}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-medium text-white">{file.name}</p>
+                  <p className="text-sm text-gray-400">
                     {(file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
                 </div>
@@ -304,9 +308,11 @@ export default function FreeAuditUpload() {
               <button
                 type="button"
                 onClick={() => setFile(null)}
-                className="text-red-600 hover:text-red-700"
+                className="text-red-400 hover:text-red-300 transition-colors"
               >
-                Remove
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
               </button>
             </div>
           )}
@@ -314,48 +320,62 @@ export default function FreeAuditUpload() {
           <button
             type="submit"
             disabled={!file || loading}
-            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className={`w-full py-3 px-6 rounded-lg font-bold transition-all ${
+            !file || loading
+              ? 'bg-transparent border border-gray-600 text-gray-500 cursor-not-allowed !hover:transform-none'
+              : 'bg-lime-400 text-black hover:bg-lime-300 pulse-glow'
+          }`}
           >
-            {loading ? 'Analyzing...' : 'Start Free Audit'}
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Analyzing...
+              </span>
+            ) : (
+              'Start Free Audit'
+            )}
           </button>
         </form>
 
         {/* Results */}
         {result && (
-          <div className="mt-8 space-y-6">
+          <div className="mt-8 space-y-6 slide-up">
             {result.success && result.results ? (
               <>
                 {/* Summary Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  <div className="bg-red-50 p-4 rounded-lg">
-                    <div className="text-3xl font-bold text-red-600">
+                  <div className="glass-effect border border-red-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
+                    <div className="text-3xl font-bold text-red-400 mb-1">
                       {result.results.summary.high}
                     </div>
-                    <div className="text-sm text-red-700 font-medium">High</div>
+                    <div className="text-sm text-red-400 font-medium">High</div>
                   </div>
-                  <div className="bg-orange-50 p-4 rounded-lg">
-                    <div className="text-3xl font-bold text-orange-600">
+                  <div className="glass-effect border border-orange-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
+                    <div className="text-3xl font-bold text-orange-400 mb-1">
                       {result.results.summary.medium}
                     </div>
-                    <div className="text-sm text-orange-700 font-medium">Medium</div>
+                    <div className="text-sm text-orange-400 font-medium">Medium</div>
                   </div>
-                  <div className="bg-yellow-50 p-4 rounded-lg">
-                    <div className="text-3xl font-bold text-yellow-600">
+                  <div className="glass-effect border border-yellow-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
+                    <div className="text-3xl font-bold text-yellow-400 mb-1">
                       {result.results.summary.low}
                     </div>
-                    <div className="text-sm text-yellow-700 font-medium">Low</div>
+                    <div className="text-sm text-yellow-400 font-medium">Low</div>
                   </div>
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <div className="text-3xl font-bold text-blue-600">
+                  <div className="glass-effect border border-blue-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
+                    <div className="text-3xl font-bold text-blue-400 mb-1">
                       {result.results.summary.informational}
                     </div>
-                    <div className="text-sm text-blue-700 font-medium">Info</div>
+                    <div className="text-sm text-blue-400 font-medium">Info</div>
                   </div>
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <div className="text-3xl font-bold text-green-600">
+                  <div className="glass-effect border border-lime-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
+                    <div className="text-3xl font-bold text-lime-400 mb-1">
                       {result.results.summary.optimization}
                     </div>
-                    <div className="text-sm text-green-700 font-medium">
+                    <div className="text-sm text-lime-400 font-medium">
                       Optimization
                     </div>
                   </div>
@@ -364,28 +384,28 @@ export default function FreeAuditUpload() {
                 {/* Detailed Findings */}
                 {result.results.detailedFindings.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="text-xl font-bold">Detailed Findings</h3>
+                    <h3 className="text-xl font-bold gradient-text">Detailed Findings</h3>
                     {result.results.detailedFindings.map((finding, index) => (
                       <div
                         key={index}
-                        className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                        className="glass-effect border rounded-lg p-4 hover:border-lime-400/40 transition-all hover:scale-[1.01]"
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center space-x-2">
                             <span
-                              className={`px-3 py-1 rounded-full text-sm font-semibold ${getSeverityColor(
+                              className={`px-3 py-1 rounded-full text-sm font-semibold border ${getSeverityColor(
                                 finding.impact
                               )}`}
                             >
                               {finding.impact}
                             </span>
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-gray-400 px-3 py-1 glass-effect rounded-full">
                               Confidence: {finding.confidence}
                             </span>
                           </div>
                         </div>
-                        <p className="text-gray-700 mb-2">{finding.description}</p>
-                        <p className="text-sm text-gray-500 font-mono">
+                        <p className="text-gray-300 mb-2">{finding.description}</p>
+                        <p className="text-sm text-lime-400/70 font-mono bg-lime-400/5 px-2 py-1 rounded inline-block">
                           Type: {finding.type}
                         </p>
                       </div>
@@ -406,15 +426,25 @@ export default function FreeAuditUpload() {
                     a.download = `audit-report-${result.projectId}.txt`;
                     a.click();
                   }}
-                  className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  className="w-full border border-lime-400 text-lime-400 py-3 px-4 rounded-lg font-semibold hover:bg-lime-400 hover:text-black transition-all"
                 >
-                  Download Full Report
+                  <span className="flex items-center justify-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Download Full Report
+                  </span>
                 </button>
               </>
             ) : (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-red-800 font-semibold">Error</p>
-                <p className="text-red-600">{result.error}</p>
+              <div className="glass-effect border border-red-500/30 rounded-lg p-6">
+                <div className="flex items-center mb-2">
+                  <svg className="w-6 h-6 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-red-400 font-bold text-lg">Error</p>
+                </div>
+                <p className="text-red-300">{result.error}</p>
               </div>
             )}
           </div>
