@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import AIAssistModal from './AIAssistModal';
 
 interface DetailedFinding {
   type: string;
@@ -424,6 +425,27 @@ export default function FreeAuditUpload() {
                   </div>
                 </div>
 
+                {/* AI Assistant Button */}
+                <button
+                  onClick={() => setShowAIModal(true)}
+                  className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black py-4 px-6 rounded-lg font-semibold hover:from-lime-300 hover:to-lime-400 transition-all shadow-lg flex items-center justify-center space-x-2 pulse-glow"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    />
+                  </svg>
+                  <span>Ask AI About Your Audit (3 Free Questions)</span>
+                </button>
+
                 {/* Detailed Findings */}
                 {result.results.detailedFindings.length > 0 && (
                   <div className="space-y-4">
@@ -488,6 +510,58 @@ export default function FreeAuditUpload() {
                   <p className="text-red-400 font-bold text-lg">Error</p>
                 </div>
                 <p className="text-red-300">{result.error}</p>
+              </div>
+            )}
+
+            {/* AI Assistant Modal */}
+            {result?.success && result.results && (
+              <AIAssistModal
+                isOpen={showAIModal}
+                onClose={() => setShowAIModal(false)}
+                auditResults={result.results}
+                analysisId={result.projectId || ''}
+                onPaymentRequired={() => {
+                  setShowAIModal(false);
+                  setShowPaymentModal(true);
+                }}
+              />
+            )}
+
+            {/* Payment Modal - Placeholder for x402 */}
+            {showPaymentModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg max-w-md w-full p-6">
+                  <h3 className="text-xl font-bold mb-4">Payment Required</h3>
+                  <p className="text-gray-600 mb-4">
+                    You've used your 3 free queries. Pay $0.10 via x402 to continue asking questions.
+                  </p>
+                  
+                  {/* TODO: Integrate x402 payment widget here */}
+                  <div className="bg-gray-100 p-4 rounded-lg mb-4">
+                    <p className="text-sm text-gray-600 text-center">
+                      x402 Payment Widget Integration Here
+                    </p>
+                  </div>
+                  
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => setShowPaymentModal(false)}
+                      className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-300"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        // TODO: After successful x402 payment
+                        // handlePaidQuestion(paymentProof);
+                        alert('Integrate x402 payment here');
+                      }}
+                      className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700"
+                    >
+                      Pay $0.10
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
