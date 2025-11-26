@@ -74,6 +74,8 @@ interface VPSResponse {
 }
 
 
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+
 function adaptVPSResponse(vpsData: VPSResponse): AuditResult {
   // Check for errors
   if (!vpsData.results.success || vpsData.results.error) {
@@ -146,6 +148,27 @@ export default function FreeAuditUpload() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AuditResult | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+  const validateFile = (selectedFile: File): boolean => {
+    setError(null);
+
+    // Check file type
+    if (!selectedFile.name.endsWith('.zip')) {
+      setError('Please upload a ZIP file');
+      return false;
+    }
+
+    // Check file size
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      setError(`File size exceeds maximum limit of ${(MAX_FILE_SIZE / 1024 / 1024).toFixed(0)}MB. Your file is ${(selectedFile.size / 1024 / 1024).toFixed(2)}MB`);
+      return false;
+    }
+
+    return true;
+  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -163,13 +186,19 @@ export default function FreeAuditUpload() {
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0]);
+      const droppedFile = e.dataTransfer.files[0];
+      if (validateFile(droppedFile)) {
+        setFile(droppedFile);
+      }
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      if (validateFile(selectedFile)) {
+        setFile(selectedFile);
+      }
     }
   };
 
@@ -189,9 +218,11 @@ export default function FreeAuditUpload() {
         body: formData,
       });
 
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+
       const vpsData = await response.json();
-      
-      // Adapt VPS response to match your frontend structure
       const adaptedResult = adaptVPSResponse(vpsData);
       setResult(adaptedResult);
     } catch (error) {
@@ -230,6 +261,18 @@ export default function FreeAuditUpload() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Error Message */}
+          {error && (
+            <div className="glass-effect border border-red-500/30 rounded-lg p-4 slide-up">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <p className="text-red-400 font-semibold">{error}</p>
+              </div>
+            </div>
+          )}
+          
           {/* File Upload Area */}
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${
