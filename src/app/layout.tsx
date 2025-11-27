@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from 'next/script'
+import '@rainbow-me/rainbowkit/styles.css';
+import { Providers } from './providers';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -65,7 +67,7 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

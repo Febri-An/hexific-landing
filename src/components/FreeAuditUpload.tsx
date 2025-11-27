@@ -151,7 +151,7 @@ export default function FreeAuditUpload() {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAIModal, setShowAIModal] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  // const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const validateFile = (selectedFile: File): boolean => {
     setError(null);
@@ -520,24 +520,24 @@ export default function FreeAuditUpload() {
                 onClose={() => setShowAIModal(false)}
                 auditResults={result.results}
                 analysisId={result.projectId || ''}
-                onPaymentRequired={() => {
-                  setShowAIModal(false);
-                  setShowPaymentModal(true);
-                }}
+                // onPaymentRequired={() => {
+                //   setShowAIModal(false);
+                //   setShowPaymentModal(true);
+                // }}
               />
             )}
 
             {/* Payment Modal - Placeholder for x402 */}
-            {showPaymentModal && (
+            {/* {showPaymentModal && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-lg max-w-md w-full p-6">
                   <h3 className="text-xl font-bold mb-4">Payment Required</h3>
                   <p className="text-gray-600 mb-4">
                     You've used your 3 free queries. Pay $0.10 via x402 to continue asking questions.
                   </p>
-                  
+                   */}
                   {/* TODO: Integrate x402 payment widget here */}
-                  <div className="bg-gray-100 p-4 rounded-lg mb-4">
+                  {/* <div className="bg-gray-100 p-4 rounded-lg mb-4">
                     <p className="text-sm text-gray-600 text-center">
                       x402 Payment Widget Integration Here
                     </p>
@@ -551,11 +551,11 @@ export default function FreeAuditUpload() {
                       Cancel
                     </button>
                     <button
-                      onClick={() => {
-                        // TODO: After successful x402 payment
+                      onClick={() => { */}
+                        {/* // TODO: After successful x402 payment
                         // handlePaidQuestion(paymentProof);
-                        alert('Integrate x402 payment here');
-                      }}
+                        alert('Integrate x402 payment here'); */}
+                      {/* }}
                       className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700"
                     >
                       Pay $0.10
@@ -563,7 +563,7 @@ export default function FreeAuditUpload() {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         )}
       </div>

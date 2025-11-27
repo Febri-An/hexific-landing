@@ -12,13 +12,17 @@
     "install-slither": "pip3 install slither-analyzer solc-select"
   },
   "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.9",
     "@tailwindcss/postcss": "^4.1.11",
+    "@tanstack/react-query": "^5.90.11",
     "adm-zip": "^0.5.16",
     "lucide-react": "^0.536.0",
     "next": "15.4.6",
     "next-sitemap": "^4.2.3",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "viem": "^2.40.3",
+    "wagmi": "^2.19.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
