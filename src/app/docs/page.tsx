@@ -158,7 +158,7 @@ function QuickLinksSidebar() {
 }
 
 // Main Documentation Layout
-export function DocsLayout({ children }: { children: React.ReactNode }) {
+function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#000E1B]">
       {/* Header */}
@@ -385,12 +385,12 @@ export default function DocsPage() {
               </Link>
             </li>
             <li>
-              Click <strong className="text-white">"Start Free Audit"</strong>
+              Click <strong className="text-white">&quot;Start Free Audit&quot;</strong>
             </li>
             <li>Drag and drop your ZIP file (or click to browse)</li>
             <li>
               Click{' '}
-              <strong className="text-white">"Start Free Audit"</strong> button
+              <strong className="text-white">&quot;Start Free Audit&quot;</strong> button
             </li>
             <li>Wait 30 seconds to 5 minutes for results</li>
           </ol>
@@ -410,7 +410,7 @@ export default function DocsPage() {
             Step 3: Review Your Results
           </h3>
           <p className="text-gray-300 mb-4">
-            After analysis completes, you'll see:
+            After analysis completes, you&apos;ll see:
           </p>
 
           <h4 className="text-xl font-semibold text-white mb-3">
@@ -470,7 +470,7 @@ export default function DocsPage() {
           <p className="text-gray-300 mb-6">
             You get <strong className="text-lime-400">3 free AI questions</strong> per
             audit. Click{' '}
-            <strong className="text-white">"Ask AI About Your Audit"</strong>{' '}
+            <strong className="text-white">&quot;Ask AI About Your Audit&quot;</strong>{' '}
             to start.
           </p>
 
@@ -480,26 +480,26 @@ export default function DocsPage() {
           <ul className="text-gray-300 space-y-2 mb-6">
             <li className="flex items-start">
               <span className="text-lime-400 mr-2">→</span>
-              <span>"Explain the high severity findings in simple terms"</span>
+              <span>&quot;Explain the high severity findings in simple terms&quot;</span>
             </li>
             <li className="flex items-start">
               <span className="text-lime-400 mr-2">→</span>
-              <span>"How do I fix the reentrancy vulnerability?"</span>
+              <span>&quot;How do I fix the reentrancy vulnerability?&quot;</span>
             </li>
             <li className="flex items-start">
               <span className="text-lime-400 mr-2">→</span>
-              <span>"What's the risk level of these medium issues?"</span>
+              <span>&quot;What&apos;s the risk level of these medium issues?&quot;</span>
             </li>
             <li className="flex items-start">
               <span className="text-lime-400 mr-2">→</span>
               <span>
-                "Show me code examples to fix the access control problem"
+                &quot;Show me code examples to fix the access control problem&quot;
               </span>
             </li>
             <li className="flex items-start">
               <span className="text-lime-400 mr-2">→</span>
               <span>
-                "Should I be worried about these gas optimizations?"
+                &quot;Should I be worried about these gas optimizations?&quot;
               </span>
             </li>
           </ul>
@@ -536,7 +536,7 @@ export default function DocsPage() {
             </p>
             <ul className="text-sm text-gray-300 space-y-1 ml-4">
               <li>• Be specific - Ask about particular findings</li>
-              <li>• One topic at a time - Don't mix multiple questions</li>
+              <li>• One topic at a time - Don&apos;t mix multiple questions</li>
               <li>• Provide context - Mention your use case if relevant</li>
               <li>• Follow up - Use your queries to drill down</li>
             </ul>
@@ -684,12 +684,12 @@ export default function DocsPage() {
           </h3>
           <ol className="text-gray-300 space-y-2 mb-6 list-decimal list-inside">
             <li>
-              Click <strong className="text-white">"Connect Wallet"</strong> when
+              Click <strong className="text-white">&quot;Connect Wallet&quot;</strong> when
               prompted
             </li>
             <li>Choose your wallet from the list</li>
             <li>Approve the connection in your wallet</li>
-            <li>You're ready to make paid queries!</li>
+            <li>You&apos;re ready to make paid queries!</li>
           </ol>
 
           <div className="not-prose glass-effect border border-yellow-400/30 rounded-lg p-4 mb-6">
@@ -738,7 +738,7 @@ export default function DocsPage() {
               Fix critical issues first
             </li>
             <li>
-              <strong className="text-white">Don't ignore informational</strong> -
+              <strong className="text-white">Don&apos;t ignore informational</strong> -
               These can prevent future bugs
             </li>
             <li>

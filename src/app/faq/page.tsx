@@ -247,7 +247,7 @@ function FAQItem({
 }
 
 // FAQ Page Component
-export function FAQPage() {
+export default function FAQPage() {
   return (
     <DocsLayout>
       <div className="max-w-4xl">
@@ -317,7 +317,7 @@ export function FAQPage() {
               question="How accurate is the automated audit?"
               answer={
                 <>
-                  <p>Slither catches approximately <strong className="text-lime-400">80% of common vulnerabilities</strong>. It's an excellent tool for development and catching standard security issues.</p>
+                  <p>Slither catches approximately <strong className="text-lime-400">80% of common vulnerabilities</strong>. It&apos;s an excellent tool for development and catching standard security issues.</p>
                   <p className="mt-2">For production deployments of high-value protocols (&gt;$1M TVL), we strongly recommend professional manual audits in addition to automated scanning.</p>
                 </>
               }
@@ -497,7 +497,7 @@ export function FAQPage() {
                     </li>
                     <li className="flex items-start">
                       <span className="text-lime-400 mr-2">•</span>
-                      <span>Don't include build artifacts</span>
+                      <span>Don&apos;t include build artifacts</span>
                     </li>
                     <li className="flex items-start">
                       <span className="text-lime-400 mr-2">•</span>
@@ -564,7 +564,7 @@ export function FAQPage() {
                   <ul className="mt-2 space-y-1 ml-4">
                     <li className="flex items-start">
                       <span className="text-red-400 mr-2">✗</span>
-                      <span>Overly broad questions ("What is Solidity?")</span>
+                      <span>Overly broad questions (&quot;What is Solidity?&quot;)</span>
                     </li>
                     <li className="flex items-start">
                       <span className="text-red-400 mr-2">✗</span>
@@ -583,15 +583,15 @@ export function FAQPage() {
                   <ul className="mt-2 space-y-1 ml-4">
                     <li className="flex items-start">
                       <span className="text-lime-400 mr-2">✓</span>
-                      <span>"Explain this specific finding in my audit"</span>
+                      <span>&quot;Explain this specific finding in my audit&quot;</span>
                     </li>
                     <li className="flex items-start">
                       <span className="text-lime-400 mr-2">✓</span>
-                      <span>"How do I fix the reentrancy issue found?"</span>
+                      <span>&quot;How do I fix the reentrancy issue found?&quot;</span>
                     </li>
                     <li className="flex items-start">
                       <span className="text-lime-400 mr-2">✓</span>
-                      <span>"What's the priority order for these fixes?"</span>
+                      <span>&quot;What&apos;s the priority order for these fixes?&quot;</span>
                     </li>
                   </ul>
                 </>
@@ -718,7 +718,7 @@ export function FAQPage() {
               question="Will there be subscription plans?"
               answer={
                 <>
-                  <p>We're exploring subscription options for power users!</p>
+                  <p>We&apos;re exploring subscription options for power users!</p>
                   <p className="mt-2"><strong className="text-white">Potential plans:</strong></p>
                   <ul className="mt-2 space-y-1 ml-4">
                     <li className="flex items-start">
@@ -768,7 +768,7 @@ export function FAQPage() {
         {/* Still Have Questions CTA */}
         <div className="bg-gradient-to-r from-lime-400/20 to-lime-500/20 border border-lime-400/30 rounded-xl p-8 text-center">
           <h2 className="text-3xl font-bold text-white gradient-text mb-4">Still Have Questions?</h2>
-          <p className="text-gray-300 mb-6">We're here to help!</p>
+          <p className="text-gray-300 mb-6">We&apos;re here to help!</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="mailto:admin@hexific.com"
@@ -788,5 +788,3 @@ export function FAQPage() {
     </DocsLayout>
   );
 }
-
-export default FAQPage;

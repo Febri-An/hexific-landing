@@ -260,7 +260,7 @@ export default function AIAssistModal({
               </svg>
               <p className="text-lg font-medium text-white mb-2">Ask me anything about your audit results</p>
               <p className="text-sm text-gray-500">
-                Examples: "Explain the high severity findings" or "How do I fix the reentrancy issue?"
+                Examples: &quot;Explain the high severity findings&quot; or &quot;How do I fix the reentrancy issue?&quot;
               </p>
             </div>
           )}
@@ -325,7 +325,7 @@ export default function AIAssistModal({
                 Connect Wallet to Continue
               </p>
               <p className="text-yellow-700 text-sm mb-3">
-                Connect your wallet to make paid queries. You'll sign a message to prove payment (no gas fees for signature).
+                Connect your wallet to make paid queries. You&apos;ll sign a message to prove payment (no gas fees for signature).
               </p>
               <div className="flex justify-center">
                 <ConnectButton />

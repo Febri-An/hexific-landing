@@ -67,7 +67,7 @@ function ContactForm() {
         <div className="text-5xl mb-4">✅</div>
         <h3 className="text-2xl font-bold text-green-900 mb-2">Request Submitted!</h3>
         <p className="text-green-800 mb-4">
-          We'll get back to you within 24-48 hours with a quote and timeline.
+          We&apos;ll get back to you within 24-48 hours with a quote and timeline.
         </p>
         <p className="text-sm text-green-700">
           Check your email (including spam folder) for our response.
@@ -182,14 +182,14 @@ function ContactForm() {
       </div>
 
       <p className="text-sm text-gray-500 text-center">
-        * We'll respond within 24-48 hours with pricing and availability
+        * We&apos;ll respond within 24-48 hours with pricing and availability
       </p>
     </div>
   );
 }
 
 // Manual Audit Page Component
-export function ManualAuditPage() {
+export default function ManualAuditPage() {
   return (
     <DocsLayout>
       {/* Hero Section */}
@@ -280,7 +280,7 @@ export function ManualAuditPage() {
       <div className="bg-gray-100 py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">What's Included</h2>
+            <h2 className="text-3xl font-bold mb-4">What&apos;s Included</h2>
             <p className="text-xl text-gray-600">Comprehensive security analysis by expert auditors</p>
           </div>
 
@@ -375,7 +375,7 @@ export function ManualAuditPage() {
             <div className="flex-1">
               <h3 className="text-xl font-bold mb-2">Request a Quote</h3>
               <p className="text-gray-600">
-                Fill out the form below with your project details. We'll respond within 24-48 hours with a quote and timeline.
+                Fill out the form below with your project details. We&apos;ll respond within 24-48 hours with a quote and timeline.
               </p>
             </div>
           </div>
@@ -399,7 +399,7 @@ export function ManualAuditPage() {
             <div className="flex-1">
               <h3 className="text-xl font-bold mb-2">Audit Phase (1-3 weeks)</h3>
               <p className="text-gray-600">
-                Our team performs comprehensive analysis. We'll provide daily updates and preliminary findings as we work.
+                Our team performs comprehensive analysis. We&apos;ll provide daily updates and preliminary findings as we work.
               </p>
             </div>
           </div>
@@ -508,7 +508,7 @@ export function ManualAuditPage() {
       <div id="request-quote" className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Request a Quote</h2>
-          <p className="text-xl text-gray-600">Tell us about your project and we'll get back to you within 24-48 hours</p>
+          <p className="text-xl text-gray-600">Tell us about your project and we&apos;ll get back to you within 24-48 hours</p>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-8">
@@ -525,7 +525,7 @@ export function ManualAuditPage() {
             <div>
               <h3 className="font-bold text-lg mb-2">How long does an audit take?</h3>
               <p className="text-gray-600">
-                Standard audits take 1-3 weeks depending on complexity. Rush audits (1 week or less) are available at a premium. We'll give you a specific timeline in our quote.
+                Standard audits take 1-3 weeks depending on complexity. Rush audits (1 week or less) are available at a premium. We&apos;ll give you a specific timeline in our quote.
               </p>
             </div>
 
@@ -539,7 +539,7 @@ export function ManualAuditPage() {
             <div>
               <h3 className="font-bold text-lg mb-2">What if you find critical issues?</h3>
               <p className="text-gray-600">
-                We'll immediately notify you of any critical findings during the audit. You can pause the audit to fix issues, or wait for the full report. Either way, we're here to help you remediate.
+                We&apos;ll immediately notify you of any critical findings during the audit. You can pause the audit to fix issues, or wait for the full report. Either way, we&apos;re here to help you remediate.
               </p>
             </div>
 
@@ -553,7 +553,7 @@ export function ManualAuditPage() {
             <div>
               <h3 className="font-bold text-lg mb-2">Do you provide an audit badge?</h3>
               <p className="text-gray-600">
-                Yes! Upon successful completion, you'll receive an official Hexific audit badge for your website and documentation, plus permission to reference the audit report.
+                Yes! Upon successful completion, you&apos;ll receive an official Hexific audit badge for your website and documentation, plus permission to reference the audit report.
               </p>
             </div>
           </div>
@@ -584,5 +584,3 @@ export function ManualAuditPage() {
     </DocsLayout>
   );
 }
-
-export default ManualAuditPage;
