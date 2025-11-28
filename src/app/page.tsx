@@ -285,7 +285,7 @@ export default function Page() {
                 <div className="text-gray-400">Contracts Audited</div>
               </div> */}
               <div className="glass-effect rounded-xl p-6 scan-line">
-                <div className="text-3xl font-bold gradient-text mb-2" id="vulnerabilities">28</div>
+                <div className="text-3xl font-bold gradient-text mb-2" id="vulnerabilities">40+</div>
                 <div className="text-gray-400">Vulnerabilities Found</div>
               </div>
               {/* <div className="glass-effect rounded-xl p-6 scan-line">
