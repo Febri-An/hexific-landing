@@ -209,8 +209,11 @@ export default function Page() {
     window.location.href = "mailto:admin@hexific.com?subject=Schedule%20Consultation&body=Hi%20there,%0A%0AI'd%20like%20to%20schedule%20a%20consultation%20to%20discuss%20my%20smart%20contract%20audit%20needs.%0APlease%20let%20me%20know%20your%20availability.%0A%0AThank%20you!";
   };
 
-  const underDevelopment = () => {
-    alert("This feature is under development.");
+  const scrollDown = () => {
+    const element = document.getElementById('free-audit-upload');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (
@@ -755,7 +758,7 @@ export default function Page() {
               <div>
                 <h3 className="text-2xl font-bold mb-4">Start Free Audit</h3>
                 <p className="text-gray-300 mb-4">Get started with our AI-powered vulnerability detection for free.</p>
-                <button onClick={underDevelopment} className="bg-lime-400 text-black px-8 py-3 rounded-lg font-bold hover:bg-lime-300 transition-all pulse-glow cursor-pointer">
+                <button onClick={scrollDown} className="bg-lime-400 text-black px-8 py-3 rounded-lg font-bold hover:bg-lime-300 transition-all pulse-glow cursor-pointer">
                   Upload Contract
                 </button>
               </div>
@@ -768,7 +771,9 @@ export default function Page() {
               </div>
             </div>
           </div>
-          <FreeAuditUpload />
+          <div id="free-audit-upload" className="scroll-mt-20">
+            <FreeAuditUpload />
+          </div>
           {/* Contact Info */}
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div>
