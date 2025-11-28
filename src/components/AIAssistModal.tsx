@@ -328,7 +328,70 @@ export default function AIAssistModal({
                 Connect your wallet to make paid queries. You&apos;ll sign a message to prove payment (no gas fees for signature).
               </p>
               <div className="flex justify-center">
-                <ConnectButton />
+                <ConnectButton.Custom>
+                  {({
+                    account,
+                    chain,
+                    openAccountModal,
+                    openChainModal,
+                    openConnectModal,
+                    mounted,
+                  }) => {
+                    const ready = mounted;
+                    const connected = ready && account && chain;
+
+                    return (
+                      <div
+                        {...(!ready && {
+                          'aria-hidden': true,
+                          'style': {
+                            opacity: 0,
+                            pointerEvents: 'none',
+                            userSelect: 'none',
+                          },
+                        })}
+                      >
+                        {(() => {
+                          if (!connected) {
+                            return (
+                              <button
+                                onClick={openConnectModal}
+                                className="px-6 py-3 bg-lime-400 text-black rounded-lg font-semibold hover:bg-lime-300 pulse-glow transition-all"
+                              >
+                                Connect Wallet
+                              </button>
+                            );
+                          }
+
+                          return (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={openChainModal}
+                                className="px-4 py-2 bg-black/50 text-lime-400 border border-lime-400/30 rounded-lg hover:border-lime-400 transition-all"
+                              >
+                                {chain.hasIcon && chain.iconUrl && (
+                                  <img
+                                    alt={chain.name ?? 'Chain icon'}
+                                    src={chain.iconUrl}
+                                    className="w-5 h-5 inline mr-2"
+                                  />
+                                )}
+                                {chain.name}
+                              </button>
+
+                              <button
+                                onClick={openAccountModal}
+                                className="px-4 py-2 bg-lime-400 text-black rounded-lg font-semibold hover:bg-lime-300 transition-all"
+                              >
+                                {account.displayName}
+                              </button>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }}
+                </ConnectButton.Custom>
               </div>
             </div>
           )}
@@ -338,7 +401,70 @@ export default function AIAssistModal({
         <div className="p-6 border-t border-lime-400/20 bg-gradient-to-t from-lime-400/5 to-transparent">
           {(freeQueriesLeft <= 0) && (
             <div className="mb-4 flex justify-center">
-              <ConnectButton />
+              <ConnectButton.Custom>
+                  {({
+                    account,
+                    chain,
+                    openAccountModal,
+                    openChainModal,
+                    openConnectModal,
+                    mounted,
+                  }) => {
+                    const ready = mounted;
+                    const connected = ready && account && chain;
+
+                    return (
+                      <div
+                        {...(!ready && {
+                          'aria-hidden': true,
+                          'style': {
+                            opacity: 0,
+                            pointerEvents: 'none',
+                            userSelect: 'none',
+                          },
+                        })}
+                      >
+                        {(() => {
+                          if (!connected) {
+                            return (
+                              <button
+                                onClick={openConnectModal}
+                                className="px-6 py-3 bg-lime-400 text-black rounded-lg font-semibold hover:bg-lime-300 pulse-glow transition-all"
+                              >
+                                Connect Wallet
+                              </button>
+                            );
+                          }
+
+                          return (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={openChainModal}
+                                className="px-4 py-2 bg-black/50 text-lime-400 border border-lime-400/30 rounded-lg hover:border-lime-400 transition-all"
+                              >
+                                {chain.hasIcon && chain.iconUrl && (
+                                  <img
+                                    alt={chain.name ?? 'Chain icon'}
+                                    src={chain.iconUrl}
+                                    className="w-5 h-5 inline mr-2"
+                                  />
+                                )}
+                                {chain.name}
+                              </button>
+
+                              <button
+                                onClick={openAccountModal}
+                                className="px-4 py-2 bg-lime-400 text-black rounded-lg font-semibold hover:bg-lime-300 transition-all"
+                              >
+                                {account.displayName}
+                              </button>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }}
+                </ConnectButton.Custom>
             </div>
           )}
           
