@@ -137,6 +137,7 @@ export default function Page() {
     return () => processObserver.disconnect();
   }, []);
 
+  // Fetch HEXI price every 30 seconds
   useEffect(() => {
     const fetchHexiPrice = async () => {
       try {
@@ -203,11 +204,11 @@ export default function Page() {
     const mobileBtn = document.querySelector<HTMLElement>('.md\\:hidden');
     if (mobileBtn) {
       const mobileMenu = document.createElement('div');
-      mobileMenu.className = 'md:hidden absolute top-full left-0 w-full glass-effect border-t border-lime-400/20 p-6 space-y-4 hidden';
+      mobileMenu.className = 'md:hidden absolute top-full left-0 w-full bg-[#000E1B]/85 border-t border-lime-400/20 p-6 space-y-4 hidden';
       mobileMenu.innerHTML = `
         <a href="#features" class="block hover:text-lime-400 transition-colors">Features</a>
         <a href="#process" class="block hover:text-lime-400 transition-colors">Process</a>
-        <a href="#pricing" class="block hover:text-lime-400 transition-colors">Pricing</a>
+        <a href="/docs" class="block hover:text-lime-400 transition-colors">Docs</a>
         <a href="#contact" class="block bg-lime-400 text-black px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold text-center">Get Audit</a>
       `;
       mobileBtn.parentElement?.appendChild(mobileMenu);
