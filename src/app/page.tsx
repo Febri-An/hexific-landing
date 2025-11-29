@@ -8,6 +8,8 @@ import FreeAuditUpload from '@/components/FreeAuditUpload';
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [countersStarted, setCountersStarted] = useState(false);
+  const [hexiPrice, setHexiPrice] = useState<number | null>(null);
+  const [priceChange24h, setPriceChange24h] = useState<number | null>(null);
 
   // Matrix animation for background
   useEffect(() => {
@@ -135,7 +137,30 @@ export default function Page() {
     return () => processObserver.disconnect();
   }, []);
 
-  // 3. Hover & click effects (feature-card, all buttons, mobile menu)
+  useEffect(() => {
+    const fetchHexiPrice = async () => {
+      try {
+        const response = await fetch(
+          'https://api.dexscreener.com/latest/dex/tokens/3ghjaogpDVt7QZ6eNauoggmj4WYw23TkpyVN2yZjpump'
+        );
+        const data = await response.json();
+        
+        if (data.pairs && data.pairs.length > 0) {
+          const pair = data.pairs[0];
+          setHexiPrice(parseFloat(pair.priceUsd));
+          setPriceChange24h(parseFloat(pair.priceChange.h24));
+        }
+      } catch (error) {
+        console.error('Failed to fetch HEXI price:', error);
+      }
+    };
+    
+    fetchHexiPrice();
+    const interval = setInterval(fetchHexiPrice, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Hover & click effects (feature-card, all buttons, mobile menu)
   useEffect(() => {
     // feature-card hover
     const cards = document.querySelectorAll<HTMLElement>('.feature-card');
@@ -254,6 +279,32 @@ export default function Page() {
           </div>
         </div>
       </nav>
+      {/* HEXI Price Tag */}
+      <a
+        href="https://dexscreener.com/solana/3ghjaogpDVt7QZ6eNauoggmj4WYw23TkpyVN2yZjpump"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 glass-effect border border-lime-400/30 rounded-2xl p-4 hover:border-lime-400 transition-all hover:scale-105 pulse-glow group"
+      >
+        {hexiPrice !== null ? (
+          <div className="flex flex-col items-center">
+          <span className="text-sm font-semibold">HEXI Price</span>
+            <span className="text-lg font-bold gradient-text">
+            ${hexiPrice < 0.0001 
+              ? `0.0₄${hexiPrice.toFixed(8).replace(/^0\.0+/, '')}` 
+              : hexiPrice.toFixed(4)}
+            </span>
+          {priceChange24h !== null && (
+            <span className={`text-sm font-medium ${priceChange24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {priceChange24h >= 0 ? '+' : ''}{priceChange24h.toFixed(2)}% (24h)
+            </span>
+          )}
+          </div>
+        ) : (
+          <span className="text-sm font-medium">Loading...</span> 
+        )}
+      </a>
+
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center floating-orbs cyber-grid">
         <div className="max-w-7xl mx-auto px-6 py-20 text-center">
