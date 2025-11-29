@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const PAYMENT_PRICE = 0.1; // $0.1 in USDC
 const PAYMENT_ADDRESS = '0xC95b563aC3Aa6B795EAfEf143778ea582962753E';
-const PAYMENT_NETWORK = 'base-sepolia';
+const PAYMENT_NETWORK = 'base';
 
 // Simple in-memory storage for payment verification
 // In production, use Redis or database

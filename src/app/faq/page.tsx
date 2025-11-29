@@ -683,9 +683,9 @@ export default function FAQPage() {
               question="Is this on mainnet or testnet?"
               answer={
                 <>
-                  <p><strong className="text-yellow-400">Currently:</strong> Base Sepolia testnet (free test network during beta)</p>
-                  <p className="mt-2"><strong className="text-lime-400">Coming Q1 2026:</strong> Base mainnet with real USDC payments</p>
-                  <p className="mt-2">During beta testing, you can test the payment flow without spending real money!</p>
+                  <p><strong className="text-yellow-400"></strong>Live on Base Mainnet!</p>
+                  <p className="mt-2"><strong className="text-lime-400"></strong>Payments are processed with real USDC on Base network.</p>
+                    <p className="mt-2">You&apos;ll need USDC on Base to make paid queries after your 3 free questions.</p>
                 </>
               }
             />

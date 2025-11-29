@@ -695,8 +695,7 @@ export default function DocsPage() {
           <div className="not-prose glass-effect border border-yellow-400/30 rounded-lg p-4 mb-6">
             <p className="font-semibold text-yellow-400">ℹ️ Note:</p>
             <p className="text-sm text-gray-300">
-              Currently on Base Sepolia testnet (free test network). No real
-              money needed!
+              Base mainnet with real USDC payments
             </p>
           </div>
         </section>
