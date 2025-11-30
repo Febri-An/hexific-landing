@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAccount, useWalletClient, useSignMessage } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { CodeBlock } from '@/components/CodeBlock';
 
 interface AIAssistModalProps {
   isOpen: boolean;
@@ -24,7 +25,7 @@ interface AIAssistModalProps {
     rawOutput: string;
   };
   analysisId: string;
-  // onPaymentRequired: () => void;
+  prefilledQuestion?: string;
 }
 
 interface WalletError {
@@ -40,7 +41,7 @@ export default function AIAssistModal({
   onClose,
   auditResults,
   analysisId,
-  // onPaymentRequired,
+  prefilledQuestion,
 }: AIAssistModalProps) {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
@@ -71,8 +72,11 @@ export default function AIAssistModal({
           JSON.stringify({ remaining: 3, history: [] })
         );
       }
+      if (prefilledQuestion) {
+        setQuestion(prefilledQuestion);
+      }
     }
-  }, [isOpen, analysisId]);
+  }, [isOpen, prefilledQuestion, analysisId]); // Tambahkan prefilledQuestion ke dependency array
 
   const handleFreeQuestion = async () => {
     if (!question.trim() || freeQueriesLeft <= 0) return;
@@ -208,6 +212,44 @@ export default function AIAssistModal({
     }
   };
 
+  function parseAIResponse(response: string) {
+    const parts: Array<{ type: 'text' | 'code'; content: string; language?: string }> = [];
+    
+    // Match code blocks with ```language
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = codeBlockRegex.exec(response)) !== null) {
+      // Add text before code block
+      if (match.index > lastIndex) {
+        parts.push({
+          type: 'text',
+          content: response.substring(lastIndex, match.index).trim(),
+        });
+      }
+
+      // Add code block
+      parts.push({
+        type: 'code',
+        content: match[2].trim(),
+        language: match[1] || 'solidity',
+      });
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text
+    if (lastIndex < response.length) {
+      parts.push({
+        type: 'text',
+        content: response.substring(lastIndex).trim(),
+      });
+    }
+
+    return parts;
+  }
+
   if (!isOpen) return null;
 
   return (
@@ -284,7 +326,19 @@ export default function AIAssistModal({
                     </svg>
                     <p className="text-xs font-semibold text-lime-400">AI Response:</p>
                   </div>
-                  <p className="text-gray-200 whitespace-pre-wrap leading-relaxed">{item.response}</p>
+                  
+                  {/* Parse and render response parts */}
+                  <div className="space-y-3">
+                    {parseAIResponse(item.response).map((part, partIdx) => (
+                      <div key={partIdx}>
+                        {part.type === 'text' ? (
+                          <p className="text-gray-200 whitespace-pre-wrap leading-relaxed">{part.content}</p>
+                        ) : (
+                          <CodeBlock code={part.content} language={part.language} />
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -304,7 +358,7 @@ export default function AIAssistModal({
             </div>
           )}
 
-          {response && !loading && (
+          {/* {response && !loading && (
             <div className="flex justify-start slide-up">
               <div className="glass-effect border border-lime-400/20 rounded-lg px-4 py-3 max-w-[80%]">
                 <div className="flex items-center mb-2">
@@ -316,7 +370,7 @@ export default function AIAssistModal({
                 <p className="text-gray-200 whitespace-pre-wrap leading-relaxed">{response}</p>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Payment Prompt */}
           {showPaymentPrompt && (

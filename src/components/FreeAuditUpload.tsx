@@ -151,6 +151,7 @@ export default function FreeAuditUpload() {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAIModal, setShowAIModal] = useState(false);
+  const [prefilledQuestion, setPrefilledQuestion] = useState<string | undefined>(undefined);
   // const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const validateFile = (selectedFile: File): boolean => {
@@ -473,6 +474,45 @@ export default function FreeAuditUpload() {
                         <p className="text-sm text-lime-400/70 font-mono bg-lime-400/5 px-2 py-1 rounded inline-block">
                           Type: {finding.type}
                         </p>
+                        <button
+                          onClick={() => {
+                            setPrefilledQuestion(`How do I fix this ${finding.impact} severity "${finding.type}" issue? Please provide complete Solidity code.`);
+                            setShowAIModal(true);
+                          }}
+                          className="mt-3 bg-lime-400/10 border border-lime-400/30 text-lime-400 px-4 py-2 rounded-lg font-semibold text-sm flex items-center space-x-2 hover:bg-lime-400/20 hover:border-lime-400/50 transition-all group"
+                        >
+                          <svg 
+                            className="w-4 h-4 group-hover:rotate-12 transition-transform" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                              strokeWidth={2} 
+                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" 
+                            />
+                            <path 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                              strokeWidth={2} 
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" 
+                            />
+                          </svg>
+                          <span>Generate Fix Code</span>
+                          <svg 
+                            className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" 
+                            fill="currentColor" 
+                            viewBox="0 0 20 20"
+                          >
+                            <path 
+                              fillRule="evenodd" 
+                              d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" 
+                              clipRule="evenodd" 
+                            />
+                          </svg>
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -517,9 +557,13 @@ export default function FreeAuditUpload() {
             {result?.success && result.results && (
               <AIAssistModal
                 isOpen={showAIModal}
-                onClose={() => setShowAIModal(false)}
+                onClose={() => {
+                  setShowAIModal(false);
+                  setPrefilledQuestion(undefined);
+                }}
                 auditResults={result.results}
                 analysisId={result.projectId || ''}
+                prefilledQuestion={prefilledQuestion}
                 // onPaymentRequired={() => {
                 //   setShowAIModal(false);
                 //   setShowPaymentModal(true);
