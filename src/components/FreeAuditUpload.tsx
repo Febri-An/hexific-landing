@@ -470,7 +470,33 @@ export default function FreeAuditUpload() {
                             </span>
                           </div>
                         </div>
-                        <p className="text-gray-300 mb-2">{finding.description}</p>
+                        <div className="text-left mb-2">
+                          <div className="bg-gray-900/50 border border-gray-700/50 rounded-lg p-4 font-mono text-sm">
+                            {finding.description.split('\n').map((line, lineIndex) => {
+                              const isMainIssue = lineIndex === 0;
+                              const isIndented = line.startsWith('\t');
+                              const trimmedLine = line.replace(/^\t/, '');
+                              
+                              return (
+                                <div
+                                  key={lineIndex}
+                                  className={`${
+                                    isMainIssue
+                                      ? 'text-lime-400 font-semibold mb-2'
+                                      : isIndented
+                                      ? 'text-gray-400 pl-4 py-0.5'
+                                      : 'text-gray-300 py-0.5'
+                                  }`}
+                                >
+                                  {isIndented && (
+                                    <span className="text-lime-400/40 mr-2">•</span>
+                                  )}
+                                  {trimmedLine}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
                         <p className="text-sm text-lime-400/70 font-mono bg-lime-400/5 px-2 py-1 rounded inline-block">
                           Type: {finding.type}
                         </p>
