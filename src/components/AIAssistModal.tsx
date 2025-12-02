@@ -5,6 +5,13 @@ import { useAccount, useWalletClient, useSignMessage } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { CodeBlock } from '@/components/CodeBlock';
 
+interface FindingDetails {
+  type: string;
+  impact: string;
+  confidence: string;
+  description: string;
+}
+
 interface AIAssistModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -25,7 +32,9 @@ interface AIAssistModalProps {
     rawOutput: string;
   };
   analysisId: string;
+  mode?: 'quick_actions' | 'instant_fix';
   prefilledQuestion?: string;
+  findingDetails?: FindingDetails;
 }
 
 interface WalletError {
@@ -41,7 +50,9 @@ export default function AIAssistModal({
   onClose,
   auditResults,
   analysisId,
+  mode = 'quick_actions',
   prefilledQuestion,
+  findingDetails,
 }: AIAssistModalProps) {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,6 +63,8 @@ export default function AIAssistModal({
   >([]);
   const [showPaymentPrompt, setShowPaymentPrompt] = useState(false);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [showQuickActions, setShowQuickActions] = useState(mode === 'quick_actions');
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
@@ -72,16 +85,104 @@ export default function AIAssistModal({
           JSON.stringify({ remaining: 3, history: [] })
         );
       }
+      // findingDetails
+      if (mode === 'instant_fix' && findingDetails) {
+        handleInstantFix();
+      }
       if (prefilledQuestion) {
         setQuestion(prefilledQuestion);
       }
     }
-  }, [isOpen, prefilledQuestion, analysisId]); // Tambahkan prefilledQuestion ke dependency array
+  }, [isOpen, prefilledQuestion, analysisId, mode]);
 
-  const handleFreeQuestion = async () => {
-    if (!question.trim() || freeQueriesLeft <= 0) return;
+  function parseAIResponse(response: string) {
+    const parts: Array<{ type: 'text' | 'code'; content: string; language?: string }> = [];
+    
+    // Match code blocks with ```language
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = codeBlockRegex.exec(response)) !== null) {
+      // Add text before code block
+      if (match.index > lastIndex) {
+        parts.push({
+          type: 'text',
+          content: response.substring(lastIndex, match.index).trim(),
+        });
+      }
+
+      // Add code block
+      parts.push({
+        type: 'code',
+        content: match[2].trim(),
+        language: match[1] || 'solidity',
+      });
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text
+    if (lastIndex < response.length) {
+      parts.push({
+        type: 'text',
+        content: response.substring(lastIndex).trim(),
+      });
+    }
+
+    return parts;
+  }
+
+  const handleInstantFix = async () => {
+    if (!findingDetails) return;
 
     setLoading(true);
+    setShowQuickActions(false);
+
+    const fixQuestion = `Fix this ${findingDetails.impact} severity "${findingDetails.type}" issue: ${findingDetails.description}`;
+
+    try {
+      const res = await fetch('/api/ai-free', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          analysis_id: analysisId,
+          audit_results: auditResults,
+          user_question: fixQuestion,
+          query_type: 'quick_fix',  // Tell backend this is instant fix
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        const newHistory = [
+          ...conversationHistory,
+          { question: fixQuestion, response: data.response, isPaid: false, queryType: 'quick_fix' },
+        ];
+        setConversationHistory(newHistory);
+        setResponse(data.response);
+
+        const newRemaining = freeQueriesLeft - 1;
+        setFreeQueriesLeft(newRemaining);
+        localStorage.setItem(
+          `ai_queries_${analysisId}`,
+          JSON.stringify({ remaining: newRemaining, history: newHistory })
+        );
+      } else {
+        setResponse('Error: ' + (data.detail || data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      setResponse(`Failed to generate fix: ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle quick action buttons
+  const handleQuickAction = async (actionType: string, questionText: string) => {
+    setLoading(true);
+    setShowQuickActions(false);
     setResponse('');
 
     try {
@@ -91,7 +192,53 @@ export default function AIAssistModal({
         body: JSON.stringify({
           analysis_id: analysisId,
           audit_results: auditResults,
+          user_question: questionText,
+          query_type: actionType,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        const newHistory = [
+          ...conversationHistory,
+          { question: questionText, response: data.response, isPaid: false, queryType: actionType },
+        ];
+        setConversationHistory(newHistory);
+        setResponse(data.response);
+
+        const newRemaining = freeQueriesLeft - 1;
+        setFreeQueriesLeft(newRemaining);
+        localStorage.setItem(
+          `ai_queries_${analysisId}`,
+          JSON.stringify({ remaining: newRemaining, history: newHistory })
+        );
+      } else {
+        setResponse('Error: ' + (data.detail || data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      setResponse(`Failed to get AI response: ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFreeQuestion = async () => {
+    if (!question.trim() || freeQueriesLeft <= 0) return;
+
+    setLoading(true);
+    setResponse('');
+    setShowQuickActions(false);
+
+    try {
+      const res = await fetch('/api/ai-free', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          analysis_id: analysisId,
+          audit_results: auditResults,
           user_question: question,
+          query_type: 'general',
         }),
       });
 
@@ -134,6 +281,7 @@ export default function AIAssistModal({
     setLoading(true);
     setResponse('');
     setShowPaymentPrompt(false);
+    setShowQuickActions(false);
 
     try {
       // // Dynamic import of x402
@@ -161,6 +309,7 @@ export default function AIAssistModal({
           analysis_id: analysisId,
           audit_results: auditResults,
           user_question: question,
+          query_type: 'general',
           payment_signature: signature,
           signer_address: address,
         }),
@@ -212,44 +361,6 @@ export default function AIAssistModal({
     }
   };
 
-  function parseAIResponse(response: string) {
-    const parts: Array<{ type: 'text' | 'code'; content: string; language?: string }> = [];
-    
-    // Match code blocks with ```language
-    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-    let lastIndex = 0;
-    let match;
-
-    while ((match = codeBlockRegex.exec(response)) !== null) {
-      // Add text before code block
-      if (match.index > lastIndex) {
-        parts.push({
-          type: 'text',
-          content: response.substring(lastIndex, match.index).trim(),
-        });
-      }
-
-      // Add code block
-      parts.push({
-        type: 'code',
-        content: match[2].trim(),
-        language: match[1] || 'solidity',
-      });
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    // Add remaining text
-    if (lastIndex < response.length) {
-      parts.push({
-        type: 'text',
-        content: response.substring(lastIndex).trim(),
-      });
-    }
-
-    return parts;
-  }
-
   if (!isOpen) return null;
 
   return (
@@ -259,6 +370,9 @@ export default function AIAssistModal({
         <div className="p-6 border-b border-lime-400/20 flex justify-between items-center bg-gradient-to-r from-lime-400/10 to-transparent">
           <div>
             <h2 className="text-2xl font-bold gradient-text">AI Audit Assistant</h2>
+            <h2 className="text-2xl font-bold">
+              {mode === 'instant_fix' ? '🔧 Generating Fix...' : '🤖 AI Audit Assistant'}
+            </h2>
             <p className="text-sm text-gray-400 mt-1">
               {freeQueriesLeft > 0 ? (
                 <>
@@ -283,8 +397,68 @@ export default function AIAssistModal({
           </button>
         </div>
 
-        {/* Conversation History */}
+        {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-[#000E1B]">
+          {/* Quick Actions (only in quick_actions mode) */}
+          {showQuickActions && mode === 'quick_actions' && (
+            <div className="space-y-4">
+              <div className="text-center mb-6">
+                <p className="text-lg text-gray-700 mb-2">What would you like to know?</p>
+                <p className="text-sm text-gray-500">Choose a quick action or ask a custom question</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button
+                  onClick={() => handleQuickAction('explain_all_high', 'Explain all high severity issues')}
+                  className="bg-red-50 hover:bg-red-100 border-2 border-red-200 rounded-lg p-4 text-left transition-all"
+                >
+                  <div className="text-2xl mb-2">🔍</div>
+                  <div className="font-semibold text-red-900">Explain High Severity</div>
+                  <div className="text-sm text-red-700 mt-1">Get details on critical issues</div>
+                </button>
+
+                {/* <button
+                  onClick={() => handleQuickAction('prioritize', 'What should I fix first?')}
+                  className="bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 rounded-lg p-4 text-left transition-all"
+                >
+                  <div className="text-2xl mb-2">⚠️</div>
+                  <div className="font-semibold text-orange-900">Priority Order</div>
+                  <div className="text-sm text-orange-700 mt-1">Which issues to fix first</div>
+                </button> */}
+
+                {/* <button
+                  onClick={() => handleQuickAction('best_practices', 'Compare my code to best practices')}
+                  className="bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 rounded-lg p-4 text-left transition-all"
+                >
+                  <div className="text-2xl mb-2">📊</div>
+                  <div className="font-semibold text-blue-900">Best Practices</div>
+                  <div className="text-sm text-blue-700 mt-1">How your code compares</div>
+                </button> */}
+
+                <button
+                  onClick={() => handleQuickAction('teach', 'Teach me about these vulnerabilities')}
+                  className="bg-purple-50 hover:bg-purple-100 border-2 border-purple-200 rounded-lg p-4 text-left transition-all"
+                >
+                  <div className="text-2xl mb-2">🎓</div>
+                  <div className="font-semibold text-purple-900">Learn Security</div>
+                  <div className="text-sm text-purple-700 mt-1">Understand vulnerabilities</div>
+                </button>
+              </div>
+
+              <button
+                onClick={() => {
+                  setShowQuickActions(false);
+                  setShowCustomInput(true);
+                }}
+                className="w-full bg-gray-100 hover:bg-gray-200 border-2 border-gray-300 rounded-lg p-4 text-center transition-all"
+              >
+                <div className="font-semibold text-gray-900">💬 Ask Custom Question</div>
+                <div className="text-sm text-gray-600 mt-1">Type your own question</div>
+              </button>
+            </div>
+          )}
+
+          {/* Conversation History */}
           {conversationHistory.length === 0 && !response && (
             <div className="text-center text-gray-400 py-8">
               <svg
@@ -567,6 +741,11 @@ export default function AIAssistModal({
               ? 'Tip: Ask specific questions about findings, severity, or how to fix issues'
               : 'Paid queries: Sign message to verify payment (no gas fees)'}
             </span>
+            {showQuickActions && mode === 'quick_actions' && (
+              <p className="text-xs text-gray-500 text-center">
+                💡 Choose a quick action above or ask a custom question
+              </p>
+            )}
           </div>
         </div>
       </div>

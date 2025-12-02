@@ -152,6 +152,8 @@ export default function FreeAuditUpload() {
   const [error, setError] = useState<string | null>(null);
   const [showAIModal, setShowAIModal] = useState(false);
   const [prefilledQuestion, setPrefilledQuestion] = useState<string | undefined>(undefined);
+  const [aiModalMode, setAiModalMode] = useState<'quick_actions' | 'instant_fix'>('quick_actions');
+  const [selectedFinding, setSelectedFinding] = useState<DetailedFinding | null>(null);
   // const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const validateFile = (selectedFile: File): boolean => {
@@ -428,7 +430,11 @@ export default function FreeAuditUpload() {
 
                 {/* AI Assistant Button */}
                 <button
-                  onClick={() => setShowAIModal(true)}
+                  onClick={() => {
+                    setAiModalMode('quick_actions');
+                    setSelectedFinding(null);
+                    setShowAIModal(true);
+                  }}
                   className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black py-4 px-6 rounded-lg font-semibold hover:from-lime-300 hover:to-lime-400 transition-all shadow-lg flex items-center justify-center space-x-2 pulse-glow"
                 >
                   <svg
@@ -502,7 +508,9 @@ export default function FreeAuditUpload() {
                         </p>
                         <button
                           onClick={() => {
-                            setPrefilledQuestion(`How do I fix this ${finding.impact} severity "${finding.type}" issue? Please provide complete Solidity code.`);
+                            setAiModalMode('instant_fix');
+                            setSelectedFinding(finding);
+                            // setPrefilledQuestion(`How do I fix this ${finding.impact} severity "${finding.type}" issue? Please provide complete Solidity code.`);
                             setShowAIModal(true);
                           }}
                           className="mt-3 bg-lime-400/10 border border-lime-400/30 text-lime-400 px-4 py-2 rounded-lg font-semibold text-sm flex items-center space-x-2 hover:bg-lime-400/20 hover:border-lime-400/50 transition-all group"
@@ -589,6 +597,8 @@ export default function FreeAuditUpload() {
                 }}
                 auditResults={result.results}
                 analysisId={result.projectId || ''}
+                mode={aiModalMode}
+                findingDetails={selectedFinding || undefined}
                 prefilledQuestion={prefilledQuestion}
                 // onPaymentRequired={() => {
                 //   setShowAIModal(false);
