@@ -757,7 +757,7 @@ export default function DocsPage() {
 
         {/* CTA */}
         <div className="not-prose bg-gradient-to-r from-lime-400/20 to-lime-500/20 border border-lime-400/30 rounded-xl p-8 text-center my-12">
-          <h2 className="text-3xl font-bold gradient-text mb-4">
+          <h2 className="text-3xl font-bold text-white gradient-text mb-4">
             Ready to Audit Your Contract?
           </h2>
           <p className="text-gray-300 mb-6">
