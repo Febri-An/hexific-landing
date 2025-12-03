@@ -77,6 +77,16 @@ function QuickLinksSidebar() {
             <div className="text-gray-400 text-xs">Learn how to use</div>
           </Link>
 
+          <Link
+            href="/x402"
+            className="block p-3 glass-effect border border-lime-400/20 rounded-lg hover:border-lime-400/40 transition-all"
+          >
+            <div className="text-lime-400 text-xs font-semibold mb-1">
+              🔌 x402
+            </div>
+            <div className="text-gray-400 text-xs">x402 Integration</div>
+          </Link>
+
           <a
             href="mailto:admin@hexific.com"
             className="block p-3 glass-effect border border-lime-400/20 rounded-lg hover:border-lime-400/40 transition-all"
@@ -142,6 +152,12 @@ function DocsLayout({ children }: { children: React.ReactNode }) {
                 className="text-gray-400 hover:text-lime-400 transition-colors text-sm"
               >
                 Documentation
+              </Link>
+              <Link
+                href="/x402"
+                className="text-gray-400 hover:text-lime-400 transition-colors text-sm"
+              >
+                x402
               </Link>
               <Link
                 href="/faq"
