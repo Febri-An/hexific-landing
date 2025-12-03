@@ -238,22 +238,22 @@ function X402Layout({ children }: { children: React.ReactNode }) {
 
 // Main Page Component
 export default function X402DocsPage() {
-  const [timeLeft, setTimeLeft] = useState(24 * 60 * 60);
+//   const [timeLeft, setTimeLeft] = useState(24 * 60 * 60);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => prev > 0 ? prev - 1 : 0);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+//   useEffect(() => {
+//     const timer = setInterval(() => {
+//       setTimeLeft(prev => prev > 0 ? prev - 1 : 0);
+//     }, 1000);
+//     return () => clearInterval(timer);
+//   }, []);
 
-  const formatTime = (seconds: number): string => {
-    const h: number = Math.floor(seconds / 3600);
-    const m: number = Math.floor((seconds % 3600) / 60);
-    const s: number = seconds % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
+//   const formatTime = (seconds: number): string => {
+//     const h: number = Math.floor(seconds / 3600);
+//     const m: number = Math.floor((seconds % 3600) / 60);
+//     const s: number = seconds % 60;
+//     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+//   };
 
   const copyToClipboard = (text: string): void => {
     navigator.clipboard.writeText(text);
@@ -384,8 +384,8 @@ testProfessionalAudit();`;
                 </div>
               </div>
               <div className="bg-black/20 backdrop-blur-sm px-6 py-3 rounded-lg">
-                <div className="text-xs uppercase tracking-wider opacity-90">Time Remaining</div>
-                <div className="text-3xl font-mono font-bold">{formatTime(timeLeft)}</div>
+                <div className="text-xs uppercase tracking-wider opacity-90">Datetime UTC:</div>
+                <div className="text-1xl font-mono font-bold">6 PM, 4rd Wednesday December 2025.</div>
               </div>
             </div>
           </div>
