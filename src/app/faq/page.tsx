@@ -35,7 +35,7 @@ function FAQSidebar() {
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center space-x-2 ${
                 activeSection === item.id
                   ? 'bg-lime-400/20 text-lime-400 font-semibold'
-                  : 'text-gray-400 hover:text-lime-400 hover:bg-lime-400/10'
+                  : 'text-gray-400 hover:cursor-pointer hover:text-lime-400 hover:bg-lime-400/10'
               }`}
             >
               <span>{item.icon}</span>
@@ -243,7 +243,7 @@ function FAQItem({
           {question}
         </span>
         <svg
-          className={`w-6 h-6 flex-shrink-0 transition-transform text-lime-400 ${
+          className={`w-6 h-6 flex-shrink-0 hover:cursor-pointer transition-transform text-lime-400 ${
             isOpen ? 'rotate-180' : ''
           }`}
           fill="none"

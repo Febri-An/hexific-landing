@@ -61,7 +61,7 @@ function X402Sidebar() {
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center space-x-2 ${
                 activeSection === item.id
                   ? 'bg-lime-400/20 text-lime-400 font-semibold'
-                  : 'text-gray-400 hover:text-lime-400 hover:bg-lime-400/10'
+                  : 'text-gray-400 hover:cursor-pointer hover:text-lime-400 hover:bg-lime-400/10'
               }`}
             >
               <span>{item.icon}</span>
@@ -503,7 +503,7 @@ testProfessionalAudit();`;
               <h2 className="text-2xl font-bold text-white gradient-text">Quick Start</h2>
               <button
                 onClick={() => copyToClipboard(quickStartCode)}
-                className="flex items-center gap-2 px-4 py-2 bg-lime-400 text-black rounded-lg hover:bg-lime-300 transition-colors font-semibold pulse-glow"
+                className="flex items-center gap-2 px-4 py-2 bg-lime-400 text-black rounded-lg hover:cursor-pointer hover:bg-lime-300 transition-colors font-semibold pulse-glow"
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 {copied ? 'Copied!' : 'Copy Code'}
