@@ -370,7 +370,7 @@ testProfessionalAudit();`;
   return (
     <X402Layout>
       {/* Free Promo Banner */}
-      <section id="promo">
+      {/* <section id="promo">
         <div className="bg-gradient-to-r from-lime-400 to-lime-500 text-black py-6 px-4 shadow-lg">
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center justify-between flex-wrap gap-4">
@@ -390,7 +390,7 @@ testProfessionalAudit();`;
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <div className="max-w-5xl mx-auto px-4 py-12">
         {/* Header */}
