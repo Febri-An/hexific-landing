@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
+    "dev": "next dev",
+    "build": "next build --webpack",
     "start": "next start",
+    "vercel-build": "npm run install-slither && next build --webpack",
     "lint": "next lint",
     "postbuild": "next-sitemap",
-    "vercel-build": "npm run install-slither && next build",
     "install-slither": "pip3 install slither-analyzer solc-select"
   },
   "dependencies": {
