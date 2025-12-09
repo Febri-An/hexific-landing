@@ -266,7 +266,7 @@ function AuditMethodTabs({ activeTab, setActiveTab }: { activeTab: string; setAc
         className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all ${
           activeTab === 'zip'
             ? 'bg-lime-400 text-black'
-            : 'glass-effect border border-lime-400/30 text-lime-400 hover:bg-lime-400/10'
+            : 'glass-effect border border-lime-400/30 text-lime-400 hover:bg-lime-400/10 hover:cursor-pointer'
         }`}
       >
         <FileArchive className="w-5 h-5" />
@@ -277,7 +277,7 @@ function AuditMethodTabs({ activeTab, setActiveTab }: { activeTab: string; setAc
         className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all ${
           activeTab === 'address'
             ? 'bg-lime-400 text-black'
-            : 'glass-effect border border-lime-400/30 text-lime-400 hover:bg-lime-400/10'
+            : 'glass-effect border border-lime-400/30 text-lime-400 hover:bg-lime-400/10 hover:cursor-pointer'
         }`}
       >
         <MapPin className="w-5 h-5" />
@@ -743,7 +743,7 @@ auditByAddress();`;
             <div className="relative group mb-6">
               <button
                 onClick={() => copyToClipboard(zipAuditCode, 'zip')}
-                className="absolute top-4 right-4 z-10 flex items-center gap-2 px-3 py-1.5 bg-lime-400 text-black rounded-lg font-semibold text-sm hover:bg-lime-300 transition-colors"
+                className={`absolute top-4 right-4 z-10 flex items-center gap-2 px-3 py-1.5 bg-lime-400 text-black rounded-lg font-semibold text-sm hover:bg-lime-300 ${copiedCode !== 'zip' && 'cursor-pointer'} transition-colors`}
               >
                 {copiedCode === 'zip' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 {copiedCode === 'zip' ? 'Copied!' : 'Copy'}
@@ -815,7 +815,7 @@ auditByAddress();`;
             <div className="relative group mb-6">
               <button
                 onClick={() => copyToClipboard(addressAuditCode, 'address')}
-                className="absolute top-4 right-4 z-10 flex items-center gap-2 px-3 py-1.5 bg-lime-400 text-black rounded-lg font-semibold text-sm hover:bg-lime-300 transition-colors"
+                className={`absolute top-4 right-4 z-10 flex items-center gap-2 px-3 py-1.5 bg-lime-400 text-black rounded-lg font-semibold text-sm hover:bg-lime-300 ${copiedCode !== 'address' && 'cursor-pointer'} transition-colors`}
               >
                 {copiedCode === 'address' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 {copiedCode === 'address' ? 'Copied!' : 'Copy'}
