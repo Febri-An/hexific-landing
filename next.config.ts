@@ -3,7 +3,7 @@ const nextConfig = {
   turbopack: {
     resolveAlias: {
       // Exclude problematic packages
-      'why-is-node-running': false,
+      'why-is-node-running': '',
     },
   },
   experimental: {

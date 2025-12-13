@@ -390,7 +390,7 @@ export default function AIAssistModal({
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-lime-400 text-3xl transition-colors"
+            className="text-gray-400 hover:text-lime-400 hover:cursor-pointer text-3xl transition-colors"
             aria-label="Close"
           >
             ×
@@ -712,7 +712,7 @@ export default function AIAssistModal({
               className={`px-6 py-3 rounded-lg font-semibold transition-all ${
                 loading || !question.trim()
                   ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                  : 'bg-lime-400 text-black hover:bg-lime-300 pulse-glow'
+                  : 'bg-lime-400 text-black hover:bg-lime-300 hover:cursor-pointer pulse-glow'
               }`}
             >
               {loading ? (

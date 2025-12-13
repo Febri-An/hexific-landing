@@ -1,4 +1,3 @@
-// /components/FreeAuditUpload2.tsx
 'use client';
 
 import { useState } from 'react';
@@ -86,6 +85,7 @@ interface VPSResponse {
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB in bytes
 
 function adaptVPSResponse(vpsData: VPSResponse): AuditResult {
+  // Check for errors
   if (!vpsData.results.success || vpsData.results.error) {
     return {
       success: false,
@@ -103,18 +103,21 @@ function adaptVPSResponse(vpsData: VPSResponse): AuditResult {
   
   const detailedFindings: DetailedFinding[] = [];
 
+  // Parse Slither detectors
   try {
     const detectors = vpsData.results.results.detectors;
     
     detectors.forEach((detector: VPSDetector) => {
       const impact = detector.impact.toLowerCase();
       
+      // Count by severity
       if (impact === 'high') summary.high++;
       else if (impact === 'medium') summary.medium++;
       else if (impact === 'low') summary.low++;
       else if (impact === 'optimization') summary.optimization++;
       else summary.informational++;
 
+      // Store detailed finding
       detailedFindings.push({
         type: detector.check,
         impact: detector.impact,
@@ -227,11 +230,13 @@ export default function FreeAuditUpload() {
   const validateFile = (selectedFile: File): boolean => {
     setError(null);
 
+    // Check file type
     if (!selectedFile.name.endsWith('.zip')) {
       setError('Please upload a ZIP file');
       return false;
     }
 
+    // Check file size
     if (selectedFile.size > MAX_FILE_SIZE) {
       setError(`File size exceeds maximum limit of ${(MAX_FILE_SIZE / 1024 / 1024).toFixed(0)}MB. Your file is ${(selectedFile.size / 1024 / 1024).toFixed(2)}MB`);
       return false;
@@ -308,7 +313,7 @@ export default function FreeAuditUpload() {
         setLoading(false);
       }
     } else {
-      // Address audit - FREE with AI analysis
+      //Free audit - Contract Address
       if (!contractAddress.trim()) {
         addStatus('Please enter a contract address', 'error');
         return;
@@ -473,7 +478,10 @@ ${result.detailed_audit}
     <div className="max-w-4xl mx-auto p-6">
       <div className="glass-effect rounded-2xl shadow-lg p-8 border border-lime-400/20">
         <h2 className="text-3xl font-bold mb-2 gradient-text">
-          {auditMode === 'upload' ? 'Free Smart Contract Audit' : 'Free AI-Powered Contract Audit'}
+          {auditMode === 'upload' 
+            ? 'Free Smart Contract Audit' 
+            : 'Free AI-Powered Contract Audit'
+          }
         </h2>
         <p className="text-gray-300 mb-6">
           {auditMode === 'upload' 
@@ -505,7 +513,7 @@ ${result.detailed_audit}
                   setResult(null);
                   setFile(null);
                 }}
-                className="text-sm text-lime-400 hover:text-lime-300 underline transition-colors"
+                className="text-sm text-lime-400 hover:text-lime-300 hover:cursor-pointer underline transition-colors"
               >
                 Or audit by contract address →
               </button>
@@ -519,7 +527,7 @@ ${result.detailed_audit}
                   setStatusMessages([]);
                   setResult(null);
                 }}
-                className="text-sm text-lime-400 hover:text-lime-300 underline transition-colors"
+                className="text-sm text-lime-400 hover:text-lime-300 hover:cursor-pointer nderline transition-colors"
               >
                 ← Back to ZIP upload
               </button>
@@ -609,7 +617,7 @@ ${result.detailed_audit}
                     onClick={() => setFile(null)}
                     className="text-red-400 hover:text-red-300 transition-colors"
                   >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 hover:cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
                   </button>
@@ -668,7 +676,7 @@ ${result.detailed_audit}
               (auditMode === 'address' && !isValidAddress(contractAddress.trim())) ||
               loading
                 ? 'bg-transparent border border-gray-600 text-gray-500 cursor-not-allowed !hover:transform-none'
-                : 'bg-lime-400 text-black hover:bg-lime-300 pulse-glow'
+                : 'bg-lime-400 text-black hover:bg-lime-300 hover:cursor-pointer pulse-glow'
             }`}
           >
             {loading ? (
@@ -766,7 +774,7 @@ ${result.detailed_audit}
                         setSelectedFinding(null);
                         setShowAIModal(true);
                       }}
-                      className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black py-4 px-6 rounded-lg font-semibold hover:from-lime-300 hover:to-lime-400 transition-all shadow-lg flex items-center justify-center space-x-2 pulse-glow"
+                      className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black py-4 px-6 rounded-lg font-semibold hover:from-lime-300 hover:to-lime-400 hover:cursor-pointer transition-all shadow-lg flex items-center justify-center space-x-2 pulse-glow"
                     >
                       <svg
                         className="w-6 h-6"
@@ -879,11 +887,11 @@ ${result.detailed_audit}
                             </p>
                             <button
                               onClick={() => {
-                                setSelectedFinding(finding);
                                 setAiModalMode('instant_fix');
+                                setSelectedFinding(finding);
                                 setShowAIModal(true);
                               }}
-                              className="mt-3 bg-lime-400/10 border border-lime-400/30 text-lime-400 px-4 py-2 rounded-lg font-semibold text-sm flex items-center space-x-2 hover:bg-lime-400/20 hover:border-lime-400/50 transition-all group"
+                              className="mt-3 bg-lime-400/10 border border-lime-400/30 text-lime-400 px-4 py-2 rounded-lg font-semibold text-sm flex items-center space-x-2 hover:bg-lime-400/20 hover:border-lime-400/50 hover:cursor-pointer transition-all group"
                             >
                               <svg
                                 className="w-4 h-4 group-hover:rotate-12 transition-transform"
@@ -911,7 +919,7 @@ ${result.detailed_audit}
                 <button
                   type="button"
                   onClick={downloadReport}
-                  className="w-full border border-lime-400 text-lime-400 py-3 px-4 rounded-lg font-semibold hover:bg-lime-400 hover:text-black transition-all"
+                  className="w-full border border-lime-400 text-lime-400 py-3 px-4 rounded-lg font-semibold hover:bg-lime-400 hover:text-black hover:cursor-pointer transition-all"
                 >
                   <span className="flex items-center justify-center">
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
