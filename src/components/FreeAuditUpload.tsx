@@ -1,7 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AIAssistModal from './AIAssistModal';
+import { 
+  checkRateLimit, 
+  logUsage, 
+  getClientIP, 
+  getTimeUntilReset,
+  type ServiceType 
+} from '@/lib/rateLimiter';
 
 interface DetailedFinding {
   type: string;
@@ -215,6 +222,12 @@ export default function FreeAuditUpload() {
   const [auditMode, setAuditMode] = useState<'upload' | 'address'>('upload');
   const [contractAddress, setContractAddress] = useState('');
   const [statusMessages, setStatusMessages] = useState<{ message: string; type: string }[]>([]);
+  const [rateLimitError, setRateLimitError] = useState<{
+    show: boolean;
+    remaining: number;
+    resetTime: Date;
+    service: string;
+  } | null>(null);
 
   const addStatus = (message: string, type: 'info' | 'success' | 'error' | 'warning') => {
     setStatusMessages((prev) => {
@@ -281,6 +294,25 @@ export default function FreeAuditUpload() {
     e.preventDefault();
 
     if (auditMode === 'upload') {
+      // Get user IP
+      const ipAddress = await getClientIP();
+      
+      // Check rate limit
+      const { allowed, remaining, resetTime } = await checkRateLimit(
+        ipAddress,
+        'zip_upload'
+      );
+
+      if (!allowed) {
+        setRateLimitError({
+          show: true,
+          remaining: 0,
+          resetTime,
+          service: 'ZIP Upload Audit',
+        });
+        return;
+      }
+
       // Free audit - ZIP upload
       if (!file) return;
       
@@ -303,6 +335,14 @@ export default function FreeAuditUpload() {
 
         const vpsData = await response.json();
         const adaptedResult = adaptVPSResponse(vpsData);
+
+        // Log usage after successful audit
+        await logUsage(ipAddress, 'zip_upload', {
+          filename: file.name,
+          filesize: file.size,
+          success: adaptedResult.success,
+        });
+
         setResult(adaptedResult);
       } catch (error) {
         setResult({
@@ -329,6 +369,25 @@ export default function FreeAuditUpload() {
       setStatusMessages([]);
 
       try {
+        // Get user IP
+        const ipAddress = await getClientIP();
+        
+        // Check rate limit
+        const { allowed, remaining, resetTime } = await checkRateLimit(
+          ipAddress,
+          'address_audit'
+        );
+
+        if (!allowed) {
+          setRateLimitError({
+            show: true,
+            remaining: 0,
+            resetTime,
+            service: 'Address Audit',
+          });
+          return;
+        }
+
         addStatus('🔍 Starting security audit...', 'info');
 
         const response = await fetch('https://api.hexific.com/ai-audit-address-ui', {
@@ -359,6 +418,14 @@ export default function FreeAuditUpload() {
               informational: aiFindings.filter(f => f.impact === 'Informational').length,
               optimization: aiFindings.filter(f => f.impact === 'Optimization').length,
             };
+
+            // Log usage after successful audit
+            await logUsage(ipAddress, 'address_audit', {
+              contract_address: contractAddress.trim(),
+              network: 'ethereum',
+              findings_count: aiFindings.length,
+              success: true,
+            });
             
             setResult({
               ...apiResult,
@@ -474,6 +541,21 @@ ${result.detailed_audit}
     URL.revokeObjectURL(url);
   };
 
+  useEffect(() => {
+    if (rateLimitError?.show) {
+      // Wait a bit for the error box to render
+      setTimeout(() => {
+        const errorElement = document.getElementById('rateLimitError');
+        if (errorElement) {
+          errorElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center'
+          });
+        }
+      }, 100);
+    }
+  }, [rateLimitError?.show]);
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="glass-effect rounded-2xl shadow-lg p-8 border border-lime-400/20">
@@ -490,6 +572,31 @@ ${result.detailed_audit}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {rateLimitError?.show && (
+          <div 
+            id="rateLimitError"
+            className="glass-effect border border-red-500/50 bg-red-950/20 rounded-lg p-4 slide-up flex items-center justify-center"
+          >
+            <div className="flex items-center">
+            <svg className="w-6 h-6 text-red-400 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+              <div>
+                <p className="text-red-400 font-semibold mb-1">Daily Limit Reached</p>
+                <p className="text-red-300 text-sm mb-2">
+                You've used all 3 free {rateLimitError.service} requests for today.
+                </p>
+                <p className="text-red-300 text-sm">
+                Resets in: <span className="font-semibold">{getTimeUntilReset(rateLimitError.resetTime)}</span>
+                </p>
+                <p className="text-gray-400 text-xs mt-2">
+                💡 Tip: You can still use the other audit type (ZIP upload or Address audit)
+                </p>
+              </div>
+            </div>
+          </div>
+          )}
+
           {/* Error Message */}
           {error && (
             <div className="glass-effect border border-red-500/30 rounded-lg p-4 slide-up">
