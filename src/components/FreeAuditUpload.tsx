@@ -29,11 +29,13 @@ interface AuditResult {
   timestamp?: string;
   results?: {
     summary: {
-      high: number;
-      medium: number;
-      low: number;
-      informational: number;
-      optimization: number;
+      critical?: number;
+      high?: number;
+      medium?: number;
+      low?: number;
+      informational?: number;
+      optimization?: number;
+      gas?: number;
     };
     detailedFindings: DetailedFinding[];
     rawOutput: string;
@@ -162,40 +164,79 @@ function adaptVPSResponse(vpsData: VPSResponse): AuditResult {
 function parseAIAuditFindings(auditText: string): DetailedFinding[] {
   const findings: DetailedFinding[] = [];
   
-  // Split by common section headers or numbered items
-  const sections = auditText.split(/(?=\d+\.\s+|\n#{1,3}\s+)/);
+  // Split by severity sections or numbered items
+  const sections = auditText.split(/(?=###\s+\d+\.|## (?:CRITICAL|HIGH|MEDIUM|LOW|GAS|INFO))/);
   
   sections.forEach((section) => {
     const trimmed = section.trim();
-    if (!trimmed || trimmed.length < 20) return;
+    if (!trimmed || trimmed.length < 30) return;
     
-    // Try to extract severity from text
+    // Extract severity
     let impact = 'Medium';
-    if (/(critical|high|severe)/i.test(trimmed)) {
+    if (/(## CRITICAL|severity.*critical)/i.test(trimmed)) {
+      impact = 'Critical';
+    } else if (/(## HIGH|severity.*high)/i.test(trimmed)) {
       impact = 'High';
-    } else if (/(low|minor)/i.test(trimmed)) {
+    } else if (/(## MEDIUM|severity.*medium)/i.test(trimmed)) {
+      impact = 'Medium';
+    } else if (/(## LOW|severity.*low)/i.test(trimmed)) {
       impact = 'Low';
-    } else if (/(info|informational|note)/i.test(trimmed)) {
+    } else if (/(## GAS|gas optimization)/i.test(trimmed)) {
+      impact = 'Gas';
+    } else if (/(## INFO|informational|best practice)/i.test(trimmed)) {
       impact = 'Informational';
     }
     
-    // Extract type from section heading or first line
-    const firstLine = trimmed.split('\n')[0];
+    // Extract type from heading
     let type = 'Security Issue';
+    const headingMatch = trimmed.match(/###\s+\d+\.\s+\*\*(.+?)\*\*/);
+    if (headingMatch) {
+      type = headingMatch[1].trim();
+    } else if (/reentrancy/i.test(trimmed)) {
+      type = 'Reentrancy Vulnerability';
+    } else if (/access control|authorization|ownership/i.test(trimmed)) {
+      type = 'Access Control';
+    } else if (/overflow|underflow/i.test(trimmed)) {
+      type = 'Integer Overflow/Underflow';
+    } else if (/tx\.origin/i.test(trimmed)) {
+      type = 'tx.origin Usage';
+    } else if (/gas/i.test(trimmed)) {
+      type = 'Gas Optimization';
+    } else if (/event/i.test(trimmed)) {
+      type = 'Missing Events';
+    } else if (/validation|zero address/i.test(trimmed)) {
+      type = 'Input Validation';
+    }
     
-    if (/reentrancy/i.test(firstLine)) type = 'Reentrancy';
-    else if (/access control/i.test(firstLine)) type = 'Access Control';
-    else if (/overflow|underflow/i.test(firstLine)) type = 'Integer Overflow';
-    else if (/gas/i.test(firstLine)) type = 'Gas Optimization';
-    else if (/unchecked/i.test(firstLine)) type = 'Unchecked Call';
-    else if (/timestamp/i.test(firstLine)) type = 'Timestamp Dependence';
-    else if (/authorization|permission/i.test(firstLine)) type = 'Authorization';
+    // Remove **Severity:** lines from description
+    let cleanedDescription = trimmed
+      .replace(/\*\*Severity:\*\*\s*(CRITICAL|HIGH|MEDIUM|LOW|GAS|INFO)/gi, '')
+      .replace(/###\s+\d+\.\s+\*\*/, '') // Remove heading markers
+      .replace(/\*\*$/, '') // Remove trailing **
+      .trim();
+    
+    // Format code blocks with proper syntax highlighting
+    cleanedDescription = cleanedDescription.replace(
+      /```solidity\n([\s\S]+?)```/g,
+      (match, code) => {
+        // Add syntax highlighting markers
+        return '\n[SOLIDITY]\n' + code.trim() + '\n[/SOLIDITY]\n';
+      }
+    );
+    
+    // Format other code blocks
+    cleanedDescription = cleanedDescription.replace(
+      /```(\w*)\n([\s\S]+?)```/g,
+      (match, lang, code) => {
+        return '\n[CODE]\n' + code.trim() + '\n[/CODE]\n';
+      }
+    );
     
     findings.push({
       type,
       impact,
-      confidence: 'High',
-      description: trimmed,
+      confidence: 'High', // Default confidence since it's from AI audit
+      description: cleanedDescription,
       location: null,
     });
   });
@@ -412,9 +453,11 @@ export default function FreeAuditUpload() {
             
             // Count severity summary from parsed findings
             const summary = {
+              critical: aiFindings.filter(f => f.impact === 'Critical').length,
               high: aiFindings.filter(f => f.impact === 'High').length,
               medium: aiFindings.filter(f => f.impact === 'Medium').length,
               low: aiFindings.filter(f => f.impact === 'Low').length,
+              gas: aiFindings.filter(f => f.impact === 'Gas').length,
               informational: aiFindings.filter(f => f.impact === 'Informational').length,
               optimization: aiFindings.filter(f => f.impact === 'Optimization').length,
             };
@@ -430,7 +473,15 @@ export default function FreeAuditUpload() {
             setResult({
               ...apiResult,
               results: {
-                summary,
+                summary: {
+                  critical: summary.critical ?? 0,
+                  high: summary.high ?? 0,
+                  medium: summary.medium ?? 0,
+                  low: summary.low ?? 0,
+                  gas: summary.gas ?? 0,
+                  informational: summary.informational ?? 0,
+                  optimization: summary.optimization ?? 0,
+                },
                 detailedFindings: aiFindings,
                 rawOutput: apiResult.detailed_audit,
               }
@@ -475,12 +526,16 @@ export default function FreeAuditUpload() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
+      case 'critical':
+        return 'text-red-500 bg-red-950/70 border-red-500/50';
       case 'high':
         return 'text-red-400 bg-red-950/50 border-red-500/30';
       case 'medium':
         return 'text-orange-400 bg-orange-950/50 border-orange-500/30';
       case 'low':
         return 'text-yellow-400 bg-yellow-950/50 border-yellow-500/30';
+      case 'gas':
+        return 'text-purple-400 bg-purple-950/50 border-purple-500/30';
       case 'informational':
         return 'text-blue-400 bg-blue-950/50 border-blue-500/30';
       case 'optimization':
@@ -839,7 +894,13 @@ ${result.detailed_audit}
                 {/* Summary Cards - SAME FOR BOTH MODES */}
                 {result.results && (
                   <>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                      <div className="glass-effect border border-red-500/50 p-4 rounded-lg hover:scale-105 transition-transform">
+                        <div className="text-3xl font-bold text-red-500 mb-1">
+                          {result.results.summary.critical || 0}
+                        </div>
+                        <div className="text-sm text-red-500 font-medium">Critical</div>
+                      </div>
                       <div className="glass-effect border border-red-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-red-400 mb-1">
                           {result.results.summary.high}
@@ -858,19 +919,17 @@ ${result.detailed_audit}
                         </div>
                         <div className="text-sm text-yellow-400 font-medium">Low</div>
                       </div>
+                      <div className="glass-effect border border-purple-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
+                        <div className="text-3xl font-bold text-purple-400 mb-1">
+                          {result.results.summary.gas || 0}
+                        </div>
+                        <div className="text-sm text-purple-400 font-medium">Gas</div>
+                      </div>
                       <div className="glass-effect border border-blue-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-blue-400 mb-1">
                           {result.results.summary.informational}
                         </div>
                         <div className="text-sm text-blue-400 font-medium">Info</div>
-                      </div>
-                      <div className="glass-effect border border-lime-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
-                        <div className="text-3xl font-bold text-lime-400 mb-1">
-                          {result.results.summary.optimization}
-                        </div>
-                        <div className="text-sm text-lime-400 font-medium">
-                          Optimization
-                        </div>
                       </div>
                     </div>
 
@@ -924,8 +983,20 @@ ${result.detailed_audit}
                               <div className="bg-gray-900/50 border border-gray-700/50 rounded-lg p-4 font-mono text-sm">
                                 {finding.description.split('\n').map((line, lineIndex) => {
                                   const isMainIssue = lineIndex === 0;
-                                  const isIndented = line.startsWith('\t');
-                                  const trimmedLine = line.replace(/^\t/, '');
+                                  const isIndented = line.startsWith('\t') || line.startsWith('  ');
+                                  const isSolidityCode = line === '[SOLIDITY]';
+                                  const isCodeEnd = line === '[/SOLIDITY]' || line === '[/CODE]';
+                                  const isCode = line === '[CODE]';
+                                  
+                                  // Skip code block markers
+                                  if (isSolidityCode || isCodeEnd || isCode) return null;
+                                  
+                                  // Check if we're inside a code block
+                                  const beforeText = finding.description.substring(0, finding.description.indexOf(line));
+                                  const isInsideCode = (beforeText.match(/\[SOLIDITY\]|\[CODE\]/g)?.length || 0) > 
+                                                      (beforeText.match(/\[\/SOLIDITY\]|\[\/CODE\]/g)?.length || 0);
+                                  
+                                  const trimmedLine = line.replace(/^\t|^  /, '');
                                   
                                   return (
                                     <div
@@ -933,12 +1004,14 @@ ${result.detailed_audit}
                                       className={`${
                                         isMainIssue
                                           ? 'text-lime-400 font-semibold mb-2'
+                                          : isInsideCode
+                                          ? 'text-cyan-400 pl-4 py-0.5 font-mono text-xs bg-gray-900/80 border-l-2 border-cyan-500/30'
                                           : isIndented
                                           ? 'text-gray-400 pl-4 py-0.5'
                                           : 'text-gray-300 py-0.5'
                                       }`}
                                     >
-                                      {isIndented && (
+                                      {isIndented && !isInsideCode && (
                                         <span className="text-lime-400/40 mr-2">•</span>
                                       )}
                                       {trimmedLine}
@@ -1056,7 +1129,16 @@ ${result.detailed_audit}
                   setShowAIModal(false);
                   setPrefilledQuestion(undefined);
                 }}
-                auditResults={result.results}
+                auditResults={{
+                  ...result.results,
+                  summary: {
+                    high: result.results.summary.high ?? 0,
+                    medium: result.results.summary.medium ?? 0,
+                    low: result.results.summary.low ?? 0,
+                    informational: result.results.summary.informational ?? 0,
+                    optimization: result.results.summary.optimization ?? 0,
+                  }
+                }}
                 analysisId={result.projectId || result.analysis_id || ''}
                 mode={aiModalMode}
                 findingDetails={selectedFinding || undefined}
