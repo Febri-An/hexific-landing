@@ -22,7 +22,7 @@ export function CodeBlock({ code, language = 'solidity' }: CodeBlockProps) {
     <div className="relative group">
       <button
         onClick={handleCopy}
-        className="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+        className={`absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 ${copied ? '' : 'hover:cursor-pointer'} text-white px-3 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity`}
       >
         {copied ? '✓ Copied!' : '📋 Copy'}
       </button>

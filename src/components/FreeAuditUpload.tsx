@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import AIAssistModal from './AIAssistModal';
+import { CodeBlock } from './CodeBlock';
 import { 
   checkRateLimit, 
   logUsage, 
@@ -9,6 +10,7 @@ import {
   getTimeUntilReset,
   type ServiceType 
 } from '@/lib/rateLimiter';
+import { trim } from 'viem';
 
 interface DetailedFinding {
   type: string;
@@ -92,6 +94,9 @@ interface VPSResponse {
 }
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+const USE_MOCK = false; // false = hit API, true = pakai mock file
+const SAVE_RESPONSE = true; // true = save API response ke file (jalankan sekali)
+
 
 function adaptVPSResponse(vpsData: VPSResponse): AuditResult {
   // Check for errors
@@ -170,6 +175,7 @@ function parseAIAuditFindings(auditText: string): DetailedFinding[] {
   sections.forEach((section) => {
     const trimmed = section.trim();
     if (!trimmed || trimmed.length < 30) return;
+    if (trimmed.startsWith('# Smart Contract Security Audit Report')) return;
     
     // Extract severity
     let impact = 'Medium';
@@ -181,9 +187,9 @@ function parseAIAuditFindings(auditText: string): DetailedFinding[] {
       impact = 'Medium';
     } else if (/(## LOW|severity.*low)/i.test(trimmed)) {
       impact = 'Low';
-    } else if (/(## GAS|gas optimization)/i.test(trimmed)) {
+    } else if (/(## GAS|gas optimization|severity.*gas)/i.test(trimmed)) {
       impact = 'Gas';
-    } else if (/(## INFO|informational|best practice)/i.test(trimmed)) {
+    } else if (/(## INFO|informational|best practice|severity.*info*)/i.test(trimmed)) {
       impact = 'Informational';
     }
     
@@ -208,11 +214,13 @@ function parseAIAuditFindings(auditText: string): DetailedFinding[] {
       type = 'Input Validation';
     }
     
-    // Remove **Severity:** lines from description
+    // Clean description
     let cleanedDescription = trimmed
-      .replace(/\*\*Severity:\*\*\s*(CRITICAL|HIGH|MEDIUM|LOW|GAS|INFO)/gi, '')
       .replace(/###\s+\d+\.\s+\*\*/, '') // Remove heading markers
-      .replace(/\*\*$/, '') // Remove trailing **
+      .replace(/## SUMMARY[\s\S]*/i, '') // Remove everything after ## SUMMARY
+      .replace(/\*\*/g, '') // Remove trailing **
+      .replace(/###/g, '')
+      .replace(/---/g, '')
       .trim();
     
     // Format code blocks with proper syntax highlighting
@@ -429,7 +437,7 @@ export default function FreeAuditUpload() {
           return;
         }
 
-        addStatus('🔍 Starting security audit...', 'info');
+        addStatus('Starting security audit...', 'info');
 
         const response = await fetch('https://api.hexific.com/ai-audit-address-ui', {
           method: 'POST',
@@ -441,12 +449,19 @@ export default function FreeAuditUpload() {
             network: 'ethereum'
           }),
         });
-
+        // let response: any;
+        // if (true) {
         if (response.ok) {
           const apiResult = await response.json();
+          // await new Promise(resolve => setTimeout(resolve, 1500)); // Simulasi loading
+        
+          // const mockResponse = await fetch('/output-test.json');
+          // const apiResult = await mockResponse.json();
+
+          // console.log('AI Audit API Result:', apiResult);
           
           if (apiResult.success && apiResult.detailed_audit) {
-            addStatus('✅ Audit completed!', 'success');
+            addStatus('Audit completed!', 'success');
             
             // Parse AI audit into structured findings
             const aiFindings = parseAIAuditFindings(apiResult.detailed_audit);
@@ -980,45 +995,95 @@ ${result.detailed_audit}
                               </span>
                             </div>
                             <div className="text-left mb-2">
-                              <div className="bg-gray-900/50 border border-gray-700/50 rounded-lg p-4 font-mono text-sm">
-                                {finding.description.split('\n').map((line, lineIndex) => {
-                                  const isMainIssue = lineIndex === 0;
-                                  const isIndented = line.startsWith('\t') || line.startsWith('  ');
-                                  const isSolidityCode = line === '[SOLIDITY]';
-                                  const isCodeEnd = line === '[/SOLIDITY]' || line === '[/CODE]';
-                                  const isCode = line === '[CODE]';
-                                  
-                                  // Skip code block markers
-                                  if (isSolidityCode || isCodeEnd || isCode) return null;
-                                  
-                                  // Check if we're inside a code block
-                                  const beforeText = finding.description.substring(0, finding.description.indexOf(line));
-                                  const isInsideCode = (beforeText.match(/\[SOLIDITY\]|\[CODE\]/g)?.length || 0) > 
-                                                      (beforeText.match(/\[\/SOLIDITY\]|\[\/CODE\]/g)?.length || 0);
-                                  
-                                  const trimmedLine = line.replace(/^\t|^  /, '');
-                                  
-                                  return (
-                                    <div
-                                      key={lineIndex}
-                                      className={`${
-                                        isMainIssue
-                                          ? 'text-lime-400 font-semibold mb-2'
-                                          : isInsideCode
-                                          ? 'text-cyan-400 pl-4 py-0.5 font-mono text-xs bg-gray-900/80 border-l-2 border-cyan-500/30'
-                                          : isIndented
-                                          ? 'text-gray-400 pl-4 py-0.5'
-                                          : 'text-gray-300 py-0.5'
-                                      }`}
-                                    >
-                                      {isIndented && !isInsideCode && (
-                                        <span className="text-lime-400/40 mr-2">•</span>
-                                      )}
-                                      {trimmedLine}
-                                    </div>
-                                  );
-                                })}
-                              </div>
+                              {(() => {
+                                const lines = finding.description.split('\n');
+                                const sections: Array<{ type: 'text' | 'code', content: string[] }> = [];
+                                let currentSection: { type: 'text' | 'code', content: string[] } = { type: 'text', content: [] };
+                                let insideCode = false;
+
+                                // Parse lines into text and code sections
+                                lines.forEach((line) => {
+                                  if (line === '[SOLIDITY]' || line === '[CODE]') {
+                                    // Start code block
+                                    if (currentSection.content.length > 0) {
+                                      sections.push(currentSection);
+                                    }
+                                    currentSection = { type: 'code', content: [] };
+                                    insideCode = true;
+                                  } else if (line === '[/SOLIDITY]' || line === '[/CODE]') {
+                                    // End code block
+                                    if (currentSection.content.length > 0) {
+                                      sections.push(currentSection);
+                                    }
+                                    currentSection = { type: 'text', content: [] };
+                                    insideCode = false;
+                                  } else {
+                                    currentSection.content.push(line);
+                                  }
+                                });
+
+                                // Push last section
+                                if (currentSection.content.length > 0) {
+                                  sections.push(currentSection);
+                                }
+
+                                // Helper function to render text with bold keywords
+                                const renderLineWithBold = (text: string) => {
+                                  const parts = text.split(/(\b[A-Z][a-zA-Z\s]+:)/g);
+                                  return parts.map((part, i) => {
+                                    if (/\b[A-Z][a-zA-Z\s]+:/.test(part)) {
+                                      return <span key={i} className="font-bold text-lime-300">{part}</span>;
+                                    }
+                                    return part;
+                                  });
+                                };
+
+                                // Render sections
+                                return sections.map((section, sectionIndex) => {
+                                  if (section.type === 'code') {
+                                    // Render code block with syntax highlighting
+                                    const codeContent = section.content.join('\n');
+                                    return (
+                                      <div key={sectionIndex} className="my-3">
+                                        <CodeBlock code={codeContent} language="solidity" />
+                                      </div>
+                                    );
+                                  } else {
+                                    // Render text section - filter out empty lines
+                                    const nonEmptyLines = section.content.filter(line => line.trim() !== '');
+                                    if (nonEmptyLines.length === 0) return null; // Skip empty sections
+        
+                                    // Render text section
+                                    return (
+                                      <div key={sectionIndex} className="bg-gray-900/50 border border-gray-700/50 rounded-lg p-4 text-sm">
+                                        {section.content.map((line, lineIndex) => {
+                                          const isMainIssue = sectionIndex === 0 && lineIndex === 0;
+                                          const isIndented = line.startsWith('\t') || line.startsWith('  ');
+                                          const trimmedLine = line.replace(/^\t|^  /, '');
+
+                                          return (
+                                            <div
+                                              key={lineIndex}
+                                              className={`${
+                                                isMainIssue
+                                                  ? 'text-lime-400 font-semibold mb-2'
+                                                  : isIndented
+                                                  ? 'text-gray-400 pl-4 py-0.5'
+                                                  : 'text-gray-300 py-0.5'
+                                              }`}
+                                            >
+                                              {isIndented && !isMainIssue && (
+                                                <span className="text-lime-400/40 mr-2">•</span>
+                                              )}
+                                              {renderLineWithBold(trimmedLine)}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  }
+                                });
+                              })()}
                             </div>
                             {finding.location && (
                               <div className="mt-2 text-sm text-gray-400">
