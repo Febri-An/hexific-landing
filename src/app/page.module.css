@@ -171,3 +171,27 @@ body {
   background: linear-gradient(90deg, #D6ED17 var(--progress, 0%), transparent var(--progress, 0%));
   transition: all 0.3s ease;
 }
+
+/* Infinite Carousel Animation */
+.carousel-track {
+  animation: scroll 30s linear infinite;
+  width: fit-content;
+}
+
+.carousel-track:hover {
+  animation-play-state: paused;
+}
+
+.carousel-slide {
+  display: flex;
+  gap: 1.5rem;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

@@ -247,7 +247,7 @@ export default function Page() {
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Smart Contract Audit | HEXIFIC</title>
-      <style dangerouslySetInnerHTML={{ __html: "\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');\n        \n        * {\n            font-family: 'Inter', sans-serif;\n        }\n        \n        html {\n            scroll-behavior: smooth;\n        }\n        \n        body {\n            background: #000E1B;\n            color: white;\n            overflow-x: hidden;\n        }\n        \n        .gradient-text {\n            background: linear-gradient(135deg, #D6ED17, #ffffff);\n            -webkit-background-clip: text;\n            -webkit-text-fill-color: transparent;\n            background-clip: text;\n        }\n        \n        .glass-effect {\n            background: rgba(214, 237, 23, 0.1);\n            backdrop-filter: blur(20px);\n            border: 1px solid rgba(214, 237, 23, 0.2);\n        }\n        \n        .feature-card:hover {\n            transform: translateY(-10px);\n            transition: all 0.3s ease;\n        }\n        \n        .cyber-grid {\n            background-image: \n                linear-gradient(rgba(214, 237, 23, 0.1) 1px, transparent 1px),\n                linear-gradient(90deg, rgba(214, 237, 23, 0.1) 1px, transparent 1px);\n            background-size: 50px 50px;\n            animation: grid-move 20s linear infinite;\n        }\n        \n        @keyframes grid-move {\n            0% { transform: translate(0, 0); }\n            100% { transform: translate(50px, 50px); }\n        }\n        \n        .floating-orbs::after {\n            content: '';\n            position: absolute;\n            width: 200px;\n            height: 200px;\n            background: radial-gradient(circle, rgba(214, 237, 23, 0.3) 0%, transparent 70%);\n            border-radius: 50%;\n            top: 20%;\n            right: 10%;\n            animation: float 8s ease-in-out infinite;\n            z-index: -1;\n        }\n        \n        .floating-orbs::before {\n            content: '';\n            position: absolute;\n            width: 150px;\n            height: 150px;\n            background: radial-gradient(circle, rgba(214, 237, 23, 0.2) 0%, transparent 70%);\n            border-radius: 50%;\n            bottom: 30%;\n            left: 15%;\n            animation: float 6s ease-in-out infinite reverse;\n            z-index: -1;\n        }\n        \n        @keyframes float {\n            0%, 100% { transform: translateY(0px) rotate(0deg); }\n            50% { transform: translateY(-30px) rotate(180deg); }\n        }\n        \n        .pulse-glow {\n            animation: pulse-glow 2s ease-in-out infinite;\n        }\n        \n        @keyframes pulse-glow {\n            0%, 100% { box-shadow: 0 0 20px rgba(214, 237, 23, 0.3); }\n            50% { box-shadow: 0 0 40px rgba(214, 237, 23, 0.6); }\n        }\n        \n        .slide-up {\n            animation: slide-up 0.8s ease-out forwards;\n        }\n        \n        @keyframes slide-up {\n            from { opacity: 0; transform: translateY(50px); }\n            to { opacity: 1; transform: translateY(0); }\n        }\n        \n        .code-pattern {\n            background: linear-gradient(45deg, transparent 49%, rgba(214, 237, 23, 0.1) 50%, transparent 51%);\n            background-size: 20px 20px;\n        }\n        \n        .neon-border {\n            border: 2px solid #D6ED17;\n            box-shadow: 0 0 20px rgba(214, 237, 23, 0.5), inset 0 0 20px rgba(214, 237, 23, 0.1);\n        }\n        \n        .scan-line {\n            position: relative;\n            overflow: hidden;\n        }\n        \n        .scan-line::after {\n            content: '';\n            position: absolute;\n            top: 0;\n            left: -100%;\n            width: 100%;\n            height: 100%;\n            background: linear-gradient(90deg, transparent, rgba(214, 237, 23, 0.3), transparent);\n            animation: scan 3s ease-in-out infinite;\n        }\n        \n        @keyframes scan {\n            0% { left: -100%; }\n            100% { left: 100%; }\n        }\n        \n        .matrix-bg {\n            position: fixed;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n            pointer-events: none;\n            z-index: -2;\n            opacity: 0.1;\n        }\n        \n        .audit-progress {\n            background: linear-gradient(90deg, #D6ED17 var(--progress, 0%), transparent var(--progress, 0%));\n            transition: all 0.3s ease;\n        }\n    " }} />
+      <style dangerouslySetInnerHTML={{ __html: "\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');\n        \n        * {\n            font-family: 'Inter', sans-serif;\n        }\n        \n        html {\n            scroll-behavior: smooth;\n        }\n        \n        body {\n            background: #000E1B;\n            color: white;\n            overflow-x: hidden;\n        }\n        \n        .gradient-text {\n            background: linear-gradient(135deg, #D6ED17, #ffffff);\n            -webkit-background-clip: text;\n            -webkit-text-fill-color: transparent;\n            background-clip: text;\n        }\n        \n        .glass-effect {\n            background: rgba(214, 237, 23, 0.1);\n            backdrop-filter: blur(20px);\n            border: 1px solid rgba(214, 237, 23, 0.2);\n        }\n        \n        .feature-card:hover {\n            transform: translateY(-10px);\n            transition: all 0.3s ease;\n        }\n        \n        .cyber-grid {\n            background-image: \n                linear-gradient(rgba(214, 237, 23, 0.1) 1px, transparent 1px),\n                linear-gradient(90deg, rgba(214, 237, 23, 0.1) 1px, transparent 1px);\n            background-size: 50px 50px;\n            animation: grid-move 20s linear infinite;\n        }\n        \n        @keyframes grid-move {\n            0% { transform: translate(0, 0); }\n            100% { transform: translate(50px, 50px); }\n        }\n        \n        .floating-orbs::after {\n            content: '';\n            position: absolute;\n            width: 200px;\n            height: 200px;\n            background: radial-gradient(circle, rgba(214, 237, 23, 0.3) 0%, transparent 70%);\n            border-radius: 50%;\n            top: 20%;\n            right: 10%;\n            animation: float 8s ease-in-out infinite;\n            z-index: -1;\n        }\n        \n        .floating-orbs::before {\n            content: '';\n            position: absolute;\n            width: 150px;\n            height: 150px;\n            background: radial-gradient(circle, rgba(214, 237, 23, 0.2) 0%, transparent 70%);\n            border-radius: 50%;\n            bottom: 30%;\n            left: 15%;\n            animation: float 6s ease-in-out infinite reverse;\n            z-index: -1;\n        }\n        \n        @keyframes float {\n            0%, 100% { transform: translateY(0px) rotate(0deg); }\n            50% { transform: translateY(-30px) rotate(180deg); }\n        }\n        \n        .pulse-glow {\n            animation: pulse-glow 2s ease-in-out infinite;\n        }\n        \n        @keyframes pulse-glow {\n            0%, 100% { box-shadow: 0 0 20px rgba(214, 237, 23, 0.3); }\n            50% { box-shadow: 0 0 40px rgba(214, 237, 23, 0.6); }\n        }\n        \n        .slide-up {\n            animation: slide-up 0.8s ease-out forwards;\n        }\n        \n        @keyframes slide-up {\n            from { opacity: 0; transform: translateY(50px); }\n            to { opacity: 1; transform: translateY(0); }\n        }\n        \n        .code-pattern {\n            background: linear-gradient(45deg, transparent 49%, rgba(214, 237, 23, 0.1) 50%, transparent 51%);\n            background-size: 20px 20px;\n        }\n        \n        .neon-border {\n            border: 2px solid #D6ED17;\n            box-shadow: 0 0 20px rgba(214, 237, 23, 0.5), inset 0 0 20px rgba(214, 237, 23, 0.1);\n        }\n        \n        .scan-line {\n            position: relative;\n            overflow: hidden;\n        }\n        \n        .scan-line::after {\n            content: '';\n            position: absolute;\n            top: 0;\n            left: -100%;\n            width: 100%;\n            height: 100%;\n            background: linear-gradient(90deg, transparent, rgba(214, 237, 23, 0.3), transparent);\n            animation: scan 3s ease-in-out infinite;\n        }\n        \n        @keyframes scan {\n            0% { left: -100%; }\n            100% { left: 100%; }\n        }\n        \n        .matrix-bg {\n            position: fixed;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n            pointer-events: none;\n            z-index: -2;\n            opacity: 0.1;\n        }\n        \n        .audit-progress {\n            background: linear-gradient(90deg, #D6ED17 var(--progress, 0%), transparent var(--progress, 0%));\n            transition: all 0.3s ease;\n        }\n        \n        /* Infinite Carousel Animation */\n        .carousel-track {\n            animation: carousel-scroll 50s linear infinite;\n            width: fit-content;\n        }\n        \n        .carousel-track:hover {\n            animation-play-state: paused;\n        }\n        \n        .carousel-slide {\n            display: flex;\n            gap: 1.5rem;\n        }\n        \n        @keyframes carousel-scroll {\n            0% {\n                transform: translateX(0);\n            }\n            100% {\n                transform: translateX(-50%);\n            }\n        }\n    " }} />
       {/* Matrix Background */}
       <div className="matrix-bg">
         <canvas ref={canvasRef} className="w-full h-full" />
@@ -515,7 +515,7 @@ export default function Page() {
         </div>
       </section>
       {/* Audit Process Section */}
-      <section id="process" className="py-20 code-pattern">
+      <section id="process" className="py-20 code-pattern overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-bold gradient-text mb-6">Audit Process</h2>
@@ -523,60 +523,91 @@ export default function Page() {
               Our streamlined process delivers comprehensive security analysis in record time.
             </p>
           </div>
-          <div className="relative">
-            {/* Process Steps */}
-            <div className="space-y-12">
-              {/* Step 1 */}
-              <div className="flex items-center gap-8">
-                <div className="flex-shrink-0 w-16 h-16 neon-border rounded-full flex items-center justify-center text-2xl font-bold">1</div>
-                <div className="glass-effect rounded-2xl p-8 flex-1">
-                  <h3 className="text-2xl font-bold mb-4">Contract Submission</h3>
-                  <p className="text-gray-300 mb-4">Upload your smart contracts through our secure platform. We support Solidity, Vyper, and other major languages.</p>
-                  <div className="audit-progress bg-gray-700 rounded-full h-2" style={{ '--progress': '15%' } as React.CSSProperties} />
-                  <div className="text-sm text-gray-400 mt-2">Average time: 5 minutes</div>
+        </div>
+        
+        {/* Infinite Carousel */}
+        <div className="relative">
+          {/* Gradient Masks */}
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#000E1B] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#000E1B] to-transparent z-10 pointer-events-none" />
+          
+          {/* Carousel Track */}
+          <div className="carousel-track flex gap-6 py-4">
+            {/* First set of cards */}
+            {[...Array(2)].map((_, setIndex) => (
+              <div key={setIndex} className="carousel-slide flex gap-6 flex-shrink-0">
+                {/* Step 1 */}
+                <div className="w-[350px] md:w-[400px] flex-shrink-0 group">
+                  <div className="glass-effect rounded-2xl p-6 h-full hover:scale-105 transition-all duration-300 hover:border-[#D6ED17] border border-transparent">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 neon-border rounded-full flex items-center justify-center text-xl font-bold group-hover:scale-110 transition-transform">1</div>
+                      <h3 className="text-xl font-bold">Contract Submission</h3>
+                    </div>
+                    <p className="text-gray-300 mb-4 text-md">Upload your smart contracts through our secure platform. We support Solidity, Vyper, and other major languages.</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-sm text-lime-400">Average time: 5 minutes</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Step 2 */}
+                <div className="w-[350px] md:w-[400px] flex-shrink-0 group">
+                  <div className="glass-effect rounded-2xl p-6 h-full hover:scale-105 transition-all duration-300 hover:border-[#D6ED17] border border-transparent">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 neon-border rounded-full flex items-center justify-center text-xl font-bold group-hover:scale-110 transition-transform">2</div>
+                      <h3 className="text-xl font-bold">Automated Analysis</h3>
+                    </div>
+                    <p className="text-gray-300 mb-4 text-md">Our AI engines perform comprehensive static and dynamic analysis, checking for 200+ vulnerability patterns.</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-sm text-lime-400">Average time: 2-4 hours</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Step 3 */}
+                <div className="w-[350px] md:w-[400px] flex-shrink-0 group">
+                  <div className="glass-effect rounded-2xl p-6 h-full hover:scale-105 transition-all duration-300 hover:border-[#D6ED17] border border-transparent">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 neon-border rounded-full flex items-center justify-center text-xl font-bold group-hover:scale-110 transition-transform">3</div>
+                      <h3 className="text-xl font-bold">Expert Review</h3>
+                    </div>
+                    <p className="text-gray-300 mb-4 text-md">Senior auditors manually review findings, test edge cases, and analyze business logic vulnerabilities.</p>
+                    <p> </p>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-sm text-lime-400">Average time: 1-3 days</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Step 4 */}
+                <div className="w-[350px] md:w-[400px] flex-shrink-0 group">
+                  <div className="glass-effect rounded-2xl p-6 h-full hover:scale-105 transition-all duration-300 hover:border-[#D6ED17] border border-transparent">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 neon-border rounded-full flex items-center justify-center text-xl font-bold group-hover:scale-110 transition-transform">4</div>
+                      <h3 className="text-xl font-bold">Report Generation</h3>
+                    </div>
+                    <p className="text-gray-300 mb-4 text-md">Comprehensive report with findings, severity ratings, and detailed remediation recommendations.</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-sm text-lime-400">Average time: 4-6 hours</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Step 5 */}
+                <div className="w-[350px] md:w-[400px] flex-shrink-0 group">
+                  <div className="glass-effect rounded-2xl p-6 h-full hover:scale-105 transition-all duration-300 hover:border-[#D6ED17] border border-transparent">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 neon-border rounded-full flex items-center justify-center text-xl font-bold group-hover:scale-110 transition-transform">5</div>
+                      <h3 className="text-xl font-bold">Remediation Support</h3>
+                    </div>
+                    <p className="text-gray-300 mb-4 text-md">Direct consultation with our team to resolve issues and validate fixes before deployment.</p>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-sm text-lime-400">Ongoing support included</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              {/* Step 2 */}
-              <div className="flex items-center gap-8">
-                <div className="flex-shrink-0 w-16 h-16 neon-border rounded-full flex items-center justify-center text-2xl font-bold">2</div>
-                <div className="glass-effect rounded-2xl p-8 flex-1">
-                  <h3 className="text-2xl font-bold mb-4">Automated Analysis</h3>
-                  <p className="text-gray-300 mb-4">Our AI engines perform comprehensive static and dynamic analysis, checking for 200+ vulnerability patterns.</p>
-                  <div className="audit-progress bg-gray-700 rounded-full h-2" style={{ '--progress': '35%' } as React.CSSProperties} />
-                  <div className="text-sm text-gray-400 mt-2">Average time: 2-4 hours</div>
-                </div>
-              </div>
-              {/* Step 3 */}
-              <div className="flex items-center gap-8">
-                <div className="flex-shrink-0 w-16 h-16 neon-border rounded-full flex items-center justify-center text-2xl font-bold">3</div>
-                <div className="glass-effect rounded-2xl p-8 flex-1">
-                  <h3 className="text-2xl font-bold mb-4">Expert Review</h3>
-                  <p className="text-gray-300 mb-4">Senior auditors manually review findings, test edge cases, and analyze business logic vulnerabilities.</p>
-                  <div className="audit-progress bg-gray-700 rounded-full h-2" style={{ '--progress': '65%' } as React.CSSProperties} />
-                  <div className="text-sm text-gray-400 mt-2">Average time: 1-3 days</div>
-                </div>
-              </div>
-              {/* Step 4 */}
-              <div className="flex items-center gap-8">
-                <div className="flex-shrink-0 w-16 h-16 neon-border rounded-full flex items-center justify-center text-2xl font-bold">4</div>
-                <div className="glass-effect rounded-2xl p-8 flex-1">
-                  <h3 className="text-2xl font-bold mb-4">Report Generation</h3>
-                  <p className="text-gray-300 mb-4">Comprehensive report with findings, severity ratings, and detailed remediation recommendations.</p>
-                  <div className="audit-progress bg-gray-700 rounded-full h-2" style={{ '--progress': '85%' } as React.CSSProperties} />
-                  <div className="text-sm text-gray-400 mt-2">Average time: 4-6 hours</div>
-                </div>
-              </div>
-              {/* Step 5 */}
-              <div className="flex items-center gap-8">
-                <div className="flex-shrink-0 w-16 h-16 neon-border rounded-full flex items-center justify-center text-2xl font-bold">5</div>
-                <div className="glass-effect rounded-2xl p-8 flex-1">
-                  <h3 className="text-2xl font-bold mb-4">Remediation Support</h3>
-                  <p className="text-gray-300 mb-4">Direct consultation with our team to resolve issues and validate fixes before deployment.</p>
-                  <div className="audit-progress bg-gray-700 rounded-full h-2" style={{ '--progress': '100%' } as React.CSSProperties} />
-                  <div className="text-sm text-gray-400 mt-2">Ongoing support included</div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
