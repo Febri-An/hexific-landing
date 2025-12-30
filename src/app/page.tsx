@@ -10,6 +10,127 @@ export default function Page() {
   const [countersStarted, setCountersStarted] = useState(false);
   const [hexiPrice, setHexiPrice] = useState<number | null>(null);
   const [priceChange24h, setPriceChange24h] = useState<number | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [currentTranslateX, setCurrentTranslateX] = useState(0);
+
+  const carouselAnimNameRef = useRef<string>('');
+  const carouselAnimDurationSecRef = useRef<number>(0);
+  const carouselAnimTimingRef = useRef<string>('linear');
+
+  const parseCssTimeToSeconds = (value: string): number => {
+    const raw = value.trim();
+    if (!raw) return 0;
+    if (raw.endsWith('ms')) {
+      const n = Number.parseFloat(raw.slice(0, -2));
+      return Number.isFinite(n) ? n / 1000 : 0;
+    }
+    if (raw.endsWith('s')) {
+      const n = Number.parseFloat(raw.slice(0, -1));
+      return Number.isFinite(n) ? n : 0;
+    }
+    const n = Number.parseFloat(raw);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!carouselRef.current) return;
+
+    const track = carouselRef.current;
+
+    setIsDragging(true);
+    setStartX(e.pageX);
+
+    // 1. Get the current position from the computed style
+    const style = window.getComputedStyle(track);
+    const matrix = new DOMMatrix(style.transform);
+    const currentX = matrix.m41;
+
+    setCurrentTranslateX(currentX);
+
+    // Store the active animation config so it can resume from the drag position
+    const animName = (style.animationName || '').split(',')[0]?.trim() || '';
+    const animDuration = (style.animationDuration || '').split(',')[0]?.trim() || '';
+    const animTiming = (style.animationTimingFunction || '').split(',')[0]?.trim() || 'linear';
+    carouselAnimNameRef.current = animName !== 'none' ? animName : '';
+    carouselAnimDurationSecRef.current = parseCssTimeToSeconds(animDuration);
+    carouselAnimTimingRef.current = animTiming || 'linear';
+
+    // 2. Disable the animation and set a fixed position so it doesn't move while holding
+    track.style.animation = 'none';
+    track.style.animationDelay = '';
+    track.style.animationPlayState = 'running';
+    track.style.transform = `translateX(${currentX}px)`;
+    track.style.cursor = 'grabbing';
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const track = carouselRef.current;
+    if (!track) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
+      const x = e.pageX - startX;
+      const walk = x * 1.5; // Drag speed
+      track.style.transform = `translateX(${currentTranslateX + walk}px)`;
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      setIsDragging(false);
+      track.style.cursor = 'grab';
+
+      // Get the final position after dragging
+      const style = window.getComputedStyle(track);
+      const matrix = new DOMMatrix(style.transform);
+      const finalX = matrix.m41;
+
+      // -50% in the keyframes = half of the track width (because width: fit-content)
+      const halfWidth = track.scrollWidth / 2;
+      if (!halfWidth) {
+        track.style.transform = '';
+        track.style.animation = '';
+        track.style.animationDelay = '';
+        return;
+      }
+
+      // Normalize so it always stays within the range [-halfWidth, 0]
+      let normalizedX = finalX % halfWidth;
+      if (normalizedX > 0) normalizedX -= halfWidth;
+      if (normalizedX < -halfWidth) normalizedX += halfWidth;
+
+      // Compute animation progress based on the position
+      const progress = Math.min(1, Math.max(0, Math.abs(normalizedX) / halfWidth));
+
+      // Use the stored animation config (fall back to computed style if needed)
+      const fallbackName = (style.animationName || '').split(',')[0]?.trim() || '';
+      const animName = carouselAnimNameRef.current || (fallbackName !== 'none' ? fallbackName : '');
+      const fallbackDurationSec = parseCssTimeToSeconds((style.animationDuration || '').split(',')[0]?.trim() || '');
+      const durationSec = carouselAnimDurationSecRef.current || fallbackDurationSec || 50;
+      const timingFn = carouselAnimTimingRef.current || 'linear';
+
+      // Restart the animation from the current position using a negative delay
+      // (Toggle 'none' -> reflow -> set animation) so the browser actually restarts it.
+      track.style.animation = 'none';
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      track.offsetHeight;
+
+      track.style.transform = '';
+      track.style.animation = `${animName} ${durationSec}s ${timingFn} infinite`;
+      track.style.animationDelay = `${-(progress * durationSec)}s`;
+      track.style.animationPlayState = 'running';
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, startX, currentTranslateX]);
 
   // Matrix animation for background
   useEffect(() => {
@@ -526,14 +647,22 @@ export default function Page() {
         </div>
         
         {/* Infinite Carousel */}
-        <div className="relative">
+        <div className="relative overflow-hidden group">
           {/* Gradient Masks */}
           <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#000E1B] to-transparent z-10 pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#000E1B] to-transparent z-10 pointer-events-none" />
           
-          {/* Carousel Track */}
-          <div className="carousel-track flex gap-6 py-4">
-            {/* First set of cards */}
+          {/* Carousel Track - Infinite Animation + Draggable */}
+          <div 
+            ref={carouselRef}
+            className={`carousel-track flex gap-6 py-4 cursor-grab select-none`}
+            onMouseDown={handleMouseDown}
+            // onMouseUp={handleMouseUp}
+            // onMouseMove={handleMouseMove}
+            // onMouseLeave={handleMouseLeave}
+            // style={{ animationPlayState: animationPaused ? 'paused' : 'running' }}
+          >
+            {/* Duplicate cards for infinite loop - First set */}
             {[...Array(2)].map((_, setIndex) => (
               <div key={setIndex} className="carousel-slide flex gap-6 flex-shrink-0">
                 {/* Step 1 */}
