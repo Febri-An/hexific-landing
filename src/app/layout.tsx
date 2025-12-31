@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from 'next/script'
 import '@rainbow-me/rainbowkit/styles.css';
 import { Providers } from './providers';
+import { SolanaProvider } from "../components/solana-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -67,7 +68,9 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <SolanaProvider>{children}</SolanaProvider>
+        </Providers>
       </body>
     </html>
   );

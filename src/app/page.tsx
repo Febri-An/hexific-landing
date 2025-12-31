@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import FreeAuditUpload from '@/components/FreeAuditUpload';
+// import { WalletConnectButton } from "@/components/wallet-connect-button";
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -392,6 +393,7 @@ export default function Page() {
                 Docs
               </Link>
               <a href="#contact" className="bg-lime-400 text-black px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold">Get Audit</a>
+              {/* <WalletConnectButton /> */}
             </div>
             <button className="md:hidden text-lime-400">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
