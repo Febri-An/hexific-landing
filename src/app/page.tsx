@@ -430,54 +430,74 @@ export default function Page() {
       </a>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center floating-orbs cyber-grid">
-        <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-          <div className="slide-up">
-            <h1 className="text-5xl md:text-7xl font-black mb-6">
-              <span className="gradient-text">Bulletproof</span><br />
+      <div>
+        {/* Mobile hero (disabled animated backgrounds) */}
+        <section className="md:hidden min-h-screen flex items-center justify-center">
+          <div className="max-w-7xl mx-auto px-6 py-20 text-center">
+            <h1 className="text-4xl font-black mb-6">
+              <span className="gradient-text">Bulletproof</span>
+              <br />
               Smart Contract Audits
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Advanced AI-powered security analysis combined with expert manual review.
-              Protect your DeFi protocol from exploits before they happen.
+            <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto">
+              Advanced AI-powered security analysis combined with expert manual review. Protect your DeFi protocol from exploits before they happen.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <button 
-              onClick={() => {
-                document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="bg-lime-400 text-black px-8 py-4 rounded-lg text-lg font-bold hover:bg-lime-300 transition-all pulse-glow cursor-pointer">
+            <div className="flex flex-col gap-4 justify-center mb-12">
+              <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="bg-lime-400 text-black px-8 py-4 rounded-lg text-lg font-bold hover:bg-lime-300 transition-all cursor-pointer">
                 Start Free Audit
               </button>
-              <button
-              onClick={() => window.open("https://github.com/Hexific/audit-reports", "_blank")}
-              className="glass-effect px-8 py-4 rounded-lg text-lg font-semibold hover:bg-lime-400/20 transition-all cursor-pointer">
+              <button onClick={() => window.open('https://github.com/Hexific/audit-reports', '_blank')} className="glass-effect px-8 py-4 rounded-lg text-lg font-semibold hover:bg-lime-400/20 transition-all cursor-pointer">
                 View Sample Report
               </button>
             </div>
-            {/* Live Stats */}
-            {/* adjusted to 2 columns for temporary */}
-            <div className="grid grid-cols-2 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {/* <div className="glass-effect rounded-xl p-6 scan-line">
-                <div className="text-3xl font-bold gradient-text mb-2" id="contracts-audited">500+</div>
-                <div className="text-gray-400">Contracts Audited</div>
-              </div> */}
-              <div className="glass-effect rounded-xl p-6 scan-line">
+            <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="glass-effect rounded-xl p-6">
                 <div className="text-3xl font-bold gradient-text mb-2" id="vulnerabilities">40+</div>
                 <div className="text-gray-400">Vulnerabilities Found</div>
               </div>
-              {/* <div className="glass-effect rounded-xl p-6 scan-line">
-                <div className="text-3xl font-bold gradient-text mb-2" id="saved-funds">$50M+</div>
-                <div className="text-gray-400">Funds Protected</div>
-              </div> */}
-              <div className="glass-effect rounded-xl p-6 scan-line">
+              <div className="glass-effect rounded-xl p-6">
                 <div className="text-3xl font-bold gradient-text mb-2" id="response-time">24h</div>
                 <div className="text-gray-400">Avg Response</div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Desktop hero (keeps animated backgrounds) */}
+        <section className="hidden md:flex relative min-h-screen items-center justify-center floating-orbs cyber-grid">
+          <div className="max-w-7xl mx-auto px-6 py-20 text-center">
+            <div className="slide-up">
+              <h1 className="text-5xl md:text-7xl font-black mb-6">
+                <span className="gradient-text">Bulletproof</span>
+                <br />
+                Smart Contract Audits
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                Advanced AI-powered security analysis combined with expert manual review. Protect your DeFi protocol from exploits before they happen.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="bg-lime-400 text-black px-8 py-4 rounded-lg text-lg font-bold hover:bg-lime-300 transition-all pulse-glow cursor-pointer">
+                  Start Free Audit
+                </button>
+                <button onClick={() => window.open('https://github.com/Hexific/audit-reports', '_blank')} className="glass-effect px-8 py-4 rounded-lg text-lg font-semibold hover:bg-lime-400/20 transition-all cursor-pointer">
+                  View Sample Report
+                </button>
+              </div>
+              {/* Live Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div className="glass-effect rounded-xl p-6 scan-line">
+                  <div className="text-3xl font-bold gradient-text mb-2" id="vulnerabilities">40+</div>
+                  <div className="text-gray-400">Vulnerabilities Found</div>
+                </div>
+                <div className="glass-effect rounded-xl p-6 scan-line">
+                  <div className="text-3xl font-bold gradient-text mb-2" id="response-time">24h</div>
+                  <div className="text-gray-400">Avg Response</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
       {/* Features Section */}
       <section id="features" className="py-20 relative">
         <div className="max-w-7xl mx-auto px-6">
