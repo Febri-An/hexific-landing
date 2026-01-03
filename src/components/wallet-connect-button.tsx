@@ -57,7 +57,7 @@ function WalletMenuItem({ wallet, onConnect }: { wallet: UiWallet; onConnect: ()
 
   return (
     <button
-      className="group flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-white transition-colors hover:bg-lime-400/10 focus:bg-lime-400/10 disabled:pointer-events-none disabled:opacity-50"
+      className="group flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-white transition-colors hover:bg-lime-400/10 hover:cursor-pointer focus:bg-lime-400/10 disabled:pointer-events-none disabled:opacity-50"
       onClick={handleConnect}
       disabled={isConnecting}
     >
@@ -106,7 +106,7 @@ export function WalletConnectButton() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="min-w-[190px] justify-between glass-effect bg-transparent border border-lime-400/30 text-lime-400 hover:bg-lime-400/10 hover:border-lime-400/50 hover:cursor-pointer transition-all"
+          className="justify-between glass-effect bg-transparent border border-lime-400/30 text-lime-400 hover:text-lime-300 hover:bg-lime-400/10 hover:border-lime-400/50 hover:cursor-pointer transition-all"
         >
           {isConnected && selectedWallet && selectedAccount ? (
             <>
@@ -124,7 +124,7 @@ export function WalletConnectButton() {
             </>
           ) : (
             <>
-              <Wallet className="mr-2 h-4 w-4 text-lime-400" />
+              <Wallet className="h-4 w-4 text-lime-400" />
               <span className="font-semibold">Connect Wallet</span>
               <ChevronDown className="ml-2 h-4 w-4 text-lime-400" />
             </>

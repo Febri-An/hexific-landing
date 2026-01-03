@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import FreeAuditUpload from '@/components/FreeAuditUpload';
-// import { WalletConnectButton } from "@/components/wallet-connect-button";
+import { WalletConnectButton } from "@/components/wallet-connect-button";
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -379,21 +379,28 @@ export default function Page() {
       <nav className="fixed top-0 w-full z-50 glass-effect border-b border-lime-400/20">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-lime-400 rounded-lg flex items-center justify-center">
-                <Image src="./logo.svg" alt="Hexific Logo" width={24} height={24} />
-                {/* <img src="/logo.svg" alt="My Logo" className="w-6 h-6" /> */}
+            <div className="flex items-center space-x-10">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-lime-400 rounded-lg flex items-center justify-center">
+                  <Image src="./logo.svg" alt="Hexific Logo" width={24} height={24} />
+                  {/* <img src="/logo.svg" alt="My Logo" className="w-6 h-6" /> */}
+                </div>
+                <span className="text-2xl font-bold gradient-text">Hexific</span>
               </div>
-              <span className="text-2xl font-bold gradient-text">Hexific</span>
+            
+              <div className="flex space-x-4">
+                <a href="#features" className="hover:text-lime-400 transition-colors">Features</a>
+                <a href="#process" className="hover:text-lime-400 transition-colors">Process</a>
+                <a href="#roadmap" className="hover:text-lime-400 transition-colors">Roadmap</a>
+                {/* <a href="#pricing" className="hover:text-lime-400 transition-colors">Pricing</a> */}
+                <Link href="/docs" className="hover:text-lime-400 transition-colors">
+                  Docs
+                </Link>
+              </div>
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="hover:text-lime-400 transition-colors">Features</a>
-              <a href="#process" className="hover:text-lime-400 transition-colors">Process</a>
-              {/* <a href="#pricing" className="hover:text-lime-400 transition-colors">Pricing</a> */}
-              <Link href="/docs" className="hover:text-lime-400 transition-colors">
-                Docs
-              </Link>
-              <a href="#contact" className="bg-lime-400 text-black px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold">Get Audit</a>
+              {/* <a href="#contact" className="glass-effect text-white px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold">Get Audit</a> */}
+              <WalletConnectButton />
               {/* <WalletConnectButton /> */}
             </div>
             <button className="md:hidden text-lime-400">
