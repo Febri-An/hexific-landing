@@ -97,7 +97,7 @@ function DisconnectButton({ wallet, onDisconnect }: { wallet: UiWallet; onDiscon
   );
 }
 
-export function WalletConnectButton() {
+export function WalletConnectButton({ onMobile = false }: { onMobile?: boolean } = {}) {
   const { wallets, selectedWallet, selectedAccount, isConnected } = useSolana();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -106,12 +106,12 @@ export function WalletConnectButton() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="justify-between glass-effect bg-transparent border border-lime-400/30 text-lime-400 hover:text-lime-300 hover:bg-lime-400/10 hover:border-lime-400/50 hover:cursor-pointer transition-all"
+          className={`justify-between bg-transparent text-lime-400 ${onMobile ? 'border-0' : 'glass-effect border border-lime-400/30'} hover:text-lime-300 hover:bg-lime-400/10 hover:border-lime-400/50 hover:cursor-pointer transition-all`}
         >
           {isConnected && selectedWallet && selectedAccount ? (
             <>
               <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-lime-400" />
+                {onMobile ? null : <div className="h-2 w-2 rounded-full bg-lime-400" />}
                 <WalletIcon
                   wallet={selectedWallet}
                   className="h-4 w-4 border border-lime-400/20 bg-black/20"
@@ -120,13 +120,19 @@ export function WalletConnectButton() {
                   {truncateAddress(selectedAccount.address)}
                 </span>
               </div>
-              <ChevronDown className="ml-2 h-4 w-4 text-lime-400" />
+              {onMobile ? null : <ChevronDown className="ml-2 h-4 w-4 text-lime-400" />}
             </>
           ) : (
             <>
-              <Wallet className="h-4 w-4 text-lime-400" />
-              <span className="font-semibold">Connect Wallet</span>
-              <ChevronDown className="ml-2 h-4 w-4 text-lime-400" />
+              {
+                onMobile 
+                ? <Wallet className="h-4 w-4 text-lime-400" />
+                : (<>
+                    <Wallet className="h-4 w-4 text-lime-400" />
+                    <span className="font-semibold">Connect Wallet</span>
+                    <ChevronDown className="ml-2 h-4 w-4 text-lime-400" />
+                  </>)
+              }
             </>
           )}
         </Button>
