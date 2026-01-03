@@ -332,7 +332,7 @@ export default function Page() {
         <a href="#process" class="block hover:text-lime-400 transition-colors">Process</a>
         <a href="/docs" class="block hover:text-lime-400 transition-colors">Docs</a>
         <a href="#roadmap" class="block hover:text-lime-400 transition-colors">Roadmap</a>
-        <a href="#contact" class="block bg-lime-400 text-black px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold text-center">Get Audit</a>
+        // <a href="#contact" class="block bg-lime-400 text-black px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold text-center">Get Audit</a>
       `;
       mobileBtn.parentElement?.appendChild(mobileMenu);
       mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
@@ -378,14 +378,13 @@ export default function Page() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 glass-effect border-b border-lime-400/20">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-10">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-lime-400 rounded-lg flex items-center justify-center">
-                  <Image src="./logo.svg" alt="Hexific Logo" width={24} height={24} />
-                  {/* <img src="/logo.svg" alt="My Logo" className="w-6 h-6" /> */}
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center space-x-4 md:space-x-10">
+              <div className="flex items-center space-x-2 md:space-x-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-lime-400 rounded-lg flex items-center justify-center">
+                  <Image src="./logo.svg" alt="Hexific Logo" width={24} height={24} className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
-                <span className="text-2xl font-bold gradient-text">Hexific</span>
+                <span className="text-xl md:text-2xl font-bold gradient-text">Hexific</span>
               </div>
             
               <div className="hidden md:flex space-x-4">
@@ -400,14 +399,17 @@ export default function Page() {
             </div>
             <div className="hidden md:flex items-center space-x-8">
               {/* <a href="#contact" className="glass-effect text-white px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold">Get Audit</a> */}
-              <WalletConnectButton />
+              <WalletConnectButton onMobile={false} />
               {/* <WalletConnectButton /> */}
             </div>
-            <button className="md:hidden text-lime-400">
+            <div className="flex items-center space-x-3 md:hidden">
+              <WalletConnectButton onMobile={true} />
+              <button className="text-lime-400">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
-            </button>
+              </button>
+            </div>
           </div>
         </div>
       </nav>
