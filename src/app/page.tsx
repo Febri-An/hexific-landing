@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import FreeAuditUpload from '@/components/FreeAuditUpload';
+import { WalletConnectButton } from "@/components/wallet-connect-button";
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -330,6 +331,7 @@ export default function Page() {
         <a href="#features" class="block hover:text-lime-400 transition-colors">Features</a>
         <a href="#process" class="block hover:text-lime-400 transition-colors">Process</a>
         <a href="/docs" class="block hover:text-lime-400 transition-colors">Docs</a>
+        <a href="/roadmap" class="block hover:text-lime-400 transition-colors">Roadmap</a>
         <a href="#contact" class="block bg-lime-400 text-black px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold text-center">Get Audit</a>
       `;
       mobileBtn.parentElement?.appendChild(mobileMenu);
@@ -377,21 +379,29 @@ export default function Page() {
       <nav className="fixed top-0 w-full z-50 glass-effect border-b border-lime-400/20">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-lime-400 rounded-lg flex items-center justify-center">
-                <Image src="./logo.svg" alt="Hexific Logo" width={24} height={24} />
-                {/* <img src="/logo.svg" alt="My Logo" className="w-6 h-6" /> */}
+            <div className="flex items-center space-x-10">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-lime-400 rounded-lg flex items-center justify-center">
+                  <Image src="./logo.svg" alt="Hexific Logo" width={24} height={24} />
+                  {/* <img src="/logo.svg" alt="My Logo" className="w-6 h-6" /> */}
+                </div>
+                <span className="text-2xl font-bold gradient-text">Hexific</span>
               </div>
-              <span className="text-2xl font-bold gradient-text">Hexific</span>
+            
+              <div className="flex space-x-4">
+                <a href="#features" className="hover:text-lime-400 transition-colors">Features</a>
+                <a href="#process" className="hover:text-lime-400 transition-colors">Process</a>
+                <a href="#roadmap" className="hover:text-lime-400 transition-colors">Roadmap</a>
+                {/* <a href="#pricing" className="hover:text-lime-400 transition-colors">Pricing</a> */}
+                <Link href="/docs" className="hover:text-lime-400 transition-colors">
+                  Docs
+                </Link>
+              </div>
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="hover:text-lime-400 transition-colors">Features</a>
-              <a href="#process" className="hover:text-lime-400 transition-colors">Process</a>
-              {/* <a href="#pricing" className="hover:text-lime-400 transition-colors">Pricing</a> */}
-              <Link href="/docs" className="hover:text-lime-400 transition-colors">
-                Docs
-              </Link>
-              <a href="#contact" className="bg-lime-400 text-black px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold">Get Audit</a>
+              {/* <a href="#contact" className="glass-effect text-white px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold">Get Audit</a> */}
+              <WalletConnectButton />
+              {/* <WalletConnectButton /> */}
             </div>
             <button className="md:hidden text-lime-400">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -428,54 +438,74 @@ export default function Page() {
       </a>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center floating-orbs cyber-grid">
-        <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-          <div className="slide-up">
-            <h1 className="text-5xl md:text-7xl font-black mb-6">
-              <span className="gradient-text">Bulletproof</span><br />
+      <div>
+        {/* Mobile hero (disabled animated backgrounds) */}
+        <section className="md:hidden min-h-screen flex items-center justify-center">
+          <div className="max-w-7xl mx-auto px-6 py-20 text-center">
+            <h1 className="text-4xl font-black mb-6">
+              <span className="gradient-text">Bulletproof</span>
+              <br />
               Smart Contract Audits
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Advanced AI-powered security analysis combined with expert manual review.
-              Protect your DeFi protocol from exploits before they happen.
+            <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto">
+              Advanced AI-powered security analysis combined with expert manual review. Protect your DeFi protocol from exploits before they happen.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <button 
-              onClick={() => {
-                document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="bg-lime-400 text-black px-8 py-4 rounded-lg text-lg font-bold hover:bg-lime-300 transition-all pulse-glow cursor-pointer">
+            <div className="flex flex-col gap-4 justify-center mb-12">
+              <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="bg-lime-400 text-black px-8 py-4 rounded-lg text-lg font-bold hover:bg-lime-300 transition-all cursor-pointer">
                 Start Free Audit
               </button>
-              <button
-              onClick={() => window.open("https://github.com/Hexific/audit-reports", "_blank")}
-              className="glass-effect px-8 py-4 rounded-lg text-lg font-semibold hover:bg-lime-400/20 transition-all cursor-pointer">
+              <button onClick={() => window.open('https://github.com/Hexific/audit-reports', '_blank')} className="glass-effect px-8 py-4 rounded-lg text-lg font-semibold hover:bg-lime-400/20 transition-all cursor-pointer">
                 View Sample Report
               </button>
             </div>
-            {/* Live Stats */}
-            {/* adjusted to 2 columns for temporary */}
-            <div className="grid grid-cols-2 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {/* <div className="glass-effect rounded-xl p-6 scan-line">
-                <div className="text-3xl font-bold gradient-text mb-2" id="contracts-audited">500+</div>
-                <div className="text-gray-400">Contracts Audited</div>
-              </div> */}
-              <div className="glass-effect rounded-xl p-6 scan-line">
-                <div className="text-3xl font-bold gradient-text mb-2" id="vulnerabilities">40+</div>
+            <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="glass-effect rounded-xl p-6">
+                <div className="text-3xl font-bold gradient-text mb-2" id="vulnerabilities">700+</div>
                 <div className="text-gray-400">Vulnerabilities Found</div>
               </div>
-              {/* <div className="glass-effect rounded-xl p-6 scan-line">
-                <div className="text-3xl font-bold gradient-text mb-2" id="saved-funds">$50M+</div>
-                <div className="text-gray-400">Funds Protected</div>
-              </div> */}
-              <div className="glass-effect rounded-xl p-6 scan-line">
+              <div className="glass-effect rounded-xl p-6">
                 <div className="text-3xl font-bold gradient-text mb-2" id="response-time">24h</div>
                 <div className="text-gray-400">Avg Response</div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Desktop hero (keeps animated backgrounds) */}
+        <section className="hidden md:flex relative min-h-screen items-center justify-center floating-orbs cyber-grid">
+          <div className="max-w-7xl mx-auto px-6 py-20 text-center">
+            <div className="slide-up">
+              <h1 className="text-5xl md:text-7xl font-black mb-6">
+                <span className="gradient-text">Bulletproof</span>
+                <br />
+                Smart Contract Audits
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                Advanced AI-powered security analysis combined with expert manual review. Protect your DeFi protocol from exploits before they happen.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="bg-lime-400 text-black px-8 py-4 rounded-lg text-lg font-bold hover:bg-lime-300 transition-all pulse-glow cursor-pointer">
+                  Start Free Audit
+                </button>
+                <button onClick={() => window.open('https://github.com/Hexific/audit-reports', '_blank')} className="glass-effect px-8 py-4 rounded-lg text-lg font-semibold hover:bg-lime-400/20 transition-all cursor-pointer">
+                  View Sample Report
+                </button>
+              </div>
+              {/* Live Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div className="glass-effect rounded-xl p-6 scan-line">
+                  <div className="text-3xl font-bold gradient-text mb-2" id="vulnerabilities">700+</div>
+                  <div className="text-gray-400">Vulnerabilities Found</div>
+                </div>
+                <div className="glass-effect rounded-xl p-6 scan-line">
+                  <div className="text-3xl font-bold gradient-text mb-2" id="response-time">24h</div>
+                  <div className="text-gray-400">Avg Response</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
       {/* Features Section */}
       <section id="features" className="py-20 relative">
         <div className="max-w-7xl mx-auto px-6">
@@ -1034,21 +1064,23 @@ export default function Page() {
             <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-gradient-to-b from-lime-400 via-lime-400/50 to-transparent" />
 
             <div className="space-y-12">
-              {/* Q4 2025 */}
+              {/* Q4 2025 - COMPLETED */}
               <div className="relative">
                 <div className="md:flex items-center">
                   {/* Timeline dot */}
                   <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-lime-400 rounded-full border-4 border-[#000E1B] z-10 items-center justify-center">
-                    <div className="w-3 h-3 bg-black rounded-full pulse-glow" />
+                    <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
                   </div>
 
                   {/* Content */}
                   <div className="md:w-1/2 md:pr-12">
-                    <div className="glass-effect rounded-2xl p-8 neon-border">
+                    <div className="glass-effect rounded-2xl p-8 border border-lime-400/40">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-2xl font-bold gradient-text">Q4 2025</h3>
                         <span className="bg-lime-400 text-black px-3 py-1 rounded-full text-xs font-bold">
-                          IN PROGRESS
+                          COMPLETED
                         </span>
                       </div>
                       <p className="text-gray-400 text-sm mb-6">Sep - Dec 2025</p>
@@ -1091,7 +1123,7 @@ export default function Page() {
                       <div className="mt-6 pt-6 border-t border-lime-400/20">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-semibold text-lime-400">Goal:</span>
-                          <span className="text-white font-bold">100+ audits findings (AI + manual)</span>
+                          <span className="text-white font-bold">100+ audits findings</span>
                         </div>
                       </div>
                     </div>
@@ -1099,55 +1131,55 @@ export default function Page() {
                 </div>
               </div>
 
-              {/* Q1 2026 */}
+              {/* Q1 2026 - IN PROGRESS */}
               <div className="relative">
                 <div className="md:flex items-center md:flex-row-reverse">
                   {/* Timeline dot */}
-                  <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-lime-400/30 rounded-full border-4 border-[#000E1B] z-10 items-center justify-center">
-                    <div className="w-3 h-3 bg-lime-400/50 rounded-full" />
+                  <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-lime-400 rounded-full border-4 border-[#000E1B] z-10 items-center justify-center">
+                    <div className="w-3 h-3 bg-black rounded-full pulse-glow" />
                   </div>
 
                   {/* Content */}
                   <div className="md:w-1/2 md:pl-12">
-                    <div className="glass-effect rounded-2xl p-8 border border-lime-400/20 hover:border-lime-400/40 transition-all">
+                    <div className="glass-effect rounded-2xl p-8 neon-border">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-2xl font-bold gradient-text">Q1 2026</h3>
-                        <span className="bg-gray-700 text-lime-400 px-3 py-1 rounded-full text-xs font-bold">
-                          PLANNED
+                        <span className="bg-lime-400 text-black px-3 py-1 rounded-full text-xs font-bold">
+                          IN PROGRESS
                         </span>
                       </div>
                       <p className="text-gray-400 text-sm mb-6">Jan - Apr 2026</p>
                       
                       <h4 className="text-xl font-bold mb-4 text-white">AI Enhancement</h4>
-                      
+
                       <ul className="space-y-3">
                         <li className="flex items-start">
-                          <svg className="w-5 h-5 text-lime-400/60 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                          </svg>
+                          <div className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0 rounded-full border-2 border-lime-400 bg-transparent flex items-center justify-center">
+                            <div className="w-1.5 h-0.5 bg-lime-400 rounded-full" />
+                          </div>
                           <span className="text-gray-300">Utilize $HEXI token for enhanced AI audit capabilities</span>
                         </li>
                         <li className="flex items-start">
-                          <svg className="w-5 h-5 text-lime-400/60 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
+                          <div className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0 rounded-full border-2 border-lime-400 bg-transparent flex items-center justify-center">
+                            <div className="w-1.5 h-0.5 bg-lime-400 rounded-full" />
+                          </div>
                           <span className="text-gray-300">$HEXI buy back & burn program from platform revenue</span>
                         </li>
                         <li className="flex items-start">
-                            <svg className="w-5 h-5 text-lime-400/60 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10a2 2 0 002 2h12a2 2 0 002-2V7M9 11h6m-6 4h6M7 7h10V5a2 2 0 00-2-2H9a2 2 0 00-2 2v2z" />
-                            </svg>
+                          <div className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0 rounded-full border-2 border-lime-400 bg-transparent flex items-center justify-center">
+                            <div className="w-1.5 h-0.5 bg-lime-400 rounded-full" />
+                          </div>
                           <span className="text-gray-300">Audit history storage (users want to see past audits)</span>
                         </li>
                         <li className="flex items-start">
-                          <svg className="w-5 h-5 text-lime-400/60 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                          </svg>
+                          <div className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0 rounded-full border-2 border-lime-400 bg-transparent flex items-center justify-center">
+                            <div className="w-1.5 h-0.5 bg-lime-400 rounded-full" />
+                          </div>
                           <span className="text-gray-300">Email notifications when audit completes</span>
                         </li>
                         <li className="flex items-start">
-                          <svg className="w-5 h-5 text-lime-400/60 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                          <svg className="w-5 h-5 text-lime-400 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>
                           <span className="text-gray-300">Multi-AI ensemble for better audit quality</span>
                         </li>
@@ -1164,14 +1196,74 @@ export default function Page() {
                 </div>
               </div>
 
+              {/* Q2 2026 - PLANNED */}
+              {/* <div className="relative">
+              <div className="md:flex items-center">
+                
+                <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-lime-400/30 rounded-full border-4 border-[#000E1B] z-10 items-center justify-center">
+                <div className="w-3 h-3 bg-lime-400/50 rounded-full" />
+                </div>
+
+                
+                <div className="md:w-1/2 md:pr-12">
+                <div className="glass-effect rounded-2xl p-8 border border-lime-400/20 hover:border-lime-400/40 transition-all">
+                  <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-bold gradient-text">Q2 2026</h3>
+                  <span className="bg-gray-700 text-lime-400 px-3 py-1 rounded-full text-xs font-bold">
+                    PLANNED
+                  </span>
+                  </div>
+                  <p className="text-gray-400 text-sm mb-6">May - Aug 2026</p>
+                  
+                  <h4 className="text-xl font-bold mb-4 text-white">Platform Expansion</h4>
+                  
+                  <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <svg className="w-5 h-5 text-lime-400/60 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span className="text-gray-300">Advanced security scanning features</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-5 h-5 text-lime-400/60 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span className="text-gray-300">Community-driven vulnerability database</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-5 h-5 text-lime-400/60 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span className="text-gray-300">Detailed analytics dashboard for audit insights</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-5 h-5 text-lime-400/60 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span className="text-gray-300">Referral program for community growth</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-5 h-5 text-lime-400/60 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                    </svg>
+                    <span className="text-gray-300">API access for enterprise integrations</span>
+                  </li>
+                  </ul>
+
+                  <div className="mt-6 pt-6 border-t border-lime-400/20">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-lime-400">Goal:</span>
+                    <span className="text-white font-bold">1000+ audits findings</span>
+                  </div>
+                  </div>
+                </div>
+                </div>
+              </div>
+              </div> */}
+
               {/* Continuous Improvements */}
               <div className="relative">
                 <div className="md:flex items-center justify-center">
-                  {/* Timeline dot - end */}
-                  {/* <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-b from-lime-400/30 to-transparent rounded-full border-4 border-[#000E1B] z-10 items-center justify-center">
-                    <div className="w-2 h-2 bg-lime-400/30 rounded-full" />
-                  </div> */}
-
                   {/* Content */}
                   <div className="md:w-2/3">
                     <div className="glass-effect rounded-2xl p-8 border border-lime-400/10 text-center">
@@ -1182,7 +1274,7 @@ export default function Page() {
                       </div>
                       <h3 className="text-2xl font-bold gradient-text mb-3">Continuous Improvements</h3>
                       <p className="text-gray-300 text-lg">
-                        Ongoing enhancements for <strong className="text-lime-400">AI Audit Quality</strong> and <strong className="text-lime-400">Privacy Protection</strong>
+                      Ongoing enhancements for <strong className="text-lime-400">AI Audit Quality</strong> and <strong className="text-lime-400">Privacy Protection</strong>
                       </p>
                       <div className="mt-6 flex flex-wrap gap-3 justify-center">
                         <span className="px-4 py-2 bg-lime-400/10 border border-lime-400/30 rounded-full text-sm text-lime-400 font-semibold">

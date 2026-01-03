@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import AIAssistModal from './AIAssistModal';
+// import AIAssistModal from './AIAssistModal';
 import { CodeBlock } from './CodeBlock';
 import { 
   checkRateLimit, 
@@ -11,6 +11,7 @@ import {
   type ServiceType 
 } from '@/lib/rateLimiter';
 import { trim } from 'viem';
+// import { useSolana } from "@/components/solana-provider";
 
 interface DetailedFinding {
   type: string;
@@ -259,6 +260,7 @@ function parseAIAuditFindings(auditText: string): DetailedFinding[] {
 }
 
 export default function FreeAuditUpload() {
+  // const { isConnected, selectedAccount } = useSolana();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AuditResult | null>(null);
@@ -271,12 +273,18 @@ export default function FreeAuditUpload() {
   const [auditMode, setAuditMode] = useState<'upload' | 'address'>('upload');
   const [contractAddress, setContractAddress] = useState('');
   const [statusMessages, setStatusMessages] = useState<{ message: string; type: string }[]>([]);
+  // const [serviceTier, setServiceTier] = useState<'free' | 'paid'>('free');
   const [rateLimitError, setRateLimitError] = useState<{
     show: boolean;
     remaining: number;
     resetTime: Date;
     service: string;
   } | null>(null);
+
+  // UX rule: wallet connected => automatically use Paid tier.
+  // useEffect(() => {
+  //   setServiceTier(isConnected ? 'paid' : 'free');
+  // }, [isConnected]);
 
   const addStatus = (message: string, type: 'info' | 'success' | 'error' | 'warning') => {
     setStatusMessages((prev) => {
@@ -439,6 +447,8 @@ export default function FreeAuditUpload() {
 
         addStatus('Starting security audit...', 'info');
 
+        // Tier-aware address audit. Paid is auto-enabled when wallet is connected.
+        // const response = await fetch('/api/audit-address', {
         const response = await fetch('https://api.hexific.com/ai-audit-address-ui', {
           method: 'POST',
           headers: { 
@@ -447,6 +457,8 @@ export default function FreeAuditUpload() {
           body: JSON.stringify({
             contract_address: contractAddress.trim(),
             network: 'ethereum'
+            // service_tier: serviceTier,
+            // wallet_address: selectedAccount?.address || null,
           }),
         });
         // let response: any;
@@ -637,7 +649,7 @@ ${result.detailed_audit}
         </h2>
         <p className="text-gray-300 mb-6">
           {auditMode === 'upload' 
-            ? 'Upload your Foundry project and get instant security analysis powered by Slither'
+            ? 'Upload your Foundry project or file and get instant security analysis'
             : 'Enter contract address and get AI-powered security analysis - completely free!'}
         </p>
 
@@ -758,7 +770,7 @@ ${result.detailed_audit}
                       or drag and drop
                     </div>
                     <p className="text-sm text-gray-400">
-                      ZIP file of your Foundry project (max 100MB)
+                      ZIP file of your project (max 100MB)
                     </p>
                   </div>
                 </label>
@@ -949,7 +961,7 @@ ${result.detailed_audit}
                     </div>
 
                     {/* AI Assistant Button */}
-                    <button
+                    {/* <button
                       onClick={() => {
                         setAiModalMode('quick_actions');
                         setSelectedFinding(null);
@@ -971,7 +983,7 @@ ${result.detailed_audit}
                         />
                       </svg>
                       <span>Ask AI About Your Audit (3 Free Questions)</span>
-                    </button>
+                    </button> */}
 
                     {/* Detailed Findings - SAME FOR BOTH MODES */}
                     {result.results.detailedFindings.length > 0 && (
@@ -1187,7 +1199,7 @@ ${result.detailed_audit}
             )}
 
             {/* AI Assistant Modal */}
-            {result?.success && result.results && (
+            {/* {result?.success && result.results && (
               <AIAssistModal
                 isOpen={showAIModal}
                 onClose={() => {
@@ -1209,7 +1221,7 @@ ${result.detailed_audit}
                 findingDetails={selectedFinding || undefined}
                 prefilledQuestion={prefilledQuestion}
               />
-            )}
+            )} */}
           </div>
         )}
       </div>

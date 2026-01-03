@@ -65,7 +65,7 @@ Live demo: [https://hexific.com](https://hexific.com)
 1. **Clone the repo**
 
    ```bash
-   git clone https://github.com/yourusername/hexific-landing.git
+   git clone https://github.com/Hexific-Org/hexific-landing.git
    cd hexific-landing
    ```
 
