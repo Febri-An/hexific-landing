@@ -331,7 +331,7 @@ export default function Page() {
         <a href="#features" class="block hover:text-lime-400 transition-colors">Features</a>
         <a href="#process" class="block hover:text-lime-400 transition-colors">Process</a>
         <a href="/docs" class="block hover:text-lime-400 transition-colors">Docs</a>
-        <a href="/roadmap" class="block hover:text-lime-400 transition-colors">Roadmap</a>
+        <a href="#roadmap" class="block hover:text-lime-400 transition-colors">Roadmap</a>
         <a href="#contact" class="block bg-lime-400 text-black px-6 py-2 rounded-lg hover:bg-lime-300 transition-colors font-semibold text-center">Get Audit</a>
       `;
       mobileBtn.parentElement?.appendChild(mobileMenu);
@@ -388,7 +388,7 @@ export default function Page() {
                 <span className="text-2xl font-bold gradient-text">Hexific</span>
               </div>
             
-              <div className="flex space-x-4">
+              <div className="hidden md:flex space-x-4">
                 <a href="#features" className="hover:text-lime-400 transition-colors">Features</a>
                 <a href="#process" className="hover:text-lime-400 transition-colors">Process</a>
                 <a href="#roadmap" className="hover:text-lime-400 transition-colors">Roadmap</a>
