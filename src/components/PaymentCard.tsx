@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSolana } from '@/components/solana-provider';
 import { useWalletAccountTransactionSendingSigner } from '@solana/react';
 import { type UiWalletAccount } from '@wallet-standard/react';
@@ -19,12 +19,24 @@ import {
 import { getTransferSolInstruction } from '@solana-program/system';
 import { PAYMENT_CONFIG, type PaymentResult } from '../hooks/payment-config';
 
-// Component yang HANYA render ketika wallet connected
-function ConnectedPaymentCard({ account }: { account: UiWalletAccount }) {
+interface ConnectedPaymentCardProps {
+  account: UiWalletAccount;
+  onPaymentSuccess: () => Promise<void>;
+  isAuditing?: boolean;
+  disabled?: boolean;
+}
+
+// This component only be rendered when wallet is connected
+function ConnectedPaymentCard({ account, onPaymentSuccess, isAuditing = false, disabled = false }: ConnectedPaymentCardProps) {
   const { rpc, chain } = useSolana();
   const signer = useWalletAccountTransactionSendingSigner(account, chain);
   const [isPaying, setIsPaying] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
+
+  // Clear result when form inputs change (file/address changes)
+  useEffect(() => {
+    setResult(null);
+  }, [disabled]);
 
   const sendPayment = async () => {
     if (!signer) return;
@@ -87,34 +99,56 @@ function ConnectedPaymentCard({ account }: { account: UiWalletAccount }) {
         success: true,
         signature,
       });
+      
+      // Trigger audit after successful payment
+      setIsPaying(false);
+      await onPaymentSuccess();
+      
     } catch (error: any) {
       console.error('Payment error:', error);
       setResult({
         success: false,
         error: error.message || 'Payment failed',
       });
-    } finally {
       setIsPaying(false);
     }
   };
 
   return (
     <div className="space-y-4">
-      <div className="p-4 rounded-xl bg-[rgba(214,237,23,0.05)] backdrop-blur-md border border-[rgba(214,237,23,0.2)]">
+      {/* <div className="p-4 rounded-xl bg-[rgba(214,237,23,0.05)] backdrop-blur-md border border-[rgba(214,237,23,0.2)]">
         <p className="text-sm text-gray-400 mb-2">
           Payment Amount: <span className="font-semibold text-lime-400">0.01 SOL</span>
         </p>
         <p className="text-xs text-gray-500 break-all">
           To: {PAYMENT_CONFIG.RECEIVER_ADDRESS}
         </p>
-      </div>
+      </div> */}
 
       <Button
         onClick={sendPayment}
-        disabled={isPaying || !signer}
-        className="w-full bg-lime-400 hover:bg-lime-500 text-[#000E1B] font-semibold py-3 rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(214,237,23,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+        disabled={isPaying || isAuditing || !signer || disabled}
+        className="w-full bg-lime-400 hover:bg-lime-500 text-[#000E1B] font-semibold py-3 rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(214,237,23,0.5)] hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
       >
-        {isPaying ? 'Processing Payment...' : 'Send Payment'}
+        {isPaying ? (
+          <span className="flex items-center justify-center">
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Processing Payment...
+          </span>
+        ) : isAuditing ? (
+          <span className="flex items-center justify-center">
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Analyzing...
+          </span>
+        ) : (
+          'Pay 0.01 SOL devnet & Start Audit'
+        )}
       </Button>
 
       {result && (
@@ -150,8 +184,8 @@ function ConnectedPaymentCard({ account }: { account: UiWalletAccount }) {
   );
 }
 
-// Main component - seperti MemoCard
-export function PaymentCard() {
+// Main component
+export function PaymentCard({ onPaymentSuccess, isAuditing = false, disabled = false }: { onPaymentSuccess: () => Promise<void>; isAuditing?: boolean; disabled?: boolean }) {
   const { selectedAccount, isConnected } = useSolana();
 
   return (
@@ -160,7 +194,7 @@ export function PaymentCard() {
         Send <span className="text-lime-400">Payment</span>
       </h3>
       {isConnected && selectedAccount ? (
-        <ConnectedPaymentCard account={selectedAccount} />
+        <ConnectedPaymentCard account={selectedAccount} onPaymentSuccess={onPaymentSuccess} isAuditing={isAuditing} disabled={disabled} />
       ) : (
         <div className="py-8 text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[rgba(214,237,23,0.1)] flex items-center justify-center">
