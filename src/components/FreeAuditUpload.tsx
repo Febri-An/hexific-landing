@@ -11,7 +11,54 @@ import {
   type ServiceType 
 } from '@/lib/rateLimiter';
 import { trim } from 'viem';
-// import { useSolana } from "@/components/solana-provider";
+import { useSolana } from "@/components/solana-provider";
+import { useConnect, type UiWallet } from "@wallet-standard/react";
+import { PaymentCard } from "@/components/PaymentCard";
+
+function WalletOption({ wallet, onConnect }: { wallet: UiWallet; onConnect: () => void }) {
+  const { setWalletAndAccount } = useSolana();
+  const [isConnecting, connect] = useConnect(wallet);
+
+  const handleConnect = async () => {
+    if (isConnecting) return;
+    try {
+      const accounts = await connect();
+      if (accounts && accounts.length > 0) {
+        setWalletAndAccount(wallet, accounts[0]);
+        onConnect();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleConnect}
+      disabled={isConnecting}
+      className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-lime-400/10 border border-transparent hover:border-lime-400/30 transition-all group"
+    >
+      <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden">
+        {wallet.icon ? (
+          <img src={wallet.icon} alt={wallet.name} className="w-full h-full object-cover" />
+        ) : (
+          <span className="text-lime-400 font-bold">{wallet.name.slice(0, 2).toUpperCase()}</span>
+        )}
+      </div>
+      <span className="font-medium text-gray-200 group-hover:text-lime-400 transition-colors">
+        {wallet.name}
+      </span>
+      {isConnecting && (
+        <div className="ml-auto">
+          <svg className="animate-spin h-4 w-4 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+      )}
+    </button>
+  );
+}
 
 interface DetailedFinding {
   type: string;
@@ -260,7 +307,11 @@ function parseAIAuditFindings(auditText: string): DetailedFinding[] {
 }
 
 export default function FreeAuditUpload() {
-  // const { isConnected, selectedAccount } = useSolana();
+  const { isConnected, selectedAccount, wallets, selectedWallet } = useSolana();
+  const [isHexificAIEnabled, setIsHexificAIEnabled] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  // const [hasPaid, setHasPaid] = useState(false);
+
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AuditResult | null>(null);
@@ -280,6 +331,29 @@ export default function FreeAuditUpload() {
     resetTime: Date;
     service: string;
   } | null>(null);
+
+  const handleToggleHexificAI = () => {
+    if (isHexificAIEnabled) {
+      setIsHexificAIEnabled(false);
+    } else {
+      if (isConnected) {
+        setIsHexificAIEnabled(true);
+      } else {
+        setShowWalletModal(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!isConnected && isHexificAIEnabled) {
+      setIsHexificAIEnabled(false);
+    }
+  }, [isConnected, isHexificAIEnabled]);
+
+  // Reset payment status when inputs change
+  // useEffect(() => {
+  //   setHasPaid(false);
+  // }, [file, contractAddress, auditMode]);
 
   // UX rule: wallet connected => automatically use Paid tier.
   // useEffect(() => {
@@ -349,6 +423,23 @@ export default function FreeAuditUpload() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // // Payment Step for Hexific AI
+    // if (isHexificAIEnabled && !hasPaid) {
+    //   addStatus('Processing payment...', 'info');
+      
+    //   const paymentResult = await sendPayment();
+      
+    //   if (!paymentResult.success) {
+    //     addStatus(`Payment failed: ${paymentResult.error}`, 'error');
+    //     return;
+    //   }
+
+    //   addStatus(`Payment sent! Tx: ${paymentResult.signature?.slice(0, 8)}...`, 'info');
+    //   setHasPaid(true);
+    //   addStatus('Payment successful! Starting premium audit...', 'success');
+    //   // Continue to audit execution immediately
+    // }
 
     if (auditMode === 'upload') {
       // Get user IP
@@ -642,15 +733,18 @@ ${result.detailed_audit}
     <div className="max-w-4xl mx-auto p-6">
       <div className="glass-effect rounded-2xl shadow-lg p-8 border border-lime-400/20">
         <h2 className="text-3xl font-bold mb-2 gradient-text">
-          {auditMode === 'upload' 
-            ? 'Free Smart Contract Audit' 
-            : 'Free AI-Powered Contract Audit'
+          {isHexificAIEnabled
+            ? 'Hexific AI Premium Audit'
+            : 'Free Smart Contract Audit' 
           }
         </h2>
         <p className="text-gray-300 mb-6">
-          {auditMode === 'upload' 
-            ? 'Upload your Foundry project or file and get instant security analysis'
-            : 'Enter contract address and get AI-powered security analysis - completely free!'}
+          {isHexificAIEnabled
+            ? 'Advanced security analysis with deep learning and automated fix suggestions'
+            : (auditMode === 'upload' 
+                ? 'Upload your Foundry project or file and get instant security analysis'
+                : 'Enter contract address and get AI-powered security analysis - completely free!')
+          }
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -723,6 +817,38 @@ ${result.detailed_audit}
             </div>
           )}
           
+          {/* Hexific AI Toggle */}
+          <div className="glass-effect border border-lime-400/20 rounded-lg p-4 flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isHexificAIEnabled ? 'bg-lime-400 text-black' : 'bg-gray-800 text-gray-400'}`}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-bold text-white flex items-center gap-2">
+                  Hexific AI
+                  <span className="text-[10px] bg-lime-400/20 text-lime-400 px-2 py-0.5 rounded-full border border-lime-400/30">BETA</span>
+                </h3>
+                <p className="text-xs text-gray-400">Enable advanced AI analysis (Requires Wallet)</p>
+              </div>
+            </div>
+            
+            <button
+              type="button"
+              onClick={handleToggleHexificAI}
+              className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-lime-400 focus:ring-offset-2 focus:ring-offset-black ${isHexificAIEnabled ? 'bg-lime-400' : 'bg-gray-700'}`}
+            >
+              <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${isHexificAIEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+            </button>
+          </div>
+
+          {isHexificAIEnabled && isConnected && selectedAccount && (
+            <div className="slide-up">
+              <PaymentCard />
+            </div>
+          )}
+
           {/* Conditional Input Based on Mode */}
           {auditMode === 'upload' ? (
             <>
@@ -859,11 +985,13 @@ ${result.detailed_audit}
               (auditMode === 'upload' && !file) ||
               (auditMode === 'address' && !isValidAddress(contractAddress.trim())) ||
               loading
+              // isPaying
             }
             className={`w-full py-3 px-6 rounded-lg font-bold transition-all ${
               (auditMode === 'upload' && !file) ||
               (auditMode === 'address' && !isValidAddress(contractAddress.trim())) ||
               loading
+              // isPaying
                 ? 'bg-transparent border border-gray-600 text-gray-500 cursor-not-allowed !hover:transform-none'
                 : 'bg-lime-400 text-black hover:bg-lime-300 hover:cursor-pointer pulse-glow'
             }`}
@@ -876,9 +1004,21 @@ ${result.detailed_audit}
                 </svg>
                 Analyzing...
               </span>
-            ) : (
-              'Start Free Audit'
-            )}
+            ) : /* isPaying ? */ (
+              'Start Audit'
+              // <span className="flex items-center justify-center">
+              //   <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              //     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              //     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              //   </svg>
+              //   Processing Payment...
+              // </span>
+            ) 
+            // : isHexificAIEnabled ? (
+            //   'Pay 0.01 SOL & Start Audit'
+            // ) : (
+            //   'Start Free Audit'
+            }
           </button>
         </form>
 
@@ -1222,6 +1362,50 @@ ${result.detailed_audit}
                 prefilledQuestion={prefilledQuestion}
               />
             )} */}
+          </div>
+        )}
+
+        {/* Wallet Connect Modal */}
+        {showWalletModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <div className="bg-gray-900 border border-lime-400/30 rounded-2xl max-w-md w-full p-6 shadow-2xl relative slide-up">
+              <button 
+                onClick={() => setShowWalletModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-lime-400/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">Connect Wallet</h3>
+                <p className="text-gray-400">Connect your Solana wallet to enable Hexific AI features.</p>
+              </div>
+
+              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                {wallets.map((wallet) => (
+                  <WalletOption 
+                    key={wallet.name} 
+                    wallet={wallet} 
+                    onConnect={() => {
+                      setShowWalletModal(false);
+                      setIsHexificAIEnabled(true);
+                    }} 
+                  />
+                ))}
+                {wallets.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No wallets detected. Please install Phantom or Solflare.
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
