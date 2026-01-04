@@ -17,6 +17,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@rainbow-me/rainbowkit": "^2.2.9",
     "@solana-program/memo": "^0.8.0",
+    "@solana-program/system": "^0.8.1",
     "@solana/kit": "^3.0.3",
     "@solana/react": "^5.1.0",
     "@supabase/supabase-js": "^2.87.2",
