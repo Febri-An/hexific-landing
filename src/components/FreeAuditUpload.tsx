@@ -10,7 +10,7 @@ import {
   getTimeUntilReset,
   type ServiceType 
 } from '@/lib/rateLimiter';
-import { trim } from 'viem';
+// import { trim } from 'viem';
 import { useSolana } from "@/components/solana-provider";
 import { PaymentCard } from "@/components/PaymentCard";
 import { adaptVPSResponse, DetailedFinding, AuditResult } from './adaptVPSResponse';
@@ -22,98 +22,6 @@ const USE_MOCK = false; // false = hit API, true = pakai mock file
 const SAVE_RESPONSE = true; // true = save API response ke file (jalankan sekali)
 
 
-// Parse AI audit text into structured findings
-function parseAIAuditFindings(auditText: string): DetailedFinding[] {
-  const findings: DetailedFinding[] = [];
-  
-  // Split by severity sections or numbered items
-  const sections = auditText.split(/(?=###\s+\d+\.|## (?:CRITICAL|HIGH|MEDIUM|LOW|GAS|INFO))/);
-  
-  sections.forEach((section) => {
-    const trimmed = section.trim();
-    if (!trimmed || trimmed.length < 30) return;
-    if (trimmed.startsWith('# Smart Contract Security Audit Report')) return;
-    
-    // Extract severity
-    let impact = 'Medium';
-    if (/(## CRITICAL|severity.*critical)/i.test(trimmed)) {
-      impact = 'Critical';
-    } else if (/(## HIGH|severity.*high)/i.test(trimmed)) {
-      impact = 'High';
-    } else if (/(## MEDIUM|severity.*medium)/i.test(trimmed)) {
-      impact = 'Medium';
-    } else if (/(## LOW|severity.*low)/i.test(trimmed)) {
-      impact = 'Low';
-    } else if (/(## GAS|gas optimization|severity.*gas)/i.test(trimmed)) {
-      impact = 'Gas';
-    } else if (/(## INFO|informational|best practice|severity.*info*)/i.test(trimmed)) {
-      impact = 'Informational';
-    }
-    
-    // Extract type from heading
-    let type = 'Security Issue';
-    const headingMatch = trimmed.match(/###\s+\d+\.\s+\*\*(.+?)\*\*/);
-    if (headingMatch) {
-      type = headingMatch[1].trim();
-    } else if (/reentrancy/i.test(trimmed)) {
-      type = 'Reentrancy Vulnerability';
-    } else if (/access control|authorization|ownership/i.test(trimmed)) {
-      type = 'Access Control';
-    } else if (/overflow|underflow/i.test(trimmed)) {
-      type = 'Integer Overflow/Underflow';
-    } else if (/tx\.origin/i.test(trimmed)) {
-      type = 'tx.origin Usage';
-    } else if (/gas/i.test(trimmed)) {
-      type = 'Gas Optimization';
-    } else if (/event/i.test(trimmed)) {
-      type = 'Missing Events';
-    } else if (/validation|zero address/i.test(trimmed)) {
-      type = 'Input Validation';
-    }
-    
-    // Clean description
-    let cleanedDescription = trimmed
-      .replace(/###\s+\d+\.\s+\*\*/, '') // Remove heading markers
-      .replace(/## SUMMARY[\s\S]*/i, '') // Remove everything after ## SUMMARY
-      .replace(/\*\*/g, '') // Remove trailing **
-      .replace(/###/g, '')
-      .replace(/---/g, '')
-      .trim();
-    
-    // Format code blocks with proper syntax highlighting
-    cleanedDescription = cleanedDescription.replace(
-      /```solidity\n([\s\S]+?)```/g,
-      (match, code) => {
-        // Add syntax highlighting markers
-        return '\n[SOLIDITY]\n' + code.trim() + '\n[/SOLIDITY]\n';
-      }
-    );
-    
-    // Format other code blocks
-    cleanedDescription = cleanedDescription.replace(
-      /```(\w*)\n([\s\S]+?)```/g,
-      (match, lang, code) => {
-        return '\n[CODE]\n' + code.trim() + '\n[/CODE]\n';
-      }
-    );
-    
-    findings.push({
-      type,
-      impact,
-      confidence: 'High', // Default confidence since it's from AI audit
-      description: cleanedDescription,
-      location: null,
-    });
-  });
-  
-  return findings.length > 0 ? findings : [{
-    type: 'General Analysis',
-    impact: 'Informational',
-    confidence: 'High',
-    description: auditText,
-    location: null,
-  }];
-}
 
 export default function FreeAuditUpload() {
   const { isConnected, selectedAccount, wallets, selectedWallet } = useSolana();
@@ -126,13 +34,11 @@ export default function FreeAuditUpload() {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAIModal, setShowAIModal] = useState(false);
-  const [prefilledQuestion, setPrefilledQuestion] = useState<string | undefined>(undefined);
   const [aiModalMode, setAiModalMode] = useState<'quick_actions' | 'instant_fix'>('quick_actions');
   const [selectedFinding, setSelectedFinding] = useState<DetailedFinding | null>(null);
   const [auditMode, setAuditMode] = useState<'upload' | 'address'>('upload');
   const [contractAddress, setContractAddress] = useState('');
   const [statusMessages, setStatusMessages] = useState<{ message: string; type: string }[]>([]);
-  // const [serviceTier, setServiceTier] = useState<'free' | 'paid'>('free');
   const [rateLimitError, setRateLimitError] = useState<{
     show: boolean;
     remaining: number;
@@ -158,15 +64,6 @@ export default function FreeAuditUpload() {
     }
   }, [isConnected, isHexificAIEnabled]);
 
-  // Reset payment status when inputs change
-  // useEffect(() => {
-  //   setHasPaid(false);
-  // }, [file, contractAddress, auditMode]);
-
-  // UX rule: wallet connected => automatically use Paid tier.
-  // useEffect(() => {
-  //   setServiceTier(isConnected ? 'paid' : 'free');
-  // }, [isConnected]);
 
   const addStatus = (message: string, type: 'info' | 'success' | 'error' | 'warning') => {
     setStatusMessages((prev) => {
@@ -235,29 +132,12 @@ export default function FreeAuditUpload() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // // Payment Step for Hexific AI
-    // if (isHexificAIEnabled && !hasPaid) {
-    //   addStatus('Processing payment...', 'info');
-      
-    //   const paymentResult = await sendPayment();
-      
-    //   if (!paymentResult.success) {
-    //     addStatus(`Payment failed: ${paymentResult.error}`, 'error');
-    //     return;
-    //   }
-
-    //   addStatus(`Payment sent! Tx: ${paymentResult.signature?.slice(0, 8)}...`, 'info');
-    //   setHasPaid(true);
-    //   addStatus('Payment successful! Starting premium audit...', 'success');
-    //   // Continue to audit execution immediately
-    // }
-
     if (auditMode === 'upload') {
       // Get user IP
       const ipAddress = await getClientIP();
       
       // Check rate limit
-      const { allowed, remaining, resetTime } = await checkRateLimit(
+      const { allowed, resetTime } = await checkRateLimit(
         ipAddress,
         'zip_upload'
       );
@@ -339,7 +219,7 @@ export default function FreeAuditUpload() {
         const ipAddress = await getClientIP();
         
         // Check rate limit
-        const { allowed, remaining, resetTime } = await checkRateLimit(
+        const { allowed, resetTime } = await checkRateLimit(
           ipAddress,
           'address_audit'
         );
@@ -374,65 +254,19 @@ export default function FreeAuditUpload() {
         // if (true) {
         if (response.ok) {
           const apiResult = await response.json();
-          // await new Promise(resolve => setTimeout(resolve, 1500)); // Simulasi loading
+          const aiFindings = adaptVPSResponse(apiResult);
 
-          // console.log('AI Audit API Result:', apiResult);
-          
-          // if (apiResult.success && apiResult.detailed_audit) {
-          //   addStatus('Audit completed!', 'success');
+          // Log usage after successful audit
+          await logUsage(ipAddress, 'address_audit', {
+            contract_address: contractAddress.trim(),
+            network: 'ethereum',
+            // findings_count: aiFindings.length,
+            // success: true,
+          });
             
-            // Parse AI audit into structured findings
-            // const aiFindings = parseAIAuditFindings(apiResult.detailed_audit);
-            const aiFindings = adaptVPSResponse(apiResult);
-            
-            // Count severity summary from parsed findings
-            // const summary = {
-            //   critical: aiFindings.filter(f => f.impact === 'Critical').length,
-            //   high: aiFindings.filter(f => f.impact === 'High').length,
-            //   medium: aiFindings.filter(f => f.impact === 'Medium').length,
-            //   low: aiFindings.filter(f => f.impact === 'Low').length,
-            //   gas: aiFindings.filter(f => f.impact === 'Gas').length,
-            //   informational: aiFindings.filter(f => f.impact === 'Informational').length,
-            //   optimization: aiFindings.filter(f => f.impact === 'Optimization').length,
-            // };
-
-            // Log usage after successful audit
-            await logUsage(ipAddress, 'address_audit', {
-              contract_address: contractAddress.trim(),
-              network: 'ethereum',
-              // findings_count: aiFindings.length,
-              // success: true,
-            });
-            
-            setResult(
-              aiFindings
-              // {
-              //   ...apiResult,
-              //   results: {
-              //     summary: {
-              //       critical: summary.critical ?? 0,
-              //       high: summary.high ?? 0,
-              //       medium: summary.medium ?? 0,
-              //       low: summary.low ?? 0,
-              //       gas: summary.gas ?? 0,
-              //       informational: summary.informational ?? 0,
-              //       optimization: summary.optimization ?? 0,
-              //     },
-              //     detailedFindings: aiFindings,
-              //     rawOutput: apiResult.detailed_audit,
-              //   }
-              // }
-            );
-            
-            setTimeout(() => {
-              document.getElementById('resultsContainer')?.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-              });
-            }, 100);
-          // } else {
-          //   addStatus(`❌ ${apiResult.error || 'Audit failed'}`, 'error');
-          // }
+          setResult(
+            aiFindings
+          );
         } else {
           const errorText = await response.text();
           let errorMsg = 'Audit failed';
