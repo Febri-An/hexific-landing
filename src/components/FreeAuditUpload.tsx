@@ -10,301 +10,18 @@ import {
   getTimeUntilReset,
   type ServiceType 
 } from '@/lib/rateLimiter';
-import { trim } from 'viem';
+// import { trim } from 'viem';
 import { useSolana } from "@/components/solana-provider";
-import { useConnect, type UiWallet } from "@wallet-standard/react";
 import { PaymentCard } from "@/components/PaymentCard";
+import { adaptVPSResponse, DetailedFinding, AuditResult } from './adaptVPSResponse';
+import { WalletOption } from './WalletOption';
 
-function WalletOption({ wallet, onConnect }: { wallet: UiWallet; onConnect: () => void }) {
-  const { setWalletAndAccount } = useSolana();
-  const [isConnecting, connect] = useConnect(wallet);
-
-  const handleConnect = async () => {
-    if (isConnecting) return;
-    try {
-      const accounts = await connect();
-      if (accounts && accounts.length > 0) {
-        setWalletAndAccount(wallet, accounts[0]);
-        onConnect();
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  return (
-    <button
-      onClick={handleConnect}
-      disabled={isConnecting}
-      className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-lime-400/10 border border-transparent hover:border-lime-400/30 transition-all group"
-    >
-      <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden">
-        {wallet.icon ? (
-          <img src={wallet.icon} alt={wallet.name} className="w-full h-full object-cover" />
-        ) : (
-          <span className="text-lime-400 font-bold">{wallet.name.slice(0, 2).toUpperCase()}</span>
-        )}
-      </div>
-      <span className="font-medium text-gray-200 group-hover:text-lime-400 transition-colors">
-        {wallet.name}
-      </span>
-      {isConnecting && (
-        <div className="ml-auto">
-          <svg className="animate-spin h-4 w-4 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-        </div>
-      )}
-    </button>
-  );
-}
-
-interface DetailedFinding {
-  type: string;
-  impact: string;
-  confidence: string;
-  description: string;
-  location: {
-    filename?: string;
-    lines?: number[];
-    start?: number;
-    length?: number;
-  } | null;
-}
-
-interface AuditResult {
-  success: boolean;
-  projectId?: string;
-  timestamp?: string;
-  results?: {
-    summary: {
-      critical?: number;
-      high?: number;
-      medium?: number;
-      low?: number;
-      informational?: number;
-      optimization?: number;
-      gas?: number;
-    };
-    detailedFindings: DetailedFinding[];
-    rawOutput: string;
-  };
-  error?: string;
-  // For address audit
-  contract_name?: string;
-  contract_address?: string;
-  network?: string;
-  compiler_version?: string;
-  ai_model?: string;
-  analysis_id?: string;
-  cost_usd?: number;
-  detailed_audit?: string;
-}
-
-interface VPSDetector {
-  elements: Array<{
-    type: string;
-    name: string;
-    source_mapping: {
-      start: number;
-      length: number;
-      filename_relative: string;
-      filename_absolute: string;
-      filename_short: string;
-      is_dependency: boolean;
-      lines: number[];
-      starting_column: number;
-      ending_column: number;
-    };
-  }>;
-  description: string;
-  markdown: string;
-  first_markdown_element: string;
-  id: string;
-  check: string;
-  impact: string;
-  confidence: string;
-}
-
-interface VPSResponse {
-  analysis_id: string;
-  filename: string;
-  timestamp: string;
-  results: {
-    success: boolean;
-    error: string | null;
-    results: {
-      detectors: VPSDetector[];
-    };
-  };
-  exit_code: number;
-}
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB in bytes
 const USE_MOCK = false; // false = hit API, true = pakai mock file
 const SAVE_RESPONSE = true; // true = save API response ke file (jalankan sekali)
 
 
-function adaptVPSResponse(vpsData: VPSResponse): AuditResult {
-  // Check for errors
-  if (!vpsData.results.success || vpsData.results.error) {
-    return {
-      success: false,
-      error: vpsData.results.error || 'Analysis failed',
-    };
-  }
-
-  const summary = {
-    high: 0,
-    medium: 0,
-    low: 0,
-    informational: 0,
-    optimization: 0,
-  };
-  
-  const detailedFindings: DetailedFinding[] = [];
-
-  // Parse Slither detectors
-  try {
-    const detectors = vpsData.results.results.detectors;
-    
-    detectors.forEach((detector: VPSDetector) => {
-      const impact = detector.impact.toLowerCase();
-      
-      // Count by severity
-      if (impact === 'high') summary.high++;
-      else if (impact === 'medium') summary.medium++;
-      else if (impact === 'low') summary.low++;
-      else if (impact === 'optimization') summary.optimization++;
-      else summary.informational++;
-
-      // Store detailed finding
-      detailedFindings.push({
-        type: detector.check,
-        impact: detector.impact,
-        confidence: detector.confidence,
-        description: detector.description,
-        location: detector.elements[0]?.source_mapping ? {
-          filename: detector.elements[0].source_mapping.filename_short,
-          lines: detector.elements[0].source_mapping.lines,
-          start: detector.elements[0].source_mapping.start,
-          length: detector.elements[0].source_mapping.length,
-        } : null,
-      });
-    });
-  } catch (e) {
-    console.error('Error parsing VPS response:', e);
-    return {
-      success: false,
-      error: 'Failed to parse audit results',
-    };
-  }
-
-  return {
-    success: true,
-    projectId: vpsData.analysis_id,
-    timestamp: vpsData.timestamp,
-    results: {
-      summary,
-      detailedFindings,
-      rawOutput: JSON.stringify(vpsData.results.results, null, 2),
-    },
-  };
-}
-
-// Parse AI audit text into structured findings
-function parseAIAuditFindings(auditText: string): DetailedFinding[] {
-  const findings: DetailedFinding[] = [];
-  
-  // Split by severity sections or numbered items
-  const sections = auditText.split(/(?=###\s+\d+\.|## (?:CRITICAL|HIGH|MEDIUM|LOW|GAS|INFO))/);
-  
-  sections.forEach((section) => {
-    const trimmed = section.trim();
-    if (!trimmed || trimmed.length < 30) return;
-    if (trimmed.startsWith('# Smart Contract Security Audit Report')) return;
-    
-    // Extract severity
-    let impact = 'Medium';
-    if (/(## CRITICAL|severity.*critical)/i.test(trimmed)) {
-      impact = 'Critical';
-    } else if (/(## HIGH|severity.*high)/i.test(trimmed)) {
-      impact = 'High';
-    } else if (/(## MEDIUM|severity.*medium)/i.test(trimmed)) {
-      impact = 'Medium';
-    } else if (/(## LOW|severity.*low)/i.test(trimmed)) {
-      impact = 'Low';
-    } else if (/(## GAS|gas optimization|severity.*gas)/i.test(trimmed)) {
-      impact = 'Gas';
-    } else if (/(## INFO|informational|best practice|severity.*info*)/i.test(trimmed)) {
-      impact = 'Informational';
-    }
-    
-    // Extract type from heading
-    let type = 'Security Issue';
-    const headingMatch = trimmed.match(/###\s+\d+\.\s+\*\*(.+?)\*\*/);
-    if (headingMatch) {
-      type = headingMatch[1].trim();
-    } else if (/reentrancy/i.test(trimmed)) {
-      type = 'Reentrancy Vulnerability';
-    } else if (/access control|authorization|ownership/i.test(trimmed)) {
-      type = 'Access Control';
-    } else if (/overflow|underflow/i.test(trimmed)) {
-      type = 'Integer Overflow/Underflow';
-    } else if (/tx\.origin/i.test(trimmed)) {
-      type = 'tx.origin Usage';
-    } else if (/gas/i.test(trimmed)) {
-      type = 'Gas Optimization';
-    } else if (/event/i.test(trimmed)) {
-      type = 'Missing Events';
-    } else if (/validation|zero address/i.test(trimmed)) {
-      type = 'Input Validation';
-    }
-    
-    // Clean description
-    let cleanedDescription = trimmed
-      .replace(/###\s+\d+\.\s+\*\*/, '') // Remove heading markers
-      .replace(/## SUMMARY[\s\S]*/i, '') // Remove everything after ## SUMMARY
-      .replace(/\*\*/g, '') // Remove trailing **
-      .replace(/###/g, '')
-      .replace(/---/g, '')
-      .trim();
-    
-    // Format code blocks with proper syntax highlighting
-    cleanedDescription = cleanedDescription.replace(
-      /```solidity\n([\s\S]+?)```/g,
-      (match, code) => {
-        // Add syntax highlighting markers
-        return '\n[SOLIDITY]\n' + code.trim() + '\n[/SOLIDITY]\n';
-      }
-    );
-    
-    // Format other code blocks
-    cleanedDescription = cleanedDescription.replace(
-      /```(\w*)\n([\s\S]+?)```/g,
-      (match, lang, code) => {
-        return '\n[CODE]\n' + code.trim() + '\n[/CODE]\n';
-      }
-    );
-    
-    findings.push({
-      type,
-      impact,
-      confidence: 'High', // Default confidence since it's from AI audit
-      description: cleanedDescription,
-      location: null,
-    });
-  });
-  
-  return findings.length > 0 ? findings : [{
-    type: 'General Analysis',
-    impact: 'Informational',
-    confidence: 'High',
-    description: auditText,
-    location: null,
-  }];
-}
 
 export default function FreeAuditUpload() {
   const { isConnected, selectedAccount, wallets, selectedWallet } = useSolana();
@@ -317,13 +34,11 @@ export default function FreeAuditUpload() {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAIModal, setShowAIModal] = useState(false);
-  const [prefilledQuestion, setPrefilledQuestion] = useState<string | undefined>(undefined);
   const [aiModalMode, setAiModalMode] = useState<'quick_actions' | 'instant_fix'>('quick_actions');
   const [selectedFinding, setSelectedFinding] = useState<DetailedFinding | null>(null);
   const [auditMode, setAuditMode] = useState<'upload' | 'address'>('upload');
   const [contractAddress, setContractAddress] = useState('');
   const [statusMessages, setStatusMessages] = useState<{ message: string; type: string }[]>([]);
-  // const [serviceTier, setServiceTier] = useState<'free' | 'paid'>('free');
   const [rateLimitError, setRateLimitError] = useState<{
     show: boolean;
     remaining: number;
@@ -349,15 +64,6 @@ export default function FreeAuditUpload() {
     }
   }, [isConnected, isHexificAIEnabled]);
 
-  // Reset payment status when inputs change
-  // useEffect(() => {
-  //   setHasPaid(false);
-  // }, [file, contractAddress, auditMode]);
-
-  // UX rule: wallet connected => automatically use Paid tier.
-  // useEffect(() => {
-  //   setServiceTier(isConnected ? 'paid' : 'free');
-  // }, [isConnected]);
 
   const addStatus = (message: string, type: 'info' | 'success' | 'error' | 'warning') => {
     setStatusMessages((prev) => {
@@ -374,8 +80,11 @@ export default function FreeAuditUpload() {
     setError(null);
 
     // Check file type
-    if (!selectedFile.name.endsWith('.zip')) {
-      setError('Please upload a ZIP file');
+    const isZip = selectedFile.name.endsWith('.zip');
+    const isSol = selectedFile.name.endsWith('.sol');
+    
+    if (!isZip && !isSol) {
+      setError('Please upload a .sol or .zip file');
       return false;
     }
 
@@ -423,29 +132,12 @@ export default function FreeAuditUpload() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // // Payment Step for Hexific AI
-    // if (isHexificAIEnabled && !hasPaid) {
-    //   addStatus('Processing payment...', 'info');
-      
-    //   const paymentResult = await sendPayment();
-      
-    //   if (!paymentResult.success) {
-    //     addStatus(`Payment failed: ${paymentResult.error}`, 'error');
-    //     return;
-    //   }
-
-    //   addStatus(`Payment sent! Tx: ${paymentResult.signature?.slice(0, 8)}...`, 'info');
-    //   setHasPaid(true);
-    //   addStatus('Payment successful! Starting premium audit...', 'success');
-    //   // Continue to audit execution immediately
-    // }
-
     if (auditMode === 'upload') {
       // Get user IP
       const ipAddress = await getClientIP();
       
       // Check rate limit
-      const { allowed, remaining, resetTime } = await checkRateLimit(
+      const { allowed, resetTime } = await checkRateLimit(
         ipAddress,
         'zip_upload'
       );
@@ -471,7 +163,13 @@ export default function FreeAuditUpload() {
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await fetch('https://api.hexific.com/audit', {
+        // Determine endpoint based on file type
+        const isSolFile = file.name.endsWith('.sol');
+        const endpoint = isSolFile 
+          ? '/api/audit/static/single'
+          : '/api/audit/static/multi';
+
+        const response = await fetch(endpoint, {
           method: 'POST',
           body: formData,
         });
@@ -481,6 +179,7 @@ export default function FreeAuditUpload() {
         }
 
         const vpsData = await response.json();
+        // console.log('VPS API Response:', vpsData);
         const adaptedResult = adaptVPSResponse(vpsData);
 
         // Log usage after successful audit
@@ -520,7 +219,7 @@ export default function FreeAuditUpload() {
         const ipAddress = await getClientIP();
         
         // Check rate limit
-        const { allowed, remaining, resetTime } = await checkRateLimit(
+        const { allowed, resetTime } = await checkRateLimit(
           ipAddress,
           'address_audit'
         );
@@ -537,9 +236,9 @@ export default function FreeAuditUpload() {
 
         addStatus('Starting security audit...', 'info');
 
+        console.log(contractAddress.trim(), 'type: ', typeof contractAddress.trim());
         // Tier-aware address audit. Paid is auto-enabled when wallet is connected.
-        // const response = await fetch('/api/audit-address', {
-        const response = await fetch('https://api.hexific.com/ai-audit-address-ui', {
+        const response = await fetch('/api/audit/static/address', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -555,64 +254,19 @@ export default function FreeAuditUpload() {
         // if (true) {
         if (response.ok) {
           const apiResult = await response.json();
-          // await new Promise(resolve => setTimeout(resolve, 1500)); // Simulasi loading
-        
-          // const mockResponse = await fetch('/output-test.json');
-          // const apiResult = await mockResponse.json();
+          const aiFindings = adaptVPSResponse(apiResult);
 
-          // console.log('AI Audit API Result:', apiResult);
-          
-          if (apiResult.success && apiResult.detailed_audit) {
-            addStatus('Audit completed!', 'success');
+          // Log usage after successful audit
+          await logUsage(ipAddress, 'address_audit', {
+            contract_address: contractAddress.trim(),
+            network: 'ethereum',
+            // findings_count: aiFindings.length,
+            // success: true,
+          });
             
-            // Parse AI audit into structured findings
-            const aiFindings = parseAIAuditFindings(apiResult.detailed_audit);
-            
-            // Count severity summary from parsed findings
-            const summary = {
-              critical: aiFindings.filter(f => f.impact === 'Critical').length,
-              high: aiFindings.filter(f => f.impact === 'High').length,
-              medium: aiFindings.filter(f => f.impact === 'Medium').length,
-              low: aiFindings.filter(f => f.impact === 'Low').length,
-              gas: aiFindings.filter(f => f.impact === 'Gas').length,
-              informational: aiFindings.filter(f => f.impact === 'Informational').length,
-              optimization: aiFindings.filter(f => f.impact === 'Optimization').length,
-            };
-
-            // Log usage after successful audit
-            await logUsage(ipAddress, 'address_audit', {
-              contract_address: contractAddress.trim(),
-              network: 'ethereum',
-              findings_count: aiFindings.length,
-              success: true,
-            });
-            
-            setResult({
-              ...apiResult,
-              results: {
-                summary: {
-                  critical: summary.critical ?? 0,
-                  high: summary.high ?? 0,
-                  medium: summary.medium ?? 0,
-                  low: summary.low ?? 0,
-                  gas: summary.gas ?? 0,
-                  informational: summary.informational ?? 0,
-                  optimization: summary.optimization ?? 0,
-                },
-                detailedFindings: aiFindings,
-                rawOutput: apiResult.detailed_audit,
-              }
-            });
-            
-            setTimeout(() => {
-              document.getElementById('resultsContainer')?.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-              });
-            }, 100);
-          } else {
-            addStatus(`❌ ${apiResult.error || 'Audit failed'}`, 'error');
-          }
+          setResult(
+            aiFindings
+          );
         } else {
           const errorText = await response.text();
           let errorMsg = 'Audit failed';
@@ -645,10 +299,14 @@ export default function FreeAuditUpload() {
     switch (severity.toLowerCase()) {
       case 'critical':
         return 'text-red-500 bg-red-950/70 border-red-500/50';
+      case 'major':
+        return 'text-red-400 bg-red-950/50 border-red-500/30';
       case 'high':
         return 'text-red-400 bg-red-950/50 border-red-500/30';
       case 'medium':
         return 'text-orange-400 bg-orange-950/50 border-orange-500/30';
+      case 'minor':
+        return 'text-yellow-400 bg-yellow-950/50 border-yellow-500/30';
       case 'low':
         return 'text-yellow-400 bg-yellow-950/50 border-yellow-500/30';
       case 'gas':
@@ -859,7 +517,7 @@ ${result.detailed_audit}
               >
                 <input
                   type="file"
-                  accept=".zip"
+                  accept=".zip,.sol"
                   onChange={handleFileChange}
                   className="hidden"
                   id="file-upload"
@@ -889,7 +547,7 @@ ${result.detailed_audit}
                       or drag and drop
                     </div>
                     <p className="text-sm text-gray-400">
-                      ZIP file of your project (max 100MB)
+                      .sol or .zip file (max 100MB)
                     </p>
                   </div>
                 </label>
@@ -1058,37 +716,41 @@ ${result.detailed_audit}
                     <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                       <div className="glass-effect border border-red-500/50 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-red-500 mb-1">
-                          {result.results.summary.critical || 0}
+                          {result.results.summary.critical ?? 0}
                         </div>
                         <div className="text-sm text-red-500 font-medium">Critical</div>
                       </div>
                       <div className="glass-effect border border-red-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-red-400 mb-1">
-                          {result.results.summary.high}
+                          {result.results.summary.high ?? result.results.summary.major ?? 0}
                         </div>
-                        <div className="text-sm text-red-400 font-medium">High</div>
+                        <div className="text-sm text-red-400 font-medium">
+                          {'high' in result.results.summary ? 'High' : 'Major'}
+                        </div>
                       </div>
                       <div className="glass-effect border border-orange-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-orange-400 mb-1">
-                          {result.results.summary.medium}
+                          {result.results.summary.medium ?? 0}
                         </div>
                         <div className="text-sm text-orange-400 font-medium">Medium</div>
                       </div>
                       <div className="glass-effect border border-yellow-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-yellow-400 mb-1">
-                          {result.results.summary.low}
+                          {result.results.summary.low ?? result.results.summary.minor ?? 0}
                         </div>
-                        <div className="text-sm text-yellow-400 font-medium">Low</div>
+                        <div className="text-sm text-yellow-400 font-medium">
+                          {'low' in result.results.summary ? 'Low' : 'Minor'}
+                        </div>
                       </div>
                       <div className="glass-effect border border-purple-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-purple-400 mb-1">
-                          {result.results.summary.gas || 0}
+                          {result.results.summary.gas ?? 0}
                         </div>
                         <div className="text-sm text-purple-400 font-medium">Gas</div>
                       </div>
                       <div className="glass-effect border border-blue-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-blue-400 mb-1">
-                          {result.results.summary.informational}
+                          {result.results.summary.informational ?? 0}
                         </div>
                         <div className="text-sm text-blue-400 font-medium">Info</div>
                       </div>
