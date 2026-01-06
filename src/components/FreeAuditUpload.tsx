@@ -802,10 +802,12 @@ ${result.detailed_audit}
                     {result.results.detailedFindings.length > 0 && (
                       <div className="space-y-4">
                         <h3 className="text-xl font-bold gradient-text">Detailed Findings</h3>
-                        {result.results.detailedFindings.map((finding, index) => (
-                          <div
-                            key={index}
-                            className="glass-effect border rounded-lg p-4 hover:border-lime-400/40 transition-all hover:scale-[1.01]"
+                        {result.results.detailedFindings
+                          .filter(finding => finding.impact === 'Critical' || finding.impact === 'Major' || finding.impact === 'High')
+                          .map((finding, index) => (
+                            <div
+                              key={index}
+                              className="glass-effect border rounded-lg p-4 hover:border-lime-400/40 transition-all hover:scale-[1.01]"
                           >
                             <div className="flex items-start justify-between mb-2">
                               <span
@@ -895,12 +897,14 @@ ${result.detailed_audit}
                                                   : isIndented
                                                   ? 'text-gray-400 pl-4 py-0.5'
                                                   : 'text-gray-300 py-0.5'
-                                              }`}
+                                              } break-words overflow-wrap-anywhere`}
                                             >
                                               {isIndented && !isMainIssue && (
                                                 <span className="text-lime-400/40 mr-2">•</span>
                                               )}
-                                              {renderLineWithBold(trimmedLine)}
+                                              <span className="break-all">
+                                                {renderLineWithBold(trimmedLine)}
+                                              </span>
                                             </div>
                                           );
                                         })}
@@ -946,7 +950,10 @@ ${result.detailed_audit}
                                       />
                                     </svg>
                                     <span>
-                                      Lines: {finding.location.lines.join(', ')}
+                                      Lines: {finding.location.lines.length > 1 
+                                        ? `${finding.location.lines[0]} - ${finding.location.lines[finding.location.lines.length - 1]}`
+                                        : finding.location.lines[0]
+                                      }
                                     </span>
                                   </div>
                                 )}
@@ -982,6 +989,9 @@ ${result.detailed_audit}
                         ))}
                       </div>
                     )}
+                    <p className='text-gray-300'>
+                      ...checkout the full report below...
+                    </p>
                   </>
                 )}
 
