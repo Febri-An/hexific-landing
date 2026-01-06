@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const FASTAPI_URL = process.env.FASTAPI_URL || 'http://api.docker.localhost/audit';
+const FASTAPI_URL = process.env.FASTAPI_URL || 'https://api.hexific.com/audit';
 
 export async function POST(request: NextRequest) {
     try {
