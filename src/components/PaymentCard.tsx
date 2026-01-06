@@ -26,6 +26,40 @@ interface ConnectedPaymentCardProps {
   disabled?: boolean;
 }
 
+async function calculateTokenAmount() {
+    const tokenMint = "3ghjaogpDVt7QZ6eNauoggmj4WYw23TkpyVN2yZjpump";
+    const solMint = "So11111111111111111111111111111111111111112";
+    
+    // 1. Fetch SOL and HEXI prices from Jupiter API
+    const response = await fetch(
+      `https://api.jup.ag/price/v3?ids=${solMint},${tokenMint}`,
+      {
+      headers: {
+        'x-api-key': process.env.NEXT_PUBLIC_JUPITER_API_KEY || '',
+      },
+      }
+    );
+    const result = await response.json();
+    console.log('Jupiter Price Result:', result);
+
+    const priceTokenUsd = result[tokenMint].usdPrice; // HEXI Token price
+    const priceSolUsd = result[solMint].usdPrice;     // SOL price
+
+    // 2. Determine target SOL to be paid
+    const targetSol = PAYMENT_CONFIG.AMOUNT_LAMPORTS / 1_000_000_000; // Convert lamports to SOL
+
+    // 3. Calculate the amount of tokens needed
+    const totalUsdNeeded = targetSol * priceSolUsd;
+    const amountTokenRequired = totalUsdNeeded / priceTokenUsd;
+
+    // console.log(`Target: ${targetSol} SOL (~$${totalUsdNeeded.toFixed(4)})`);
+    // console.log(`Token Price: $${priceTokenUsd}`);
+    // console.log(`SOL Price: $${priceSolUsd}`);
+    // console.log(`User should pay: ${amountTokenRequired.toFixed()} Token`);
+    
+    return amountTokenRequired;
+}
+
 // This component only be rendered when wallet is connected
 function ConnectedPaymentCard({ account, onPaymentSuccess, isAuditing = false, disabled = false }: ConnectedPaymentCardProps) {
   const { rpc, chain } = useSolana();
@@ -116,15 +150,6 @@ function ConnectedPaymentCard({ account, onPaymentSuccess, isAuditing = false, d
 
   return (
     <div className="space-y-4">
-      {/* <div className="p-4 rounded-xl bg-[rgba(214,237,23,0.05)] backdrop-blur-md border border-[rgba(214,237,23,0.2)]">
-        <p className="text-sm text-gray-400 mb-2">
-          Payment Amount: <span className="font-semibold text-lime-400">0.01 SOL</span>
-        </p>
-        <p className="text-xs text-gray-500 break-all">
-          To: {PAYMENT_CONFIG.RECEIVER_ADDRESS}
-        </p>
-      </div> */}
-
       <Button
         onClick={sendPayment}
         disabled={isPaying || isAuditing || !signer || disabled}
@@ -147,7 +172,7 @@ function ConnectedPaymentCard({ account, onPaymentSuccess, isAuditing = false, d
             Analyzing...
           </span>
         ) : (
-          'Pay 0.01 SOL devnet & Start Audit'
+          'Pay 0.001 SOL mainnet & Start Audit'
         )}
       </Button>
 
