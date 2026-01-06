@@ -132,6 +132,23 @@ export default function FreeAuditUpload() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // // Payment Step for Hexific AI
+    // if (isHexificAIEnabled && !hasPaid) {
+    //   addStatus('Processing payment...', 'info');
+      
+    //   const paymentResult = await sendPayment();
+      
+    //   if (!paymentResult.success) {
+    //     addStatus(`Payment failed: ${paymentResult.error}`, 'error');
+    //     return;
+    //   }
+
+    //   addStatus(`Payment sent! Tx: ${paymentResult.signature?.slice(0, 8)}...`, 'info');
+    //   setHasPaid(true);
+    //   addStatus('Payment successful! Starting premium audit...', 'success');
+    //   // Continue to audit execution immediately
+    // }
+
     if (auditMode === 'upload') {
       // Get user IP
       const ipAddress = await getClientIP();
