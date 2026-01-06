@@ -955,7 +955,7 @@ ${result.detailed_audit}
                             <p className="text-sm text-lime-400/70 font-mono bg-lime-400/5 px-2 py-1 rounded inline-block mt-2">
                               Type: {finding.type}
                             </p>
-                            <button
+                            {/* <button
                               onClick={() => {
                                 setAiModalMode('instant_fix');
                                 setSelectedFinding(finding);
@@ -977,7 +977,7 @@ ${result.detailed_audit}
                                 />
                               </svg>
                               <span>Get AI Fix Suggestion</span>
-                            </button>
+                            </button> */}
                           </div>
                         ))}
                       </div>
