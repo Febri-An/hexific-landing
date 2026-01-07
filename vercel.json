@@ -1,7 +1,3 @@
 {
-  "functions": {
-    "app/api/audit/route.ts": {
-      "maxDuration": 120
-    }
-  }
+    "framework": "nextjs"
 }

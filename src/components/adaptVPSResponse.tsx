@@ -105,16 +105,16 @@ function adaptVPSResponse(vpsData: any): AuditResult {
     };
 
     const detailedFindings: DetailedFinding[] = vpsData.findings.map((finding: any) => ({
-      type: finding.title,
-      impact: finding.severity,
-      confidence: finding.confidence,
-      description: finding.description,
-      location: {
+      type: finding.title || finding.type || 'Unknown',
+      impact: finding.severity || finding.impact || 'Unknown',
+      confidence: finding.confidence || 'Medium',
+      description: finding.description || '',
+      location: finding.locations ? {
         filename: finding.locations.filename,
         lines: finding.locations.lines,
         start: finding.locations.start,
         length: finding.locations.length,
-      },
+      } : null,
     }));
 
     return {
@@ -198,15 +198,15 @@ function adaptVPSResponse(vpsData: any): AuditResult {
       informational: 0,
       optimization: 0,
     };
-    
+
     const detailedFindings: DetailedFinding[] = [];
 
     try {
       const detectors = vpsData.results.results.detectors;
-      
+
       detectors.forEach((detector: VPSDetector) => {
         const impact = detector.impact.toLowerCase();
-        
+
         // Count by severity
         if (impact === 'high') summary.high++;
         else if (impact === 'medium') summary.medium++;
