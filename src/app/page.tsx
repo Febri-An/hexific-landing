@@ -354,7 +354,7 @@ export default function Page() {
   }, []);
 
   const handleClick = () => {
-    window.location.href = "mailto:admin@hexific.com?subject=Schedule%20Consultation&body=Hi%20there,%0A%0AI'd%20like%20to%20schedule%20a%20consultation%20to%20discuss%20my%20smart%20contract%20audit%20needs.%0APlease%20let%20me%20know%20your%20availability.%0A%0AThank%20you!";
+    window.location.href = "/manual-audit";
   };
 
   const scrollDown = () => {

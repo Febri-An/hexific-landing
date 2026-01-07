@@ -1,0 +1,210 @@
+/* Manual Audit Page Styles - Hexific Theme */
+
+.manual-audit-container {
+  background: #000E1B;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.manual-audit-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(rgba(214, 237, 23, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(214, 237, 23, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-move 20s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes grid-move {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+.form-container {
+  background: rgba(214, 237, 23, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(214, 237, 23, 0.2);
+  border-radius: 1rem;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.form-input {
+  background: rgba(0, 14, 27, 0.6);
+  border: 1px solid rgba(214, 237, 23, 0.3);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  border-color: #D6ED17;
+  box-shadow: 0 0 20px rgba(214, 237, 23, 0.3);
+  outline: none;
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.form-input option {
+  background: #000E1B;
+  color: white;
+}
+
+.form-label {
+  color: rgba(214, 237, 23, 0.9);
+  font-weight: 500;
+}
+
+.submit-button {
+  background: #D6ED17;
+  color: #000E1B;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.submit-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.submit-button:hover {
+  background: #E8FF4A;
+  box-shadow: 0 0 30px rgba(214, 237, 23, 0.5);
+}
+
+.submit-button:active {
+  transform: scale(0.95);
+}
+
+.success-card {
+  background: rgba(214, 237, 23, 0.1);
+  border: 2px solid rgba(214, 237, 23, 0.5);
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  animation: success-pulse 2s ease-in-out infinite;
+}
+
+@keyframes success-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(214, 237, 23, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(214, 237, 23, 0.6);
+  }
+}
+
+.success-icon {
+  font-size: 4rem;
+  filter: drop-shadow(0 0 10px rgba(214, 237, 23, 0.8));
+}
+
+.cta-section {
+  position: relative;
+  z-index: 1;
+}
+
+.cta-button-primary {
+  background: #D6ED17;
+  color: #000E1B;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.cta-button-primary:hover {
+  background: #E8FF4A;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(214, 237, 23, 0.4);
+}
+
+.cta-button-secondary {
+  background: transparent;
+  border: 2px solid #D6ED17;
+  color: #D6ED17;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.cta-button-secondary:hover {
+  background: #D6ED17;
+  color: #000E1B;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(214, 237, 23, 0.4);
+}
+
+.gradient-title {
+  background: linear-gradient(135deg, #D6ED17, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.char-counter {
+  font-size: 0.75rem;
+  transition: color 0.3s ease;
+}
+
+.char-counter.complete {
+  color: #D6ED17;
+}
+
+.floating-orb {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(214, 237, 23, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.floating-orb-1 {
+  top: 10%;
+  right: 10%;
+  animation: float 8s ease-in-out infinite;
+}
+
+.floating-orb-2 {
+  bottom: 20%;
+  left: 10%;
+  animation: float 6s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(180deg);
+  }
+}
