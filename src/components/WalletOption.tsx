@@ -22,7 +22,7 @@ function WalletOption({ wallet, onConnect }: { wallet: UiWallet; onConnect: () =
     <button
       onClick={handleConnect}
       disabled={isConnecting}
-      className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-lime-400/10 border border-transparent hover:border-lime-400/30 transition-all group"
+      className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-lime-400/10 border border-transparent hover:border-lime-400/30 hover:cursor-pointer transition-all group"
     >
       <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden">
         {wallet.icon ? (
