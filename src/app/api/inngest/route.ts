@@ -19,7 +19,7 @@ const processAudit = inngest.createFunction(
         const aiResult = await step.run("call-backend-api", async () => {
             // 1. DYNAMIC URL
             console.log("🚀 STARTING API CALL");
-            const endpoint = mode === 'AI' ? '/audit/fastaudit-single' : '/audit/staticaudit-single';
+            const endpoint = mode === 'AI' ? '/audit/fastaudit' : '/audit/staticaudit';
             const apiUrl = `${process.env.FASTAPI_URL}${endpoint}`;
 
             console.log("👉 Target URL:", apiUrl);
