@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 // import AIAssistModal from './AIAssistModal';
 import { CodeBlock } from './CodeBlock';
-import { 
-  checkRateLimit, 
-  logUsage, 
-  getClientIP, 
+import {
+  checkRateLimit,
+  logUsage,
+  getClientIP,
   getTimeUntilReset,
-  type ServiceType 
+  type ServiceType
 } from '@/lib/rateLimiter';
 // import { trim } from 'viem';
 import { useSolana } from "@/components/solana-provider";
@@ -39,6 +39,11 @@ export default function FreeAuditUpload() {
   const [auditMode, setAuditMode] = useState<'upload' | 'address'>('upload');
   const [contractAddress, setContractAddress] = useState('');
   const [statusMessages, setStatusMessages] = useState<{ message: string; type: string }[]>([]);
+  const [expandedFindings, setExpandedFindings] = useState<Set<number>>(new Set());
+
+  // Ref to track polling intervals to clear them on unmount
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const [rateLimitError, setRateLimitError] = useState<{
     show: boolean;
     remaining: number;
@@ -64,6 +69,13 @@ export default function FreeAuditUpload() {
     }
   }, [isConnected, isHexificAIEnabled]);
 
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
+  }, []);
+
 
   const addStatus = (message: string, type: 'info' | 'success' | 'error' | 'warning') => {
     setStatusMessages((prev) => {
@@ -82,7 +94,7 @@ export default function FreeAuditUpload() {
     // Check file type
     const isZip = selectedFile.name.endsWith('.zip');
     const isSol = selectedFile.name.endsWith('.sol');
-    
+
     if (!isZip && !isSol) {
       setError('Please upload a .sol or .zip file');
       return false;
@@ -129,35 +141,69 @@ export default function FreeAuditUpload() {
     }
   };
 
+  // --- NEW: Polling Logic for Async Architecture ---
+  const pollJobStatus = async (
+    jobId: string,
+    ipAddress: string,
+    serviceType: 'zip_upload' | 'address_audit',
+    metaData: any
+  ) => {
+    // Clear any existing poll
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+
+    pollIntervalRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/audit/status?jobId=${jobId}`);
+        if (!res.ok) throw new Error("Status check failed");
+
+        const data = await res.json();
+
+        if (data.status === 'COMPLETED') {
+          if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+
+          // Determine success based on whether we got results
+          if (data.results && data.results.length > 0) {
+            // Pass all results to adapter (handles both single and multi-file)
+            const adaptedResult = adaptVPSResponse(data.results.length === 1 ? data.results[0] : data.results);
+
+            await logUsage(ipAddress, serviceType, {
+              ...metaData,
+              success: adaptedResult.success,
+            });
+
+            setResult(adaptedResult);
+            addStatus("Audit completed successfully!", 'success');
+          } else {
+            setError("Analysis completed but no results returned.");
+            addStatus("No results found.", 'error');
+          }
+          setLoading(false);
+        } else if (data.status === 'FAILED') {
+          if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+          setError("The audit process failed on the server.");
+          addStatus("Audit failed.", 'error');
+          setLoading(false);
+        } else {
+          // Still processing... could update a progress bar here
+        }
+      } catch (err) {
+        if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+        setError("Lost connection to status server.");
+        setLoading(false);
+      }
+    }, 2000); // Check every 2 seconds
+  };
+  // ------------------------------------------------
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // // Payment Step for Hexific AI
-    // if (isHexificAIEnabled && !hasPaid) {
-    //   addStatus('Processing payment...', 'info');
-      
-    //   const paymentResult = await sendPayment();
-      
-    //   if (!paymentResult.success) {
-    //     addStatus(`Payment failed: ${paymentResult.error}`, 'error');
-    //     return;
-    //   }
-
-    //   addStatus(`Payment sent! Tx: ${paymentResult.signature?.slice(0, 8)}...`, 'info');
-    //   setHasPaid(true);
-    //   addStatus('Payment successful! Starting premium audit...', 'success');
-    //   // Continue to audit execution immediately
-    // }
+    // Get user IP
+    const ipAddress = await getClientIP();
 
     if (auditMode === 'upload') {
-      // Get user IP
-      const ipAddress = await getClientIP();
-      
       // Check rate limit
-      const { allowed, resetTime } = await checkRateLimit(
-        ipAddress,
-        'zip_upload'
-      );
+      const { allowed, resetTime } = await checkRateLimit(ipAddress, 'zip_upload');
 
       if (!allowed) {
         setRateLimitError({
@@ -169,54 +215,50 @@ export default function FreeAuditUpload() {
         return;
       }
 
-      // Free audit - ZIP upload
       if (!file) return;
-      
+
       setLoading(true);
       setResult(null);
       setStatusMessages([]);
+      addStatus("Uploading file...", 'info');
 
       try {
         const formData = new FormData();
-        formData.append('file', file);
+        // Use 'files' (plural) to match the new API
+        formData.append('files', file);
+        // Pass the AI toggle state
+        formData.append('ai_mode', isHexificAIEnabled.toString());
 
-        // Determine endpoint based on file type
-        const isSolFile = file.name.endsWith('.sol');
-        const endpoint = isSolFile 
-          ? '/api/audit/static/single'
-          : '/api/audit/static/multi';
-
-        const response = await fetch(endpoint, {
+        const response = await fetch('/api/audit/ingest', {
           method: 'POST',
           body: formData,
         });
 
-        if (!response.ok) {
-          throw new Error(`Server responded with status: ${response.status}`);
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+        const data = await response.json();
+
+        if (data.jobId) {
+          addStatus("File queued. Analyzing...", 'info');
+          // Start Polling
+          pollJobStatus(data.jobId, ipAddress, 'zip_upload', {
+            filename: file.name,
+            filesize: file.size
+          });
+        } else {
+          throw new Error(data.error || "Upload failed");
         }
 
-        const vpsData = await response.json();
-        // console.log('VPS API Response:', vpsData);
-        const adaptedResult = adaptVPSResponse(vpsData);
-
-        // Log usage after successful audit
-        await logUsage(ipAddress, 'zip_upload', {
-          filename: file.name,
-          filesize: file.size,
-          success: adaptedResult.success,
-        });
-
-        setResult(adaptedResult);
-      } catch (error) {
+      } catch (error: any) {
         setResult({
           success: false,
-          error: `Failed to submit audit request: ${error}`,
+          error: `Failed to submit: ${error.message}`,
         });
-      } finally {
         setLoading(false);
       }
+
     } else {
-      //Free audit - Contract Address
+      // Address Audit Mode
       if (!contractAddress.trim()) {
         addStatus('Please enter a contract address', 'error');
         return;
@@ -227,86 +269,59 @@ export default function FreeAuditUpload() {
         return;
       }
 
+      const { allowed, resetTime } = await checkRateLimit(ipAddress, 'address_audit');
+
+      if (!allowed) {
+        setRateLimitError({
+          show: true,
+          remaining: 0,
+          resetTime,
+          service: 'Address Audit',
+        });
+        return;
+      }
+
       setLoading(true);
       setResult(null);
       setStatusMessages([]);
+      addStatus('Starting security audit...', 'info');
 
       try {
-        // Get user IP
-        const ipAddress = await getClientIP();
-        
-        // Check rate limit
-        const { allowed, resetTime } = await checkRateLimit(
-          ipAddress,
-          'address_audit'
-        );
+        const formData = new FormData();
+        formData.append('addresses', contractAddress.trim());
+        formData.append('ai_mode', isHexificAIEnabled.toString());
 
-        if (!allowed) {
-          setRateLimitError({
-            show: true,
-            remaining: 0,
-            resetTime,
-            service: 'Address Audit',
-          });
-          return;
+        // Use the SAME ingestion endpoint
+        const response = await fetch('/api/audit/ingest', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(errText);
         }
 
-        addStatus('Starting security audit...', 'info');
+        const data = await response.json();
 
-        console.log(contractAddress.trim(), 'type: ', typeof contractAddress.trim());
-        // Tier-aware address audit. Paid is auto-enabled when wallet is connected.
-        const response = await fetch('/api/audit/static/address', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        if (data.jobId) {
+          addStatus("Address Queued. Analyzing...", 'info');
+          pollJobStatus(data.jobId, ipAddress, 'address_audit', {
             contract_address: contractAddress.trim(),
             network: 'ethereum'
-            // service_tier: serviceTier,
-            // wallet_address: selectedAccount?.address || null,
-          }),
-        });
-        // let response: any;
-        // if (true) {
-        if (response.ok) {
-          const apiResult = await response.json();
-          const aiFindings = adaptVPSResponse(apiResult);
-
-          // Log usage after successful audit
-          await logUsage(ipAddress, 'address_audit', {
-            contract_address: contractAddress.trim(),
-            network: 'ethereum',
-            // findings_count: aiFindings.length,
-            // success: true,
           });
-            
-          setResult(
-            aiFindings
-          );
         } else {
-          const errorText = await response.text();
-          let errorMsg = 'Audit failed';
-          
-          try {
-            const errorJson = JSON.parse(errorText);
-            errorMsg = errorJson.detail || errorJson.message || errorText;
-          } catch {
-            errorMsg = errorText;
-          }
-
-          if (errorMsg.includes('not verified')) {
-            addStatus('❌ Contract not verified on Etherscan', 'error');
-            addStatus('Verify at: https://etherscan.io/verifyContract', 'info');
-          } else {
-            addStatus(`❌ Error: ${errorMsg}`, 'error');
-          }
+          throw new Error(data.error || "Request failed");
         }
 
-        setLoading(false);
       } catch (error: any) {
         console.error('Audit error:', error);
-        addStatus(`❌ Error: ${error.message}`, 'error');
+        let errorMsg = error.message;
+        if (errorMsg.includes('not verified')) {
+          addStatus('❌ Contract not verified on Etherscan', 'error');
+        } else {
+          addStatus(`❌ Error: ${errorMsg}`, 'error');
+        }
         setLoading(false);
       }
     }
@@ -394,8 +409,8 @@ ${result.detailed_audit}
       setTimeout(() => {
         const errorElement = document.getElementById('rateLimitError');
         if (errorElement) {
-          errorElement.scrollIntoView({ 
-            behavior: 'smooth', 
+          errorElement.scrollIntoView({
+            behavior: 'smooth',
             block: 'center'
           });
         }
@@ -409,42 +424,42 @@ ${result.detailed_audit}
         <h2 className="text-3xl font-bold mb-2 gradient-text">
           {isHexificAIEnabled
             ? 'Hexific AI Premium Audit'
-            : 'Free Smart Contract Audit' 
+            : 'Free Smart Contract Audit'
           }
         </h2>
         <p className="text-gray-300 mb-6">
           {isHexificAIEnabled
             ? 'Advanced security analysis with deep learning and automated fix suggestions'
-            : (auditMode === 'upload' 
-                ? 'Upload your Foundry project or file and get instant security analysis'
-                : 'Enter contract address and get AI-powered security analysis - completely free!')
+            : (auditMode === 'upload'
+              ? 'Upload your Foundry project or file and get instant security analysis'
+              : 'Enter contract address and get AI-powered security analysis - completely free!')
           }
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {rateLimitError?.show && (
-          <div 
-            id="rateLimitError"
-            className="glass-effect border border-red-500/50 bg-red-950/20 rounded-lg p-4 slide-up flex items-center justify-center"
-          >
-            <div className="flex items-center">
-            <svg className="w-6 h-6 text-red-400 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-              <div>
-                <p className="text-red-400 font-semibold mb-1">Daily Limit Reached</p>
-                <p className="text-red-300 text-sm mb-2">
-                You've used all 3 free {rateLimitError.service} requests for today.
-                </p>
-                <p className="text-red-300 text-sm">
-                Resets in: <span className="font-semibold">{getTimeUntilReset(rateLimitError.resetTime)}</span>
-                </p>
-                <p className="text-gray-400 text-xs mt-2">
-                💡 Tip: You can still use the other audit type (ZIP upload or Address audit)
-                </p>
+            <div
+              id="rateLimitError"
+              className="glass-effect border border-red-500/50 bg-red-950/20 rounded-lg p-4 slide-up flex items-center justify-center"
+            >
+              <div className="flex items-center">
+                <svg className="w-6 h-6 text-red-400 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <p className="text-red-400 font-semibold mb-1">Daily Limit Reached</p>
+                  <p className="text-red-300 text-sm mb-2">
+                    You've used all 3 free {rateLimitError.service} requests for today.
+                  </p>
+                  <p className="text-red-300 text-sm">
+                    Resets in: <span className="font-semibold">{getTimeUntilReset(rateLimitError.resetTime)}</span>
+                  </p>
+                  <p className="text-gray-400 text-xs mt-2">
+                    💡 Tip: You can still use the other audit type (ZIP upload or Address audit)
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
           )}
 
           {/* Error Message */}
@@ -490,7 +505,7 @@ ${result.detailed_audit}
               </button>
             </div>
           )}
-          
+
           {/* Hexific AI Toggle */}
           <div className="glass-effect border border-lime-400/20 rounded-lg p-4 flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
@@ -507,7 +522,7 @@ ${result.detailed_audit}
                 <p className="text-xs text-gray-400">Enable advanced AI analysis (Requires Wallet)</p>
               </div>
             </div>
-            
+
             <button
               type="button"
               onClick={handleToggleHexificAI}
@@ -522,11 +537,10 @@ ${result.detailed_audit}
             <>
               {/* File Upload Area */}
               <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${
-                  dragActive
-                    ? 'border-lime-400 bg-lime-400/10 scale-[1.02]'
-                    : 'border-lime-400/30 hover:border-lime-400/50 hover:bg-lime-400/5'
-                }`}
+                className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${dragActive
+                  ? 'border-lime-400 bg-lime-400/10 scale-[1.02]'
+                  : 'border-lime-400/30 hover:border-lime-400/50 hover:bg-lime-400/5'
+                  }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
                 onDragOver={handleDrag}
@@ -647,10 +661,9 @@ ${result.detailed_audit}
             </>
           )}
 
-          { isHexificAIEnabled && isConnected && selectedAccount ? (
-            <PaymentCard 
+          {isHexificAIEnabled && isConnected && selectedAccount ? (
+            <PaymentCard
               onPaymentSuccess={async () => {
-                // This will be called after successful payment to start the audit
                 await handleSubmit(new Event('submit') as any);
               }}
               isAuditing={loading}
@@ -658,7 +671,7 @@ ${result.detailed_audit}
                 (auditMode === 'upload' && !file) ||
                 (auditMode === 'address' && !isValidAddress(contractAddress.trim()))
               }
-            /> 
+            />
           ) : (
             <button
               type="submit"
@@ -668,13 +681,12 @@ ${result.detailed_audit}
                 loading
                 // isPaying
               }
-              className={`w-full py-3 px-6 rounded-lg font-bold transition-all ${
-                (auditMode === 'upload' && !file) ||
+              className={`w-full py-3 px-6 rounded-lg font-bold transition-all ${(auditMode === 'upload' && !file) ||
                 (auditMode === 'address' && !isValidAddress(contractAddress.trim())) ||
                 loading
-                  ? 'bg-transparent border border-gray-600 text-gray-500 cursor-not-allowed !hover:transform-none'
-                  : 'bg-lime-400 text-black hover:bg-lime-300 hover:cursor-pointer pulse-glow'
-              }`}
+                ? 'bg-transparent border border-gray-600 text-gray-500 cursor-not-allowed !hover:transform-none'
+                : 'bg-lime-400 text-black hover:bg-lime-300 hover:cursor-pointer pulse-glow'
+                }`}
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -687,7 +699,7 @@ ${result.detailed_audit}
               ) : (
                 'Start Audit'
               )}
-            </button> 
+            </button>
           )}
         </form>
 
@@ -697,26 +709,24 @@ ${result.detailed_audit}
             {statusMessages.map((status, index) => (
               <div
                 key={index}
-                className={`glass-effect border rounded-lg p-3 flex items-center gap-3 slide-up ${
-                  status.type === 'info'
-                    ? 'border-blue-500/30 bg-blue-950/20'
-                    : status.type === 'success'
+                className={`glass-effect border rounded-lg p-3 flex items-center gap-3 slide-up ${status.type === 'info'
+                  ? 'border-blue-500/30 bg-blue-950/20'
+                  : status.type === 'success'
                     ? 'border-lime-500/30 bg-lime-950/20'
                     : status.type === 'error'
-                    ? 'border-red-500/30 bg-red-950/20'
-                    : 'border-yellow-500/30 bg-yellow-950/20'
-                }`}
+                      ? 'border-red-500/30 bg-red-950/20'
+                      : 'border-yellow-500/30 bg-yellow-950/20'
+                  }`}
               >
                 <span>{getStatusIcon(status.type)}</span>
-                <span className={`text-sm ${
-                  status.type === 'info'
-                    ? 'text-blue-400'
-                    : status.type === 'success'
+                <span className={`text-sm ${status.type === 'info'
+                  ? 'text-blue-400'
+                  : status.type === 'success'
                     ? 'text-lime-400'
                     : status.type === 'error'
-                    ? 'text-red-400'
-                    : 'text-yellow-400'
-                }`}>{status.message}</span>
+                      ? 'text-red-400'
+                      : 'text-yellow-400'
+                  }`}>{status.message}</span>
               </div>
             ))}
           </div>
@@ -730,7 +740,7 @@ ${result.detailed_audit}
                 {/* Summary Cards - SAME FOR BOTH MODES */}
                 {result.results && (
                   <>
-                    <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                       <div className="glass-effect border border-red-500/50 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-red-500 mb-1">
                           {result.results.summary.critical ?? 0}
@@ -758,12 +768,6 @@ ${result.detailed_audit}
                         <div className="text-sm text-yellow-400 font-medium">
                           {'low' in result.results.summary ? 'Low' : 'Minor'}
                         </div>
-                      </div>
-                      <div className="glass-effect border border-purple-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
-                        <div className="text-3xl font-bold text-purple-400 mb-1">
-                          {result.results.summary.gas ?? 0}
-                        </div>
-                        <div className="text-sm text-purple-400 font-medium">Gas</div>
                       </div>
                       <div className="glass-effect border border-blue-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-blue-400 mb-1">
@@ -828,65 +832,47 @@ ${result.detailed_audit}
                                 let currentSection: { type: 'text' | 'code', content: string[] } = { type: 'text', content: [] };
                                 let insideCode = false;
 
-                                // Parse lines into text and code sections
-                                lines.forEach((line) => {
-                                  if (line === '[SOLIDITY]' || line === '[CODE]') {
-                                    // Start code block
-                                    if (currentSection.content.length > 0) {
-                                      sections.push(currentSection);
-                                    }
-                                    currentSection = { type: 'code', content: [] };
-                                    insideCode = true;
-                                  } else if (line === '[/SOLIDITY]' || line === '[/CODE]') {
-                                    // End code block
-                                    if (currentSection.content.length > 0) {
-                                      sections.push(currentSection);
-                                    }
-                                    currentSection = { type: 'text', content: [] };
-                                    insideCode = false;
-                                  } else {
-                                    currentSection.content.push(line);
-                                  }
-                                });
+                                          lines.forEach((line) => {
+                                            if (line === '[SOLIDITY]' || line === '[CODE]') {
+                                              if (currentSection.content.length > 0) sections.push(currentSection);
+                                              currentSection = { type: 'code', content: [] };
+                                            } else if (line === '[/SOLIDITY]' || line === '[/CODE]') {
+                                              if (currentSection.content.length > 0) sections.push(currentSection);
+                                              currentSection = { type: 'text', content: [] };
+                                            } else {
+                                              currentSection.content.push(line);
+                                            }
+                                          });
+                                          if (currentSection.content.length > 0) sections.push(currentSection);
 
-                                // Push last section
-                                if (currentSection.content.length > 0) {
-                                  sections.push(currentSection);
-                                }
+                                          const renderLineWithBold = (text: string) => {
+                                            const parts = text.split(/(\b[A-Z][a-zA-Z\s]+:)/g);
+                                            return parts.map((part, i) => {
+                                              if (/\b[A-Z][a-zA-Z\s]+:/.test(part)) {
+                                                return <span key={i} className="font-bold text-lime-300">{part}</span>;
+                                              }
+                                              return part;
+                                            });
+                                          };
 
-                                // Helper function to render text with bold keywords
-                                const renderLineWithBold = (text: string) => {
-                                  const parts = text.split(/(\b[A-Z][a-zA-Z\s]+:)/g);
-                                  return parts.map((part, i) => {
-                                    if (/\b[A-Z][a-zA-Z\s]+:/.test(part)) {
-                                      return <span key={i} className="font-bold text-lime-300">{part}</span>;
-                                    }
-                                    return part;
-                                  });
-                                };
+                                          return sections.map((section, sectionIndex) => {
+                                            if (section.type === 'code') {
+                                              const codeContent = section.content.join('\n');
+                                              return (
+                                                <div key={sectionIndex} className="my-3">
+                                                  <CodeBlock code={codeContent} language="solidity" />
+                                                </div>
+                                              );
+                                            } else {
+                                              const nonEmptyLines = section.content.filter(line => line.trim() !== '');
+                                              if (nonEmptyLines.length === 0) return null;
 
-                                // Render sections
-                                return sections.map((section, sectionIndex) => {
-                                  if (section.type === 'code') {
-                                    // Render code block with syntax highlighting
-                                    const codeContent = section.content.join('\n');
-                                    return (
-                                      <div key={sectionIndex} className="my-3">
-                                        <CodeBlock code={codeContent} language="solidity" />
-                                      </div>
-                                    );
-                                  } else {
-                                    // Render text section - filter out empty lines
-                                    const nonEmptyLines = section.content.filter(line => line.trim() !== '');
-                                    if (nonEmptyLines.length === 0) return null; // Skip empty sections
-        
-                                    // Render text section
-                                    return (
-                                      <div key={sectionIndex} className="bg-gray-900/50 border border-gray-700/50 rounded-lg p-4 text-sm">
-                                        {section.content.map((line, lineIndex) => {
-                                          const isMainIssue = sectionIndex === 0 && lineIndex === 0;
-                                          const isIndented = line.startsWith('\t') || line.startsWith('  ');
-                                          const trimmedLine = line.replace(/^\t|^  /, '');
+                                              return (
+                                                <div key={sectionIndex} className="bg-gray-900/50 border border-gray-700/50 rounded-lg p-4 text-sm">
+                                                  {section.content.map((line, lineIndex) => {
+                                                    const isMainIssue = sectionIndex === 0 && lineIndex === 0;
+                                                    const isIndented = line.startsWith('\t') || line.startsWith('  ');
+                                                    const trimmedLine = line.replace(/^\t|^  /, '');
 
                                           return (
                                             <div
@@ -1020,31 +1006,6 @@ ${result.detailed_audit}
                 <p className="text-red-300">{result.error}</p>
               </div>
             )}
-
-            {/* AI Assistant Modal */}
-            {/* {result?.success && result.results && (
-              <AIAssistModal
-                isOpen={showAIModal}
-                onClose={() => {
-                  setShowAIModal(false);
-                  setPrefilledQuestion(undefined);
-                }}
-                auditResults={{
-                  ...result.results,
-                  summary: {
-                    high: result.results.summary.high ?? 0,
-                    medium: result.results.summary.medium ?? 0,
-                    low: result.results.summary.low ?? 0,
-                    informational: result.results.summary.informational ?? 0,
-                    optimization: result.results.summary.optimization ?? 0,
-                  }
-                }}
-                analysisId={result.projectId || result.analysis_id || ''}
-                mode={aiModalMode}
-                findingDetails={selectedFinding || undefined}
-                prefilledQuestion={prefilledQuestion}
-              />
-            )} */}
           </div>
         )}
 
@@ -1052,7 +1013,7 @@ ${result.detailed_audit}
         {showWalletModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <div className="bg-gray-900 border border-lime-400/30 rounded-2xl max-w-md w-full p-6 shadow-2xl relative slide-up">
-              <button 
+              <button
                 onClick={() => setShowWalletModal(false)}
                 className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
               >
@@ -1060,7 +1021,7 @@ ${result.detailed_audit}
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              
+
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-lime-400/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1073,13 +1034,13 @@ ${result.detailed_audit}
 
               <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                 {wallets.map((wallet) => (
-                  <WalletOption 
-                    key={wallet.name} 
-                    wallet={wallet} 
+                  <WalletOption
+                    key={wallet.name}
+                    wallet={wallet}
                     onConnect={() => {
                       setShowWalletModal(false);
                       setIsHexificAIEnabled(true);
-                    }} 
+                    }}
                   />
                 ))}
                 {wallets.length === 0 && (

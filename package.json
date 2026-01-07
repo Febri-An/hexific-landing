@@ -9,7 +9,8 @@
     "vercel-build": "npm run install-slither && next build --webpack",
     "lint": "next lint",
     "postbuild": "next-sitemap",
-    "install-slither": "pip3 install slither-analyzer solc-select"
+    "install-slither": "pip3 install slither-analyzer solc-select",
+    "inngest": "inngest-cli dev"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",
@@ -31,6 +32,8 @@
     "adm-zip": "^0.5.16",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "inngest": "^3.48.1",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.536.0",
     "next": "^16.0.7",
     "next-sitemap": "^4.2.3",
