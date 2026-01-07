@@ -3,7 +3,7 @@ import { inngest } from "@/lib/inngest";
 import { supabase } from "@/lib/supabase";
 
 const processAudit = inngest.createFunction(
-    { id: "worker-audit-router", concurrency: 20 },
+    { id: "worker-audit-router", concurrency: 5 },
     { event: "audit/process.code" },
     async ({ event, step }) => {
         const { recordId, jobId, mode } = event.data; // mode is 'STATIC' or 'AI'
