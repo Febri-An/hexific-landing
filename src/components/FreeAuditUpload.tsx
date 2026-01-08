@@ -777,89 +777,60 @@ ${result.detailed_audit}
                       </div>
                     </div>
 
-                    {/* Detailed Findings - Collapsible Accordion (Critical & Major only) */}
-                    {(() => {
-                      const criticalMajorFindings = result.results.detailedFindings.filter(
-                        (f) => ['critical', 'major', 'high'].includes(f.impact.toLowerCase())
-                      );
-                      return criticalMajorFindings.length > 0 ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-xl font-bold gradient-text">Critical & Major Findings</h3>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (expandedFindings.size === criticalMajorFindings.length) {
-                                  setExpandedFindings(new Set());
-                                } else {
-                                  setExpandedFindings(new Set(criticalMajorFindings.map((_, i) => i)));
-                                }
-                              }}
-                              className="text-xs text-lime-400 hover:text-lime-300 transition-colors"
-                            >
-                              {expandedFindings.size === criticalMajorFindings.length ? 'Collapse All' : 'Expand All'}
-                            </button>
-                          </div>
-                          {criticalMajorFindings.map((finding, index) => {
-                            const isExpanded = expandedFindings.has(index);
-                            return (
-                              <div
-                                key={index}
-                                className="glass-effect border rounded-lg overflow-hidden transition-all hover:border-lime-400/40"
-                              >
-                                {/* Collapsed Header - Always Visible */}
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newExpanded = new Set(expandedFindings);
-                                    if (isExpanded) {
-                                      newExpanded.delete(index);
-                                    } else {
-                                      newExpanded.add(index);
-                                    }
-                                    setExpandedFindings(newExpanded);
-                                  }}
-                                  className="w-full p-4 flex items-center justify-between text-left hover:bg-lime-400/5 transition-colors"
-                                >
-                                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                                    <span
-                                      className={`px-3 py-1 rounded-full text-xs font-bold border flex-shrink-0 ${getSeverityColor(
-                                        finding.impact
-                                      )}`}
-                                    >
-                                      {finding.impact.toUpperCase()}
-                                    </span>
-                                    <span className="text-white font-medium truncate">{finding.type}</span>
-                                    {finding.location?.filename && (
-                                      <span className="text-gray-500 text-sm font-mono truncate hidden sm:block">
-                                        {finding.location.filename}
-                                      </span>
-                                    )}
-                                  </div>
-                                  <svg
-                                    className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                </button>
+                    {/* AI Assistant Button */}
+                    {/* <button
+                      onClick={() => {
+                        setAiModalMode('quick_actions');
+                        setSelectedFinding(null);
+                        setShowAIModal(true);
+                      }}
+                      className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black py-4 px-6 rounded-lg font-semibold hover:from-lime-300 hover:to-lime-400 hover:cursor-pointer transition-all shadow-lg flex items-center justify-center space-x-2 pulse-glow"
+                    >
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                        />
+                      </svg>
+                      <span>Ask AI About Your Audit (3 Free Questions)</span>
+                    </button> */}
 
-                                {/* Expanded Content */}
-                                {isExpanded && (
-                                  <div className="px-4 pb-4 border-t border-gray-700/50">
-                                    <div className="pt-4">
-                                      <div className="flex items-center justify-between mb-3">
-                                        <span className="text-xs text-gray-400">
-                                          Confidence: {finding.confidence}
-                                        </span>
-                                      </div>
-                                      <div className="text-left mb-3">
-                                        {(() => {
-                                          const lines = finding.description.split('\n');
-                                          const sections: Array<{ type: 'text' | 'code', content: string[] }> = [];
-                                          let currentSection: { type: 'text' | 'code', content: string[] } = { type: 'text', content: [] };
+                    {/* Detailed Findings - SAME FOR BOTH MODES */}
+                    {result.results.detailedFindings.length > 0 && (
+                      <div className="space-y-4">
+                        <h3 className="text-xl font-bold gradient-text">Detailed Findings</h3>
+                        {result.results.detailedFindings
+                          .filter(finding => finding.impact === 'Critical' || finding.impact === 'Major' || finding.impact === 'High')
+                          .map((finding, index) => (
+                            <div
+                              key={index}
+                              className="glass-effect border rounded-lg p-4 hover:border-lime-400/40 transition-all hover:scale-[1.01]"
+                          >
+                            <div className="flex items-start justify-between mb-2">
+                              <span
+                                className={`px-3 py-1 rounded-full text-xs font-bold border ${getSeverityColor(
+                                  finding.impact
+                                )}`}
+                              >
+                                {finding.impact.toUpperCase()}
+                              </span>
+                              <span className="text-xs text-gray-400">
+                                Confidence: {finding.confidence}
+                              </span>
+                            </div>
+                            <div className="text-left mb-2">
+                              {(() => {
+                                const lines = finding.description.split('\n');
+                                const sections: Array<{ type: 'text' | 'code', content: string[] }> = [];
+                                let currentSection: { type: 'text' | 'code', content: string[] } = { type: 'text', content: [] };
+                                let insideCode = false;
 
                                           lines.forEach((line) => {
                                             if (line === '[SOLIDITY]' || line === '[CODE]') {
@@ -903,86 +874,110 @@ ${result.detailed_audit}
                                                     const isIndented = line.startsWith('\t') || line.startsWith('  ');
                                                     const trimmedLine = line.replace(/^\t|^  /, '');
 
-                                                    return (
-                                                      <div
-                                                        key={lineIndex}
-                                                        className={`${isMainIssue
-                                                          ? 'text-lime-400 font-semibold mb-2'
-                                                          : isIndented
-                                                            ? 'text-gray-400 pl-4 py-0.5'
-                                                            : 'text-gray-300 py-0.5'
-                                                          }`}
-                                                      >
-                                                        {isIndented && !isMainIssue && (
-                                                          <span className="text-lime-400/40 mr-2">•</span>
-                                                        )}
-                                                        {renderLineWithBold(trimmedLine)}
-                                                      </div>
-                                                    );
-                                                  })}
-                                                </div>
-                                              );
-                                            }
-                                          });
-                                        })()}
-                                      </div>
-                                      {finding.location && (
-                                        <div className="mt-2 text-sm text-gray-400">
-                                          {finding.location.filename && (
-                                            <div className="flex items-center space-x-2 mb-1">
-                                              <svg className="w-4 h-4 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                              </svg>
-                                              <span className="font-mono">{finding.location.filename}</span>
+                                          return (
+                                            <div
+                                              key={lineIndex}
+                                              className={`${
+                                                isMainIssue
+                                                  ? 'text-lime-400 font-semibold mb-2'
+                                                  : isIndented
+                                                  ? 'text-gray-400 pl-4 py-0.5'
+                                                  : 'text-gray-300 py-0.5'
+                                              } break-words overflow-wrap-anywhere`}
+                                            >
+                                              {isIndented && !isMainIssue && (
+                                                <span className="text-lime-400/40 mr-2">•</span>
+                                              )}
+                                              <span className="break-all">
+                                                {renderLineWithBold(trimmedLine)}
+                                              </span>
                                             </div>
-                                          )}
-                                          {finding.location.lines && finding.location.lines.length > 0 && (
-                                            <div className="flex items-center space-x-2">
-                                              <svg className="w-4 h-4 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                                              </svg>
-                                              <span>Lines: {finding.location.lines.join(', ')}</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                      )}
-                                      <div className="flex items-center gap-3 mt-3">
-                                        <span className="text-sm text-lime-400/70 font-mono bg-lime-400/5 px-2 py-1 rounded">
-                                          Type: {finding.type}
-                                        </span>
-                                        <button
-                                          onClick={() => {
-                                            setAiModalMode('instant_fix');
-                                            setSelectedFinding(finding);
-                                            setShowAIModal(true);
-                                          }}
-                                          className="bg-lime-400/10 border border-lime-400/30 text-lime-400 px-3 py-1 rounded-lg font-semibold text-sm flex items-center space-x-2 hover:bg-lime-400/20 hover:border-lime-400/50 hover:cursor-pointer transition-all group"
-                                        >
-                                          <svg className="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                          </svg>
-                                          <span>Get AI Fix</span>
-                                        </button>
+                                          );
+                                        })}
                                       </div>
-                                    </div>
+                                    );
+                                  }
+                                });
+                              })()}
+                            </div>
+                            {finding.location && (
+                              <div className="mt-2 text-sm text-gray-400">
+                                {finding.location.filename && (
+                                  <div className="flex items-center space-x-2 mb-1">
+                                    <svg
+                                      className="w-4 h-4 text-lime-400"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                      />
+                                    </svg>
+                                    <span className="font-mono">{finding.location.filename}</span>
+                                  </div>
+                                )}
+                                {finding.location.lines && finding.location.lines.length > 0 && (
+                                  <div className="flex items-center space-x-2">
+                                    <svg
+                                      className="w-4 h-4 text-lime-400"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+                                      />
+                                    </svg>
+                                    <span>
+                                      Lines: {finding.location.lines.length > 1 
+                                        ? `${finding.location.lines[0]} - ${finding.location.lines[finding.location.lines.length - 1]}`
+                                        : finding.location.lines[0]
+                                      }
+                                    </span>
                                   </div>
                                 )}
                               </div>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <div className="glass-effect border border-lime-400/30 rounded-lg p-6 text-center">
-                          <div className="w-16 h-16 bg-lime-400/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
+                            )}
+                            <p className="text-sm text-lime-400/70 font-mono bg-lime-400/5 px-2 py-1 rounded inline-block mt-2">
+                              Type: {finding.type}
+                            </p>
+                            {/* <button
+                              onClick={() => {
+                                setAiModalMode('instant_fix');
+                                setSelectedFinding(finding);
+                                setShowAIModal(true);
+                              }}
+                              className="mt-3 bg-lime-400/10 border border-lime-400/30 text-lime-400 px-4 py-2 rounded-lg font-semibold text-sm flex items-center space-x-2 hover:bg-lime-400/20 hover:border-lime-400/50 hover:cursor-pointer transition-all group"
+                            >
+                              <svg
+                                className="w-4 h-4 group-hover:rotate-12 transition-transform"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                                />
+                              </svg>
+                              <span>Get AI Fix Suggestion</span>
+                            </button> */}
                           </div>
-                          <h3 className="text-xl font-bold text-lime-400 mb-2">No Critical or Major Issues Found</h3>
-                          <p className="text-gray-400">Your contract passed the security audit without any critical or major vulnerabilities.</p>
-                        </div>
-                      );
-                    })()}
+                        ))}
+                      </div>
+                    )}
+                    <p className='text-gray-300'>
+                      ...checkout the full report below...
+                    </p>
                   </>
                 )}
 
@@ -1020,7 +1015,7 @@ ${result.detailed_audit}
             <div className="bg-gray-900 border border-lime-400/30 rounded-2xl max-w-md w-full p-6 shadow-2xl relative slide-up">
               <button
                 onClick={() => setShowWalletModal(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                className="absolute top-4 right-4 text-gray-400 hover:text-white hover:cursor-pointer transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

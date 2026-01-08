@@ -2,45 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-
-// Reuse DocsLayout
-function DocsLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              Hexific
-            </Link>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/docs" className="text-gray-700 hover:text-blue-600">
-                Documentation
-              </Link>
-              <Link href="/faq" className="text-gray-700 hover:text-blue-600">
-                FAQ
-              </Link>
-              <Link href="/manual-audit" className="text-gray-700 hover:text-blue-600">
-                Manual Audits
-              </Link>
-              <Link href="/" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                Start Free Audit
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-      <main>{children}</main>
-      <footer className="bg-white border-t mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center text-gray-600">
-            <p>© 2025 Hexific. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-}
+import './styles.css';
 
 // Contact Form Component
 function ContactForm() {
@@ -53,534 +15,359 @@ function ContactForm() {
     description: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In production, send to your backend/email service
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/manual-audit-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit request');
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.');
+      console.error('Error submitting form:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
-        <div className="text-5xl mb-4">✅</div>
-        <h3 className="text-2xl font-bold text-green-900 mb-2">Request Submitted!</h3>
-        <p className="text-green-800 mb-4">
-          We&apos;ll get back to you within 24-48 hours with a quote and timeline.
+      <div className="success-container">
+        <div className="success-icon-wrapper">
+          <svg className="success-checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 className="success-title">Request Submitted Successfully</h3>
+        <p className="success-message">
+          Thank you for your interest. Our security team will review your request and respond within 24-48 business hours.
         </p>
-        <p className="text-sm text-green-700">
-          Check your email (including spam folder) for our response.
-        </p>
+        <div className="success-next-steps">
+          <p className="next-steps-label">What happens next:</p>
+          <ul className="next-steps-list">
+            <li>Our team reviews your project requirements</li>
+            <li>We prepare a detailed quote and timeline</li>
+            <li>You&apos;ll receive our proposal via email</li>
+          </ul>
+        </div>
+        <Link href="/" className="back-home-button">
+          Return to Homepage
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Your Name *
+    <form onSubmit={handleSubmit} className="audit-form">
+      {/* Form Header */}
+      <div className="form-header">
+        <div className="form-step-indicator">
+          <span className="step-number">1</span>
+          <span className="step-text">Fill out the form below</span>
+        </div>
+      </div>
+
+      {/* Contact Information Section */}
+      <div className="form-section">
+        <h3 className="section-title">
+          <svg className="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          Contact Information
+        </h3>
+
+        <div className="form-grid">
+          <div className="form-field">
+            <label className="field-label">
+              Full Name
+              <span className="required-asterisk">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="field-input"
+              placeholder="Enter your full name"
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="field-label">
+              Email Address
+              <span className="required-asterisk">*</span>
+            </label>
+            <input
+              type="email"
+              required
+              pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+              title="Please enter a valid email address"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="field-input"
+              placeholder="you@company.com"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Project Information Section */}
+      <div className="form-section">
+        <h3 className="section-title">
+          <svg className="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          Project Details
+        </h3>
+
+        <div className="form-field">
+          <label className="field-label">
+            Project Name
+            <span className="required-asterisk">*</span>
           </label>
           <input
             type="text"
             required
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="John Doe"
+            value={formData.project}
+            onChange={(e) => setFormData({ ...formData, project: e.target.value })}
+            className="field-input"
+            placeholder="Your protocol or project name"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email Address *
+        <div className="form-grid">
+          <div className="form-field">
+            <label className="field-label">
+              Expected TVL
+              <span className="required-asterisk">*</span>
+            </label>
+            <div className="select-wrapper">
+              <select
+                required
+                value={formData.tvl}
+                onChange={(e) => setFormData({ ...formData, tvl: e.target.value })}
+                className="field-select"
+              >
+                <option value="">Select range</option>
+                <option value="<100k">Less than $100K</option>
+                <option value="100k-1m">$100K - $1M</option>
+                <option value="1m-10m">$1M - $10M</option>
+                <option value="10m+">$10M+</option>
+              </select>
+              <svg className="select-arrow" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="form-field">
+            <label className="field-label">
+              Timeline
+              <span className="required-asterisk">*</span>
+            </label>
+            <div className="select-wrapper">
+              <select
+                required
+                value={formData.timeline}
+                onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
+                className="field-select"
+              >
+                <option value="">Select timeline</option>
+                <option value="fast">Fast Track (&lt;1 week)</option>
+                <option value="standard">Standard (&lt;2 weeks)</option>
+              </select>
+              <svg className="select-arrow" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Description Section */}
+      <div className="form-section">
+        <h3 className="section-title">
+          <svg className="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Project Description
+        </h3>
+
+        <div className="form-field">
+          <label className="field-label">
+            Tell us about your project
+            <span className="required-asterisk">*</span>
           </label>
-          <input
-            type="email"
+          <textarea
             required
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="john@example.com"
+            minLength={100}
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            rows={5}
+            className="field-textarea"
+            placeholder="Please include:
+• Protocol type (DeFi, NFT, DAO, etc.)
+• Key features and functionality
+• Approximate lines of code
+• Any specific security concerns"
           />
+          <div className="textarea-footer">
+            <span className={`char-count ${formData.description.length >= 100 ? 'valid' : ''}`}>
+              {formData.description.length}/100 characters minimum
+              {formData.description.length >= 100 && (
+                <svg className="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              )}
+            </span>
+          </div>
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Project Name *
-        </label>
-        <input
-          type="text"
-          required
-          value={formData.project}
-          onChange={(e) => setFormData({ ...formData, project: e.target.value })}
-          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="My DeFi Protocol"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Expected TVL *
-          </label>
-          <select
-            required
-            value={formData.tvl}
-            onChange={(e) => setFormData({ ...formData, tvl: e.target.value })}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Select TVL range</option>
-            <option value="<100k">Less than $100K</option>
-            <option value="100k-1m">$100K - $1M</option>
-            <option value="1m-10m">$1M - $10M</option>
-            <option value="10m+">$10M+</option>
-          </select>
+      {/* Error Message */}
+      {error && (
+        <div className="error-message">
+          <svg className="error-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          <span>{error}</span>
         </div>
+      )}
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Desired Timeline *
-          </label>
-          <select
-            required
-            value={formData.timeline}
-            onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Select timeline</option>
-            <option value="urgent">ASAP (1 week)</option>
-            <option value="fast">Fast Track (2 weeks)</option>
-            <option value="standard">Standard (3-4 weeks)</option>
-            <option value="flexible">Flexible</option>
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Project Description *
-        </label>
-        <textarea
-          required
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          rows={6}
-          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Tell us about your project:&#10;- Type of protocol (DeFi, NFT, DAO, etc.)&#10;- Key features&#10;- Lines of code (approximate)&#10;- Any specific concerns"
-        />
-      </div>
-
-      <div
-        onClick={handleSubmit}
-        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg cursor-pointer text-center"
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={loading}
+        className="submit-btn"
       >
-        Request Manual Audit Quote →
-      </div>
+        {loading ? (
+          <span className="loading-state">
+            <svg className="spinner" viewBox="0 0 24 24">
+              <circle className="spinner-track" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="spinner-head" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            Processing...
+          </span>
+        ) : (
+          <span className="button-content">
+            Request Audit Quote
+            <svg className="arrow-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </span>
+        )}
+      </button>
 
-      <p className="text-sm text-gray-500 text-center">
-        * We&apos;ll respond within 24-48 hours with pricing and availability
+      {/* Form Footer */}
+      <p className="form-footer">
+        <svg className="clock-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+        </svg>
+        We typically respond within 24-48 business hours
       </p>
-    </div>
+    </form>
   );
 }
 
 // Manual Audit Page Component
 export default function ManualAuditPage() {
   return (
-    <DocsLayout>
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-6">Professional Manual Audits</h1>
-          <p className="text-xl text-blue-100 mb-8">
-            In-depth security reviews by expert auditors for production-ready protocols
+    <div className="page-container">
+      {/* Background Elements */}
+      <div className="bg-gradient-top" />
+      <div className="bg-gradient-bottom" />
+      <div className="bg-grid" />
+
+      {/* Navigation */}
+      <nav className="page-nav">
+        <Link href="/" className="nav-logo">
+          <div className="logo-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <span className="logo-text">Hexific</span>
+        </Link>
+        <Link href="/" className="nav-back">
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+            <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+          Back to Home
+        </Link>
+      </nav>
+
+      {/* Main Content */}
+      <main className="page-main">
+        {/* Header */}
+        <div className="page-header">
+          <div className="header-badge">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="badge-icon">
+              <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            Expert Security Review
+          </div>
+          <h1 className="page-title">
+            Request a <span className="title-highlight">Full Audit</span>
+          </h1>
+          <p className="page-subtitle">
+            Get comprehensive smart contract security analysis from our expert team. We&apos;ll provide a detailed quote within 48 hours.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="#request-quote"
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-block"
-            >
-              Request a Quote
-            </a>
-            <a
-              href="#how-it-works"
-              className="bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors inline-block"
-            >
-              How It Works
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* When You Need Manual Audits */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">When to Get a Manual Audit</h2>
-          <p className="text-xl text-gray-600">
-            Automated tools are great for development, but these situations require human expertise
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-            <div className="text-4xl mb-4">💰</div>
-            <h3 className="text-xl font-bold mb-3">High-Value Protocols</h3>
-            <p className="text-gray-600">
-              Your protocol will handle significant value (&gt;$1M TVL) and needs maximum security assurance.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-            <div className="text-4xl mb-4">🏗️</div>
-            <h3 className="text-xl font-bold mb-3">Complex Logic</h3>
-            <p className="text-gray-600">
-              DeFi protocols with intricate mechanisms like AMMs, lending, derivatives, or cross-chain bridges.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-            <div className="text-4xl mb-4">🚀</div>
-            <h3 className="text-xl font-bold mb-3">Mainnet Launch</h3>
-            <p className="text-gray-600">
-              Pre-mainnet deployment security review to catch edge cases automated tools miss.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-            <div className="text-4xl mb-4">📋</div>
-            <h3 className="text-xl font-bold mb-3">Compliance Needs</h3>
-            <p className="text-gray-600">
-              Require detailed audit reports for investors, insurance, or regulatory compliance.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-            <div className="text-4xl mb-4">🛡️</div>
-            <h3 className="text-xl font-bold mb-3">Multiple Perspectives</h3>
-            <p className="text-gray-600">
-              Critical systems benefit from multiple auditor reviews to catch blind spots.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-            <div className="text-4xl mb-4">🔄</div>
-            <h3 className="text-xl font-bold mb-3">Major Updates</h3>
-            <p className="text-gray-600">
-              Significant protocol upgrades or new feature launches that change core logic.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* What's Included */}
-      <div className="bg-gray-100 py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">What&apos;s Included</h2>
-            <p className="text-xl text-gray-600">Comprehensive security analysis by expert auditors</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="flex items-start mb-4">
-                <div className="text-3xl mr-4">🔍</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">In-Depth Code Review</h3>
-                  <p className="text-gray-600">
-                    Line-by-line manual analysis by security experts. We review architecture, logic flows, edge cases, and potential attack vectors.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="flex items-start mb-4">
-                <div className="text-3xl mr-4">🎯</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Custom Exploit Testing</h3>
-                  <p className="text-gray-600">
-                    We develop specific attack scenarios for your protocol, including reentrancy, flash loan attacks, and business logic exploits.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="flex items-start mb-4">
-                <div className="text-3xl mr-4">⚡</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Gas Optimization</h3>
-                  <p className="text-gray-600">
-                    Professional recommendations to reduce deployment and transaction costs without compromising security.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="flex items-start mb-4">
-                <div className="text-3xl mr-4">📄</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Detailed Report</h3>
-                  <p className="text-gray-600">
-                    Comprehensive written findings with severity ratings, proof-of-concept exploits, and specific recommendations.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="flex items-start mb-4">
-                <div className="text-3xl mr-4">🤝</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Remediation Support</h3>
-                  <p className="text-gray-600">
-                    Direct communication with auditors to help implement fixes and answer questions during remediation.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="flex items-start mb-4">
-                <div className="text-3xl mr-4">✅</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Follow-Up Review</h3>
-                  <p className="text-gray-600">
-                    Re-audit of fixed issues to verify proper implementation. Final report confirming all issues resolved.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* How It Works */}
-      <div id="how-it-works" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">How It Works</h2>
-          <p className="text-xl text-gray-600">Simple, transparent audit process</p>
-        </div>
-
-        <div className="space-y-8">
-          <div className="flex items-start">
-            <div className="flex-shrink-0 w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mr-6">
-              1
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold mb-2">Request a Quote</h3>
-              <p className="text-gray-600">
-                Fill out the form below with your project details. We&apos;ll respond within 24-48 hours with a quote and timeline.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start">
-            <div className="flex-shrink-0 w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mr-6">
-              2
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold mb-2">Kickoff Call</h3>
-              <p className="text-gray-600">
-                Schedule a call with our auditors to discuss your protocol, review architecture, and define scope and priorities.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start">
-            <div className="flex-shrink-0 w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mr-6">
-              3
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold mb-2">Audit Phase (1-3 weeks)</h3>
-              <p className="text-gray-600">
-                Our team performs comprehensive analysis. We&apos;ll provide daily updates and preliminary findings as we work.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start">
-            <div className="flex-shrink-0 w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mr-6">
-              4
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold mb-2">Report Delivery</h3>
-              <p className="text-gray-600">
-                Receive detailed audit report with all findings, severity ratings, and recommendations. Includes executive summary for stakeholders.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start">
-            <div className="flex-shrink-0 w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mr-6">
-              5
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold mb-2">Remediation Support</h3>
-              <p className="text-gray-600">
-                Work with auditors to implement fixes. Ask questions, review code changes, and get guidance on best approaches.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start">
-            <div className="flex-shrink-0 w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl mr-6">
-              6
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold mb-2">Follow-Up Review</h3>
-              <p className="text-gray-600">
-                Re-audit of fixed code to verify proper implementation. Final report confirms all critical issues resolved.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Pricing Section */}
-      <div className="bg-gray-100 py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Transparent Pricing</h2>
-            <p className="text-xl text-gray-600">Based on complexity, not hours</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <h3 className="text-2xl font-bold mb-6">Pricing Factors</h3>
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <div className="text-xl mr-3">📏</div>
-                <div>
-                  <h4 className="font-semibold mb-1">Code Complexity</h4>
-                  <p className="text-gray-600 text-sm">Lines of code, number of contracts, and architectural complexity</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="text-xl mr-3">🎯</div>
-                <div>
-                  <h4 className="font-semibold mb-1">Risk Level</h4>
-                  <p className="text-gray-600 text-sm">Expected TVL and potential impact of vulnerabilities</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="text-xl mr-3">⏱️</div>
-                <div>
-                  <h4 className="font-semibold mb-1">Timeline</h4>
-                  <p className="text-gray-600 text-sm">Rush audits (&lt;1 week) incur premium pricing</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="text-xl mr-3">🔄</div>
-                <div>
-                  <h4 className="font-semibold mb-1">Scope</h4>
-                  <p className="text-gray-600 text-sm">Full audit vs. specific components, follow-up reviews</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 p-6 bg-blue-50 rounded-lg">
-              <h4 className="font-bold text-lg mb-2">Typical Ranges</h4>
-              <ul className="space-y-2 text-gray-700">
-                <li>• <strong>Small projects</strong> (500-1000 LOC): $5K - $10K</li>
-                <li>• <strong>Medium protocols</strong> (1000-3000 LOC): $10K - $25K</li>
-                <li>• <strong>Large protocols</strong> (3000+ LOC): $25K - $50K+</li>
-                <li>• <strong>Rush audits</strong>: +50% premium</li>
-                <li>• <strong>Follow-up reviews</strong>: 30% of original audit cost</li>
-              </ul>
-            </div>
-
-            <p className="mt-6 text-sm text-gray-600 text-center">
-              * Final pricing based on specific project requirements. Get a custom quote below.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Request Quote Form */}
-      <div id="request-quote" className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Request a Quote</h2>
-          <p className="text-xl text-gray-600">Tell us about your project and we&apos;ll get back to you within 24-48 hours</p>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        {/* Form Container */}
+        <div className="form-wrapper">
           <ContactForm />
         </div>
-      </div>
 
-      {/* FAQ Section */}
-      <div className="bg-gray-100 py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Common Questions</h2>
-
-          <div className="bg-white rounded-xl shadow-sm p-8 space-y-6">
-            <div>
-              <h3 className="font-bold text-lg mb-2">How long does an audit take?</h3>
-              <p className="text-gray-600">
-                Standard audits take 1-3 weeks depending on complexity. Rush audits (1 week or less) are available at a premium. We&apos;ll give you a specific timeline in our quote.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-lg mb-2">Do you offer discounts?</h3>
-              <p className="text-gray-600">
-                Yes! We offer discounts for: projects that have completed our free automated audit first, returning customers, multiple audit packages, and open-source projects.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-lg mb-2">What if you find critical issues?</h3>
-              <p className="text-gray-600">
-                We&apos;ll immediately notify you of any critical findings during the audit. You can pause the audit to fix issues, or wait for the full report. Either way, we&apos;re here to help you remediate.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-lg mb-2">Can I hire you for ongoing security consulting?</h3>
-              <p className="text-gray-600">
-                Absolutely! We offer retainer agreements for ongoing security reviews, architecture consulting, and pre-deployment checks. Contact us to discuss your needs.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-lg mb-2">Do you provide an audit badge?</h3>
-              <p className="text-gray-600">
-                Yes! Upon successful completion, you&apos;ll receive an official Hexific audit badge for your website and documentation, plus permission to reference the audit report.
-              </p>
-            </div>
+        {/* Trust Indicators */}
+        <div className="trust-section">
+          <div className="trust-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="trust-icon">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>Confidential & Secure</span>
+          </div>
+          <div className="trust-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="trust-icon">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>48h Response Time</span>
+          </div>
+          <div className="trust-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="trust-icon">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span>Expert Engineers</span>
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Final CTA */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h2 className="text-3xl font-bold mb-4">Not Sure If You Need a Manual Audit?</h2>
-        <p className="text-xl text-gray-600 mb-8">
-          Start with our free automated audit, then chat with us about your specific needs
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/"
-            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors inline-block"
-          >
-            Try Free Audit First
+      {/* Footer CTA */}
+      <footer className="page-footer">
+        <p className="footer-text">
+          Not ready for a full audit?{' '}
+          <Link href="/" className="footer-link">
+            Try our free AI-powered scan first →
           </Link>
-          <a
-            href="mailto:security@hexific.com"
-            className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors inline-block"
-          >
-            Email Us
-          </a>
-        </div>
-      </div>
-    </DocsLayout>
+        </p>
+      </footer>
+    </div>
   );
 }

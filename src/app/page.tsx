@@ -267,7 +267,7 @@ export default function Page() {
           'https://api.dexscreener.com/latest/dex/tokens/3ghjaogpDVt7QZ6eNauoggmj4WYw23TkpyVN2yZjpump'
         );
         const data = await response.json();
-        
+
         if (data.pairs && data.pairs.length > 0) {
           const pair = data.pairs[0];
           setHexiPrice(parseFloat(pair.priceUsd));
@@ -277,7 +277,7 @@ export default function Page() {
         console.error('Failed to fetch HEXI price:', error);
       }
     };
-    
+
     fetchHexiPrice();
     const interval = setInterval(fetchHexiPrice, 30000);
     return () => clearInterval(interval);
@@ -328,7 +328,7 @@ export default function Page() {
       const mobileMenu = document.createElement('div');
       mobileMenu.className = 'md:hidden absolute top-full left-0 w-full bg-[#000E1B]/85 border-t border-lime-400/20 p-6 space-y-4 hidden';
       mobileMenu.innerHTML = `
-        <a href="#features" class="block hover:text-lime-400 transition-colors">Features</a>
+        <a href="#services" class="block hover:text-lime-400 transition-colors">Services</a>
         <a href="#process" class="block hover:text-lime-400 transition-colors">Process</a>
         <a href="/docs" class="block hover:text-lime-400 transition-colors">Docs</a>
         <a href="#roadmap" class="block hover:text-lime-400 transition-colors">Roadmap</a>
@@ -354,7 +354,7 @@ export default function Page() {
   }, []);
 
   const handleClick = () => {
-    window.location.href = "mailto:admin@hexific.com?subject=Schedule%20Consultation&body=Hi%20there,%0A%0AI'd%20like%20to%20schedule%20a%20consultation%20to%20discuss%20my%20smart%20contract%20audit%20needs.%0APlease%20let%20me%20know%20your%20availability.%0A%0AThank%20you!";
+    window.location.href = "/manual-audit";
   };
 
   const scrollDown = () => {
@@ -369,7 +369,7 @@ export default function Page() {
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Smart Contract Audit | HEXIFIC</title>
-      <style dangerouslySetInnerHTML={{ __html: "\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');\n        \n        * {\n            font-family: 'Inter', sans-serif;\n        }\n        \n        html {\n            scroll-behavior: smooth;\n        }\n        \n        body {\n            background: #000E1B;\n            color: white;\n            overflow-x: hidden;\n        }\n        \n        .gradient-text {\n            background: linear-gradient(135deg, #D6ED17, #ffffff);\n            -webkit-background-clip: text;\n            -webkit-text-fill-color: transparent;\n            background-clip: text;\n        }\n        \n        .glass-effect {\n            background: rgba(214, 237, 23, 0.1);\n            backdrop-filter: blur(20px);\n            border: 1px solid rgba(214, 237, 23, 0.2);\n        }\n        \n        .feature-card:hover {\n            transform: translateY(-10px);\n            transition: all 0.3s ease;\n        }\n        \n        .cyber-grid {\n            background-image: \n                linear-gradient(rgba(214, 237, 23, 0.1) 1px, transparent 1px),\n                linear-gradient(90deg, rgba(214, 237, 23, 0.1) 1px, transparent 1px);\n            background-size: 50px 50px;\n            animation: grid-move 20s linear infinite;\n        }\n        \n        @keyframes grid-move {\n            0% { transform: translate(0, 0); }\n            100% { transform: translate(50px, 50px); }\n        }\n        \n        .floating-orbs::after {\n            content: '';\n            position: absolute;\n            width: 200px;\n            height: 200px;\n            background: radial-gradient(circle, rgba(214, 237, 23, 0.3) 0%, transparent 70%);\n            border-radius: 50%;\n            top: 20%;\n            right: 10%;\n            animation: float 8s ease-in-out infinite;\n            z-index: -1;\n        }\n        \n        .floating-orbs::before {\n            content: '';\n            position: absolute;\n            width: 150px;\n            height: 150px;\n            background: radial-gradient(circle, rgba(214, 237, 23, 0.2) 0%, transparent 70%);\n            border-radius: 50%;\n            bottom: 30%;\n            left: 15%;\n            animation: float 6s ease-in-out infinite reverse;\n            z-index: -1;\n        }\n        \n        @keyframes float {\n            0%, 100% { transform: translateY(0px) rotate(0deg); }\n            50% { transform: translateY(-30px) rotate(180deg); }\n        }\n        \n        .pulse-glow {\n            animation: pulse-glow 2s ease-in-out infinite;\n        }\n        \n        @keyframes pulse-glow {\n            0%, 100% { box-shadow: 0 0 20px rgba(214, 237, 23, 0.3); }\n            50% { box-shadow: 0 0 40px rgba(214, 237, 23, 0.6); }\n        }\n        \n        .slide-up {\n            animation: slide-up 0.8s ease-out forwards;\n        }\n        \n        @keyframes slide-up {\n            from { opacity: 0; transform: translateY(50px); }\n            to { opacity: 1; transform: translateY(0); }\n        }\n        \n        .code-pattern {\n            background: linear-gradient(45deg, transparent 49%, rgba(214, 237, 23, 0.1) 50%, transparent 51%);\n            background-size: 20px 20px;\n        }\n        \n        .neon-border {\n            border: 2px solid #D6ED17;\n            box-shadow: 0 0 20px rgba(214, 237, 23, 0.5), inset 0 0 20px rgba(214, 237, 23, 0.1);\n        }\n        \n        .scan-line {\n            position: relative;\n            overflow: hidden;\n        }\n        \n        .scan-line::after {\n            content: '';\n            position: absolute;\n            top: 0;\n            left: -100%;\n            width: 100%;\n            height: 100%;\n            background: linear-gradient(90deg, transparent, rgba(214, 237, 23, 0.3), transparent);\n            animation: scan 3s ease-in-out infinite;\n        }\n        \n        @keyframes scan {\n            0% { left: -100%; }\n            100% { left: 100%; }\n        }\n        \n        .matrix-bg {\n            position: fixed;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n            pointer-events: none;\n            z-index: -2;\n            opacity: 0.1;\n        }\n        \n        .audit-progress {\n            background: linear-gradient(90deg, #D6ED17 var(--progress, 0%), transparent var(--progress, 0%));\n            transition: all 0.3s ease;\n        }\n        \n        /* Infinite Carousel Animation */\n        .carousel-track {\n            animation: carousel-scroll 50s linear infinite;\n            width: fit-content;\n        }\n        \n        .carousel-track:hover {\n            animation-play-state: paused;\n        }\n        \n        .carousel-slide {\n            display: flex;\n            gap: 1.5rem;\n        }\n        \n        @keyframes carousel-scroll {\n            0% {\n                transform: translateX(0);\n            }\n            100% {\n                transform: translateX(-50%);\n            }\n        }\n    " }} />
+      <style dangerouslySetInnerHTML={{ __html: "\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');\n        \n        * {\n            font-family: 'Inter', sans-serif;\n        }\n        \n        html {\n            scroll-behavior: smooth;\n        }\n        \n        body {\n            background: #000E1B;\n            color: white;\n            overflow-x: hidden;\n        }\n        \n        .gradient-text {\n            background: linear-gradient(135deg, #D6ED17, #ffffff);\n            -webkit-background-clip: text;\n            -webkit-text-fill-color: transparent;\n            background-clip: text;\n        }\n        \n        .glass-effect {\n            background: rgba(214, 237, 23, 0.1);\n            backdrop-filter: blur(20px);\n            border: 1px solid rgba(214, 237, 23, 0.2);\n        }\n        \n        .feature-card:hover {\n            transform: translateY(-10px);\n            transition: all 0.3s ease;\n        }\n        \n        .cyber-grid {\n            background-image: \n                linear-gradient(rgba(214, 237, 23, 0.1) 1px, transparent 1px),\n                linear-gradient(90deg, rgba(214, 237, 23, 0.1) 1px, transparent 1px);\n            background-size: 50px 50px;\n            animation: grid-move 20s linear infinite;\n        }\n        \n        @keyframes grid-move {\n            0% { transform: translate(0, 0); }\n            100% { transform: translate(50px, 50px); }\n        }\n        \n        .floating-orbs::after {\n            content: '';\n            position: absolute;\n            width: 200px;\n            height: 200px;\n            background: radial-gradient(circle, rgba(214, 237, 23, 0.3) 0%, transparent 70%);\n            border-radius: 50%;\n            top: 20%;\n            right: 10%;\n            animation: float 8s ease-in-out infinite;\n            z-index: -1;\n        }\n        \n        .floating-orbs::before {\n            content: '';\n            position: absolute;\n            width: 150px;\n            height: 150px;\n            background: radial-gradient(circle, rgba(214, 237, 23, 0.2) 0%, transparent 70%);\n            border-radius: 50%;\n            bottom: 30%;\n            left: 15%;\n            animation: float 6s ease-in-out infinite reverse;\n            z-index: -1;\n        }\n        \n        @keyframes float {\n            0%, 100% { transform: translateY(0px) rotate(0deg); }\n            50% { transform: translateY(-30px) rotate(180deg); }\n        }\n        \n        .pulse-glow {\n            animation: pulse-glow 2s ease-in-out infinite;\n        }\n        \n        @keyframes pulse-glow {\n            0%, 100% { box-shadow: 0 0 20px rgba(214, 237, 23, 0.3); }\n            50% { box-shadow: 0 0 40px rgba(214, 237, 23, 0.6); }\n        }\n        \n        .slide-up {\n            animation: slide-up 0.8s ease-out forwards;\n        }\n        \n        @keyframes slide-up {\n            from { opacity: 0; transform: translateY(50px); }\n            to { opacity: 1; transform: translateY(0); }\n        }\n        \n        .code-pattern {\n            background: linear-gradient(45deg, transparent 49%, rgba(214, 237, 23, 0.1) 50%, transparent 51%);\n            background-size: 20px 20px;\n        }\n        \n        .neon-border {\n            border: 2px solid #D6ED17;\n            box-shadow: 0 0 20px rgba(214, 237, 23, 0.5), inset 0 0 20px rgba(214, 237, 23, 0.1);\n        }\n        \n        .scan-line {\n            position: relative;\n            overflow: hidden;\n        }\n        \n        .scan-line::after {\n            content: '';\n            position: absolute;\n            top: 0;\n            left: -100%;\n            width: 100%;\n            height: 100%;\n            background: linear-gradient(90deg, transparent, rgba(214, 237, 23, 0.3), transparent);\n            animation: scan 3s ease-in-out infinite;\n        }\n        \n        @keyframes scan {\n            0% { left: -100%; }\n            100% { left: 100%; }\n        }\n        \n        .matrix-bg {\n            position: fixed;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n            pointer-events: none;\n            z-index: -2;\n            opacity: 0.1;\n        }\n        \n        .audit-progress {\n            background: linear-gradient(90deg, #D6ED17 var(--progress, 0%), transparent var(--progress, 0%));\n            transition: all 0.3s ease;\n        }\n        \n        /* Infinite Carousel Animation */\n        .carousel-track {\n            animation: carousel-scroll 50s linear infinite;\n            width: fit-content;\n        }\n        \n        .carousel-track:hover {\n            animation-play-state: paused;\n        }\n        \n        .carousel-slide {\n            display: flex;\n            gap: 1.5rem;\n        }\n        \n        @keyframes carousel-scroll {\n            0% {\n                transform: translateX(0);\n            }\n            100% {\n                transform: translateX(-50%);\n            }\n        }\n        \n        /* Service Card Animations */\n        .service-card {\n            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);\n        }\n        \n        .service-card:hover {\n            transform: translateY(-8px);\n        }\n        \n        .service-card::before {\n            content: '';\n            position: absolute;\n            inset: 0;\n            border-radius: 1.5rem;\n            padding: 2px;\n            background: linear-gradient(135deg, transparent 40%, rgba(214, 237, 23, 0.3) 50%, transparent 60%);\n            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);\n            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);\n            -webkit-mask-composite: xor;\n            mask-composite: exclude;\n            opacity: 0;\n            transition: opacity 0.4s ease;\n        }\n        \n        .service-card:hover::before {\n            opacity: 1;\n            animation: border-rotate 3s linear infinite;\n        }\n        \n        @keyframes border-rotate {\n            to {\n                background: linear-gradient(495deg, transparent 40%, rgba(214, 237, 23, 0.3) 50%, transparent 60%);\n            }\n        }\n        \n        /* Shimmer effect for badges */\n        .shimmer {\n            position: relative;\n            overflow: hidden;\n        }\n        \n        .shimmer::after {\n            content: '';\n            position: absolute;\n            top: 0;\n            left: -100%;\n            width: 50%;\n            height: 100%;\n            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);\n            animation: shimmer 2s infinite;\n        }\n        \n        @keyframes shimmer {\n            100% { left: 150%; }\n        }\n        \n        /* Featured card glow pulse */\n        .featured-glow {\n            animation: featured-pulse 3s ease-in-out infinite;\n        }\n        \n        @keyframes featured-pulse {\n            0%, 100% { opacity: 0.75; }\n            50% { opacity: 1; }\n        }\n        \n        /* Icon float animation */\n        .icon-float {\n            animation: icon-float 3s ease-in-out infinite;\n        }\n        \n        @keyframes icon-float {\n            0%, 100% { transform: translateY(0); }\n            50% { transform: translateY(-5px); }\n        }\n        \n        /* Gradient border animation */\n        @property --gradient-angle {\n            syntax: '<angle>';\n            initial-value: 0deg;\n            inherits: false;\n        }\n        \n        .gradient-border {\n            background: linear-gradient(var(--gradient-angle), #D6ED17, #00ff88, #00d4ff, #D6ED17);\n            animation: gradient-rotate 4s linear infinite;\n        }\n        \n        @keyframes gradient-rotate {\n            to { --gradient-angle: 360deg; }\n        }\n    " }} />
       {/* Matrix Background */}
       <div className="matrix-bg">
         <canvas ref={canvasRef} className="w-full h-full" />
@@ -385,9 +385,9 @@ export default function Page() {
                 </div>
                 <span className="text-xl md:text-2xl font-bold gradient-text">Hexific</span>
               </div>
-            
+
               <div className="hidden md:flex space-x-4">
-                <a href="#features" className="hover:text-lime-400 transition-colors">Features</a>
+                <a href="#services" className="hover:text-lime-400 transition-colors">Services</a>
                 <a href="#process" className="hover:text-lime-400 transition-colors">Process</a>
                 <a href="#roadmap" className="hover:text-lime-400 transition-colors">Roadmap</a>
                 {/* <a href="#pricing" className="hover:text-lime-400 transition-colors">Pricing</a> */}
@@ -404,9 +404,9 @@ export default function Page() {
             <div className="flex items-center space-x-3 md:hidden">
               <WalletConnectButton onMobile={true} />
               <button className="text-lime-400">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
               </button>
             </div>
           </div>
@@ -421,20 +421,20 @@ export default function Page() {
       >
         {hexiPrice !== null ? (
           <div className="flex flex-col items-center">
-          <span className="text-sm font-semibold">HEXI Price</span>
+            <span className="text-sm font-semibold">HEXI Price</span>
             <span className="text-lg font-bold gradient-text">
-            ${hexiPrice < 0.0001 
-              ? `0.0₄${hexiPrice.toFixed(8).replace(/^0\.0+/, '')}` 
-              : hexiPrice.toFixed(4)}
+              ${hexiPrice < 0.0001
+                ? `0.0₄${hexiPrice.toFixed(8).replace(/^0\.0+/, '')}`
+                : hexiPrice.toFixed(4)}
             </span>
-          {priceChange24h !== null && (
-            <span className={`text-sm font-medium ${priceChange24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {priceChange24h >= 0 ? '+' : ''}{priceChange24h.toFixed(2)}% (24h)
-            </span>
-          )}
+            {priceChange24h !== null && (
+              <span className={`text-sm font-medium ${priceChange24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {priceChange24h >= 0 ? '+' : ''}{priceChange24h.toFixed(2)}% (24h)
+              </span>
+            )}
           </div>
         ) : (
-          <span className="text-sm font-medium">Loading...</span> 
+          <span className="text-sm font-medium">Loading...</span>
         )}
       </a>
 
@@ -507,162 +507,347 @@ export default function Page() {
           </div>
         </section>
       </div>
-      {/* Features Section */}
-      <section id="features" className="py-20 relative">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-bold gradient-text mb-6">Next-Gen Security</h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Our platform combines cutting-edge AI analysis with expert human review to catch vulnerabilities others miss.
+      {/* Services Section */}
+      <section id="services" className="py-24 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-lime-400/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-lime-400/3 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-lime-400/5 to-transparent rounded-full" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          {/* Section Header with Trust Indicators */}
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center gap-2 bg-lime-400/10 border border-lime-400/20 rounded-full px-4 py-2 mb-6">
+              <svg className="w-4 h-4 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-lime-400">Trusted by 50+ Web3 Projects</span>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-bold mb-6">
+              <span className="gradient-text">Enterprise-Grade</span>{' '}
+              <span className="text-white">Security Services</span>
+            </h2>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              From instant AI-powered scans to comprehensive manual audits by industry veterans.
+              Your smart contracts deserve military-grade protection.
             </p>
           </div>
-          {/* adjusted to 2 columns for temporary */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {/* AI-Powered Analysis */}
-            <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
-              <div className="w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-lime-400/30 transition-colors">
-                <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold mb-4">AI-Powered Analysis</h3>
-              <p className="text-gray-300 mb-4">Advanced machine learning models trained on thousands of smart contracts detect complex vulnerabilities in seconds.</p>
-              <div className="space-y-2">
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Reentrancy Detection</span>
+
+          {/* Services Grid */}
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+            {/* Fast Audit - Static & AI Audit */}
+            <div className="group relative service-card">
+              {/* Glow effect on hover */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-lime-400/20 to-cyan-400/20 rounded-3xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative bg-gradient-to-br from-[#0a1628] to-[#0d1e35] rounded-3xl p-8 border border-white/5 hover:border-lime-400/30 transition-all duration-300">
+                {/* Beta Badge */}
+                <div className="absolute top-6 right-6">
+                  <span className="shimmer inline-flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-violet-500/25">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    BETA
+                  </span>
                 </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Integer Overflow/Underflow</span>
+
+                {/* Icon */}
+                <div className="icon-float w-14 h-14 bg-gradient-to-br from-lime-400/20 to-cyan-400/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 ring-1 ring-lime-400/20">
+                  <svg className="w-7 h-7 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
                 </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Access Control Issues</span>
+
+                {/* Title */}
+                <div className="flex items-baseline gap-3 mb-4">
+                  <h3 className="text-2xl font-bold text-white">Fast Audit</h3>
+                  <span className="text-sm text-gray-500 font-medium">Static & AI Audit</span>
                 </div>
-              </div>
-            </div>
-            {/* Expert Manual Review */}
-            <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
-              <div className="w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-lime-400/30 transition-colors">
-                <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold mb-4">Expert Manual Review</h3>
-              <p className="text-gray-300 mb-4">Senior security engineers with 5+ years DeFi experience manually review every line of code.</p>
-              <div className="space-y-2">
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Business Logic Validation</span>
+
+                {/* Description */}
+                <p className="text-gray-400 mb-6 leading-relaxed">
+                  Get instant security insights with our hybrid approach. We combine battle-tested static analysis with <span className="text-lime-400 font-medium">RAG-powered AI</span> to scan your smart contracts in minutes, not days.
+                </p>
+
+                {/* Features with checkmarks */}
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-3 text-sm text-gray-300">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-lime-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>200+ vulnerability patterns detected</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-300">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-lime-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>AI-powered contextual analysis</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-300">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-lime-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>Results in under 5 minutes</span>
+                  </div>
                 </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Economic Attack Vectors</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Governance Vulnerabilities</span>
-                </div>
-              </div>
-            </div>
-            {/* Real-time Dashboard */}
-            <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
-              <div className="w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-lime-400/30 transition-colors">
-                <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 00-2-2z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold mb-4">Real-time Dashboard</h3>
-              <p className="text-gray-300 mb-4">Track audit progress, view findings, and collaborate with our team through an intuitive dashboard.</p>
-              <div className="space-y-2">
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Live Progress Tracking</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Interactive Reports</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Team Collaboration</span>
-                </div>
-              </div>
-            </div>
-            {/* Continuous Monitoring */}
-            {/* <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
-              <div className="w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-lime-400/30 transition-colors">
-                <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold mb-4">Continuous Monitoring</h3>
-              <p className="text-gray-300 mb-4">24/7 monitoring of your deployed contracts with instant alerts for suspicious activities or new vulnerabilities.</p>
-              <div className="space-y-2">
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Transaction Monitoring</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Anomaly Detection</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Instant Alerts</span>
-                </div>
-              </div>
-            </div> */}
-            {/* Compliance Reports */}
-            <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
-              <div className="w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-lime-400/30 transition-colors">
-                <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold mb-4">Compliance Reports</h3>
-              <p className="text-gray-300 mb-4">Comprehensive audit reports that meet industry standards and regulatory requirements for institutional clients.</p>
-              <div className="space-y-2">
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>PDF &amp; JSON Formats</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Executive Summaries</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Remediation Guidelines</span>
-                </div>
+
+                {/* CTA Button */}
+                <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-lime-400/10 to-cyan-400/10 border border-lime-400/30 text-lime-400 font-semibold hover:from-lime-400 hover:to-lime-300 hover:text-black hover:border-transparent transition-all duration-300 flex items-center justify-center gap-2 group/btn">
+                  Try Fast Audit
+                  <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </button>
               </div>
             </div>
-            {/* Emergency Response */}
-            {/* <div className="feature-card glass-effect rounded-2xl p-8 group cursor-pointer">
-              <div className="w-16 h-16 bg-lime-400/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-lime-400/30 transition-colors">
-                <svg className="w-8 h-8 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+
+            {/* Full Audit - Human Audit (Featured) */}
+            <div className="group relative service-card">
+              {/* Featured glow effect */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-lime-400/30 to-emerald-400/30 rounded-3xl blur featured-glow" />
+              <div className="relative bg-gradient-to-br from-[#0a1628] to-[#0d1e35] rounded-3xl p-8 border-2 border-lime-400/40 hover:border-lime-400/60 transition-all duration-300">
+                {/* Recommended Badge */}
+                <div className="absolute top-6 right-6">
+                  <span className="shimmer inline-flex items-center gap-1.5 bg-lime-400 text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-lime-400/25">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    RECOMMENDED
+                  </span>
+                </div>
+
+                {/* Icon */}
+                <div className="icon-float w-14 h-14 bg-gradient-to-br from-lime-400/20 to-emerald-400/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 ring-1 ring-lime-400/30">
+                  <svg className="w-7 h-7 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+
+                {/* Title */}
+                <div className="flex items-baseline gap-3 mb-4">
+                  <h3 className="text-2xl font-bold text-white">Full Audit</h3>
+                  <span className="text-sm text-gray-500 font-medium">Human Expert Review</span>
+                </div>
+
+                {/* Description */}
+                <p className="text-gray-400 mb-6 leading-relaxed">
+                  When security is non-negotiable, trust our <span className="text-lime-400 font-medium">expert security engineers</span>. Each audit is performed by seasoned professionals who understand DeFi inside-out.
+                </p>
+
+                {/* Features with checkmarks */}
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-3 text-sm text-gray-300">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-lime-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>Deep business logic validation</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-300">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-lime-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>Economic & MEV attack analysis</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-300">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-lime-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>Comprehensive remediation support</span>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <button onClick={handleClick} className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-lime-400 to-lime-300 text-black font-bold hover:from-lime-300 hover:to-lime-200 transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg shadow-lime-400/20">
+                  Schedule Full Audit
+                  <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* HexiChat - AI Consultation */}
+            <div className="group relative service-card">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-3xl blur opacity-0 group-hover:opacity-60 transition-opacity duration-500" />
+              <div className="relative bg-gradient-to-br from-[#0a1628]/90 to-[#0d1e35]/90 rounded-3xl p-8 border border-white/5 hover:border-blue-400/20 transition-all duration-300">
+                {/* Coming Soon Badge */}
+                <div className="absolute top-6 right-6">
+                  <span className="shimmer inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-blue-500/25">
+                    <svg className="w-3 h-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    COMING SOON
+                  </span>
+                </div>
+
+                {/* Icon */}
+                <div className="icon-float w-14 h-14 bg-gradient-to-br from-blue-400/20 to-indigo-400/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 ring-1 ring-blue-400/20">
+                  <svg className="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+
+                {/* Title */}
+                <div className="flex items-baseline gap-3 mb-4">
+                  <h3 className="text-2xl font-bold text-white">HexiChat</h3>
+                  <span className="text-sm text-gray-500 font-medium">AI Security Consultant</span>
+                </div>
+
+                {/* Description */}
+                <p className="text-gray-400 mb-6 leading-relaxed">
+                  Your 24/7 security companion. Chat with our AI to get <span className="text-blue-400 font-medium">instant answers</span> about smart contract vulnerabilities, best practices, and real-time research.
+                </p>
+
+                {/* Features with checkmarks */}
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-3 text-sm text-gray-400">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>Real-time security consultation</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-400">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>Latest vulnerability research</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-400">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>Code review assistance</span>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <button disabled className="w-full py-3.5 px-6 rounded-xl bg-white/5 border border-white/10 text-gray-500 font-semibold cursor-not-allowed flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  Notify Me When Available
+                </button>
+              </div>
+            </div>
+
+            {/* AI Playground - Attack Testing */}
+            <div className="group relative service-card">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-3xl blur opacity-0 group-hover:opacity-60 transition-opacity duration-500" />
+              <div className="relative bg-gradient-to-br from-[#0a1628]/90 to-[#0d1e35]/90 rounded-3xl p-8 border border-white/5 hover:border-orange-400/20 transition-all duration-300">
+                {/* Coming Soon Badge */}
+                <div className="absolute top-6 right-6">
+                  <span className="shimmer inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-600 to-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-orange-500/25">
+                    <svg className="w-3 h-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    COMING SOON
+                  </span>
+                </div>
+
+                {/* Icon */}
+                <div className="icon-float w-14 h-14 bg-gradient-to-br from-orange-400/20 to-red-400/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 ring-1 ring-orange-400/20">
+                  <svg className="w-7 h-7 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+
+                {/* Title */}
+                <div className="flex items-baseline gap-3 mb-4">
+                  <h3 className="text-2xl font-bold text-white">AI Playground</h3>
+                  <span className="text-sm text-gray-500 font-medium">Attack Simulation</span>
+                </div>
+
+                {/* Description */}
+                <p className="text-gray-400 mb-6 leading-relaxed">
+                  Watch AI agents attempt to <span className="text-orange-400 font-medium">break your contracts in real-time</span>. Our autonomous agents simulate sophisticated attack vectors—so you can see vulnerabilities before hackers do.
+                </p>
+
+                {/* Features with checkmarks */}
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-3 text-sm text-gray-400">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>Autonomous attack simulations</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-400">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>Flash loan & MEV exploits</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-400">
+                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-400/10 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span>Detailed attack replays</span>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <button disabled className="w-full py-3.5 px-6 rounded-xl bg-white/5 border border-white/10 text-gray-500 font-semibold cursor-not-allowed flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  Notify Me When Available
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Trust Bar */}
+          <div className="mt-16 pt-12 border-t border-white/5">
+            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 text-gray-500">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
+                <span className="text-sm">Solidity & Vyper</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4">Emergency Response</h3>
-              <p className="text-gray-300 mb-4">24/7 emergency response team for critical vulnerabilities with incident response and damage mitigation.</p>
-              <div className="space-y-2">
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>&lt; 1 Hour Response</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Incident Management</span>
-                </div>
-                <div className="flex items-center text-sm">
-                  <div className="w-2 h-2 bg-lime-400 rounded-full mr-3" />
-                  <span>Post-Incident Analysis</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm">EVM & Solana</span>
               </div>
-            </div> */}
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm">DeFi & NFT</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm">DAO & Governance</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -676,22 +861,22 @@ export default function Page() {
             </p>
           </div>
         </div>
-        
+
         {/* Infinite Carousel */}
         <div className="relative overflow-hidden group">
           {/* Gradient Masks */}
           <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#000E1B] to-transparent z-10 pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#000E1B] to-transparent z-10 pointer-events-none" />
-          
+
           {/* Carousel Track - Infinite Animation + Draggable */}
-          <div 
+          <div
             ref={carouselRef}
             className={`carousel-track flex gap-6 py-4 cursor-grab select-none`}
             onMouseDown={handleMouseDown}
-            // onMouseUp={handleMouseUp}
-            // onMouseMove={handleMouseMove}
-            // onMouseLeave={handleMouseLeave}
-            // style={{ animationPlayState: animationPaused ? 'paused' : 'running' }}
+          // onMouseUp={handleMouseUp}
+          // onMouseMove={handleMouseMove}
+          // onMouseLeave={handleMouseLeave}
+          // style={{ animationPlayState: animationPaused ? 'paused' : 'running' }}
           >
             {/* Duplicate cards for infinite loop - First set */}
             {[...Array(2)].map((_, setIndex) => (
@@ -709,7 +894,7 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Step 2 */}
                 <div className="w-[350px] md:w-[400px] flex-shrink-0 group">
                   <div className="glass-effect rounded-2xl p-6 h-full hover:scale-105 transition-all duration-300 hover:border-[#D6ED17] border border-transparent">
@@ -723,7 +908,7 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Step 3 */}
                 <div className="w-[350px] md:w-[400px] flex-shrink-0 group">
                   <div className="glass-effect rounded-2xl p-6 h-full hover:scale-105 transition-all duration-300 hover:border-[#D6ED17] border border-transparent">
@@ -738,7 +923,7 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Step 4 */}
                 <div className="w-[350px] md:w-[400px] flex-shrink-0 group">
                   <div className="glass-effect rounded-2xl p-6 h-full hover:scale-105 transition-all duration-300 hover:border-[#D6ED17] border border-transparent">
@@ -752,7 +937,7 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Step 5 */}
                 <div className="w-[350px] md:w-[400px] flex-shrink-0 group">
                   <div className="glass-effect rounded-2xl p-6 h-full hover:scale-105 transition-all duration-300 hover:border-[#D6ED17] border border-transparent">
@@ -781,8 +966,8 @@ export default function Page() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"> */}
-            {/* Starter Plan */}
-            {/* <div className="glass-effect rounded-2xl p-8 relative">
+      {/* Starter Plan */}
+      {/* <div className="glass-effect rounded-2xl p-8 relative">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold mb-4">Starter</h3>
                 <div className="text-4xl font-bold gradient-text mb-2">$2,500</div>
@@ -824,8 +1009,8 @@ export default function Page() {
                 Choose Starter
               </button>
             </div> */}
-            {/* Professional Plan */}
-            {/* <div className="glass-effect rounded-2xl p-8 relative neon-border">
+      {/* Professional Plan */}
+      {/* <div className="glass-effect rounded-2xl p-8 relative neon-border">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-lime-400 text-black px-4 py-1 rounded-full text-sm font-bold">
                 MOST POPULAR
               </div>
@@ -882,8 +1067,8 @@ export default function Page() {
                 Choose Professional
               </button>
             </div> */}
-            {/* Enterprise Plan */}
-            {/* <div className="glass-effect rounded-2xl p-8 relative">
+      {/* Enterprise Plan */}
+      {/* <div className="glass-effect rounded-2xl p-8 relative">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold mb-4">Enterprise</h3>
                 <div className="text-4xl font-bold gradient-text mb-2">Custom</div>
@@ -1085,9 +1270,9 @@ export default function Page() {
                         </span>
                       </div>
                       <p className="text-gray-400 text-sm mb-6">Sep - Dec 2025</p>
-                      
+
                       <h4 className="text-xl font-bold mb-4 text-white">Foundation & Core Features</h4>
-                      
+
                       <ul className="space-y-3">
                         <li className="flex items-start">
                           <svg className="w-5 h-5 text-lime-400 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -1150,7 +1335,7 @@ export default function Page() {
                         </span>
                       </div>
                       <p className="text-gray-400 text-sm mb-6">Jan - Apr 2026</p>
-                      
+
                       <h4 className="text-xl font-bold mb-4 text-white">AI Enhancement</h4>
 
                       <ul className="space-y-3">
@@ -1275,7 +1460,7 @@ export default function Page() {
                       </div>
                       <h3 className="text-2xl font-bold gradient-text mb-3">Continuous Improvements</h3>
                       <p className="text-gray-300 text-lg">
-                      Ongoing enhancements for <strong className="text-lime-400">AI Audit Quality</strong> and <strong className="text-lime-400">Privacy Protection</strong>
+                        Ongoing enhancements for <strong className="text-lime-400">AI Audit Quality</strong> and <strong className="text-lime-400">Privacy Protection</strong>
                       </p>
                       <div className="mt-6 flex flex-wrap gap-3 justify-center">
                         <span className="px-4 py-2 bg-lime-400/10 border border-lime-400/30 rounded-full text-sm text-lime-400 font-semibold">
@@ -1372,37 +1557,37 @@ export default function Page() {
               </ul>
             </div>
           </div>
-            <div className="border-t border-lime-400/20 pt-8">
+          <div className="border-t border-lime-400/20 pt-8">
             <div className="flex flex-col items-center space-y-6">
               {/* Social Links */}
               <div className="flex space-x-8">
-              <a 
-                href="https://x.com/hexific" 
-                className="text-gray-400 hover:text-lime-400 transition-all hover:scale-110 transform"
-                aria-label="Twitter"
-              >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" /></svg>
-              </a>
-              <a 
-                href="https://www.linkedin.com/company/hexific/" 
-                className="text-gray-400 hover:text-lime-400 transition-all hover:scale-110 transform"
-                aria-label="LinkedIn"
-              >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
-              </a>
-              <a 
-                href="https://discord.gg/5v8v3X9Qhf" 
-                className="text-gray-400 hover:text-lime-400 transition-all hover:scale-110 transform"
-                aria-label="Discord"
-              >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-              </a>
+                <a
+                  href="https://x.com/hexific"
+                  className="text-gray-400 hover:text-lime-400 transition-all hover:scale-110 transform"
+                  aria-label="Twitter"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" /></svg>
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/hexific/"
+                  className="text-gray-400 hover:text-lime-400 transition-all hover:scale-110 transform"
+                  aria-label="LinkedIn"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
+                </a>
+                <a
+                  href="https://discord.gg/5v8v3X9Qhf"
+                  className="text-gray-400 hover:text-lime-400 transition-all hover:scale-110 transform"
+                  aria-label="Discord"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" /></svg>
+                </a>
               </div>
-              
+
               {/* Copyright */}
               <p className="text-gray-400 text-sm">© 2025 Hexific. All rights reserved.</p>
             </div>
-            </div>
+          </div>
         </div>
       </footer>
     </div>
