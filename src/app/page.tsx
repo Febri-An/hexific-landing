@@ -510,7 +510,7 @@ export default function Page() {
         </section>
       </div>
       {/* Services Section */}
-      <section id="services" className="py-24 relative overflow-hidden">
+      <section id="services" className="py-16 md:py-24 relative overflow-hidden">
         {/* Background decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-20 left-10 w-72 h-72 bg-lime-400/5 rounded-full blur-3xl" />
@@ -518,9 +518,9 @@ export default function Page() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-lime-400/5 to-transparent rounded-full" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
           {/* Section Header with Trust Indicators */}
-          <div className="text-center mb-20">
+          <div className="text-center mb-12 md:mb-20">
             <div className="inline-flex items-center gap-2 bg-lime-400/10 border border-lime-400/20 rounded-full px-4 py-2 mb-6">
               <svg className="w-4 h-4 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -543,9 +543,9 @@ export default function Page() {
             <div className="group relative service-card">
               {/* Glow effect on hover */}
               <div className="absolute -inset-0.5 bg-gradient-to-r from-lime-400/20 to-cyan-400/20 rounded-3xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative bg-gradient-to-br from-[#0a1628] to-[#0d1e35] rounded-3xl p-8 border border-white/5 hover:border-lime-400/30 transition-all duration-300">
+              <div className="relative bg-gradient-to-br from-[#0a1628] to-[#0d1e35] rounded-3xl p-5 md:p-8 border border-white/5 hover:border-lime-400/30 transition-all duration-300">
                 {/* Beta Badge */}
-                <div className="absolute top-6 right-6">
+                <div className="absolute top-4 right-4 md:top-6 md:right-6">
                   <span className="shimmer inline-flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-violet-500/25">
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -562,9 +562,9 @@ export default function Page() {
                 </div>
 
                 {/* Title */}
-                <div className="flex items-baseline gap-3 mb-4">
-                  <h3 className="text-2xl font-bold text-white">Fast Audit</h3>
-                  <span className="text-sm text-gray-500 font-medium">Static & AI Audit</span>
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 mb-4">
+                  <h3 className="text-xl md:text-2xl font-bold text-white">Fast Audit</h3>
+                  <span className="text-xs sm:text-sm text-gray-500 font-medium">Static & AI Audit</span>
                 </div>
 
                 {/* Description */}
@@ -614,9 +614,9 @@ export default function Page() {
             <div className="group relative service-card">
               {/* Featured glow effect */}
               <div className="absolute -inset-0.5 bg-gradient-to-r from-lime-400/30 to-emerald-400/30 rounded-3xl blur featured-glow" />
-              <div className="relative bg-gradient-to-br from-[#0a1628] to-[#0d1e35] rounded-3xl p-8 border-2 border-lime-400/40 hover:border-lime-400/60 transition-all duration-300">
+              <div className="relative bg-gradient-to-br from-[#0a1628] to-[#0d1e35] rounded-3xl p-5 md:p-8 border-2 border-lime-400/40 hover:border-lime-400/60 transition-all duration-300">
                 {/* Recommended Badge */}
-                <div className="absolute top-6 right-6">
+                <div className="absolute top-4 right-4 md:top-6 md:right-6">
                   <span className="shimmer inline-flex items-center gap-1.5 bg-lime-400 text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-lime-400/25">
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -633,9 +633,9 @@ export default function Page() {
                 </div>
 
                 {/* Title */}
-                <div className="flex items-baseline gap-3 mb-4">
-                  <h3 className="text-2xl font-bold text-white">Full Audit</h3>
-                  <span className="text-sm text-gray-500 font-medium">Human Expert Review</span>
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 mb-4">
+                  <h3 className="text-xl md:text-2xl font-bold text-white">Full Audit</h3>
+                  <span className="text-xs sm:text-sm text-gray-500 font-medium">Human Expert Review</span>
                 </div>
 
                 {/* Description */}
@@ -684,9 +684,9 @@ export default function Page() {
             {/* HexiChat - AI Consultation */}
             <div className="group relative service-card">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-3xl blur opacity-0 group-hover:opacity-60 transition-opacity duration-500" />
-              <div className="relative bg-gradient-to-br from-[#0a1628]/90 to-[#0d1e35]/90 rounded-3xl p-8 border border-white/5 hover:border-blue-400/20 transition-all duration-300">
+              <div className="relative bg-gradient-to-br from-[#0a1628]/90 to-[#0d1e35]/90 rounded-3xl p-5 md:p-8 border border-white/5 hover:border-blue-400/20 transition-all duration-300">
                 {/* Coming Soon Badge */}
-                <div className="absolute top-6 right-6">
+                <div className="absolute top-4 right-4 md:top-6 md:right-6">
                   <span className="shimmer inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-blue-500/25">
                     <svg className="w-3 h-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
@@ -703,9 +703,9 @@ export default function Page() {
                 </div>
 
                 {/* Title */}
-                <div className="flex items-baseline gap-3 mb-4">
-                  <h3 className="text-2xl font-bold text-white">HexiChat</h3>
-                  <span className="text-sm text-gray-500 font-medium">AI Security Consultant</span>
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 mb-4">
+                  <h3 className="text-xl md:text-2xl font-bold text-white">HexiChat</h3>
+                  <span className="text-xs sm:text-sm text-gray-500 font-medium">AI Security Consultant</span>
                 </div>
 
                 {/* Description */}
@@ -754,9 +754,9 @@ export default function Page() {
             {/* AI Playground - Attack Testing */}
             <div className="group relative service-card">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-3xl blur opacity-0 group-hover:opacity-60 transition-opacity duration-500" />
-              <div className="relative bg-gradient-to-br from-[#0a1628]/90 to-[#0d1e35]/90 rounded-3xl p-8 border border-white/5 hover:border-orange-400/20 transition-all duration-300">
+              <div className="relative bg-gradient-to-br from-[#0a1628]/90 to-[#0d1e35]/90 rounded-3xl p-5 md:p-8 border border-white/5 hover:border-orange-400/20 transition-all duration-300">
                 {/* Coming Soon Badge */}
-                <div className="absolute top-6 right-6">
+                <div className="absolute top-4 right-4 md:top-6 md:right-6">
                   <span className="shimmer inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-600 to-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-orange-500/25">
                     <svg className="w-3 h-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
@@ -773,9 +773,9 @@ export default function Page() {
                 </div>
 
                 {/* Title */}
-                <div className="flex items-baseline gap-3 mb-4">
-                  <h3 className="text-2xl font-bold text-white">AI Playground</h3>
-                  <span className="text-sm text-gray-500 font-medium">Attack Simulation</span>
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 mb-4">
+                  <h3 className="text-xl md:text-2xl font-bold text-white">AI Playground</h3>
+                  <span className="text-xs sm:text-sm text-gray-500 font-medium">Attack Simulation</span>
                 </div>
 
                 {/* Description */}
@@ -823,8 +823,8 @@ export default function Page() {
           </div>
 
           {/* Trust Bar */}
-          <div className="mt-16 pt-12 border-t border-white/5">
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 text-gray-500">
+          <div className="mt-10 md:mt-16 pt-8 md:pt-12 border-t border-white/5">
+            <div className="grid grid-cols-2 md:flex md:flex-wrap justify-center items-center gap-4 md:gap-8 lg:gap-16 text-gray-500">
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-lime-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -854,8 +854,8 @@ export default function Page() {
         </div>
       </section>
       {/* Audit Process Section */}
-      <section id="process" className="py-20 code-pattern overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
+      <section id="process" className="py-12 md:py-20 code-pattern overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-bold gradient-text mb-6">Audit Process</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -1128,9 +1128,9 @@ export default function Page() {
         </div>
       </section> */}
       {/* Testimonials Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
+      <section className="py-12 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="text-center mb-10 md:mb-16">
             <h2 className="text-4xl md:text-6xl font-bold gradient-text mb-6">Trusted by Leaders</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Top DeFi protocols trust Hexific to protect their smart contracts and users&#39; funds.
@@ -1177,8 +1177,8 @@ export default function Page() {
         </div>
       </section>
       {/* CTA Section */}
-      <section id="contact" className="py-20 floating-orbs">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+      <section id="contact" className="py-12 md:py-20 floating-orbs">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
           <h2 className="text-4xl md:text-6xl font-bold gradient-text mb-6">Ready to Secure Your Protocol?</h2>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
             Join hundreds of projects that trust Hexific to protect their smart contracts and users&#39; funds.
@@ -1498,7 +1498,9 @@ export default function Page() {
                 </a>
                 <a
                   href="https://x.com/i/communities/1994420483463528685"
-                  className="glass-effect border border-lime-400 text-lime-400 px-6 py-2 rounded-lg font-bold hover:bg-lime-400 hover:text-black transition-all inline-flex items-center gap-1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-effect border border-lime-400 text-lime-400 px-6 py-2 rounded-lg font-bold hover:bg-lime-400 hover:text-black transition-all inline-flex items-center justify-center gap-1"
                 >
                   Join
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -1512,9 +1514,9 @@ export default function Page() {
         </div>
       </section>
       {/* Footer */}
-      <footer className="py-12 border-t border-lime-400/20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+      <footer className="py-8 md:py-12 border-t border-lime-400/20">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-8 h-8 bg-lime-400 rounded-lg flex items-center justify-center">
@@ -1569,6 +1571,8 @@ export default function Page() {
               <div className="flex space-x-8">
                 <a
                   href="https://x.com/hexific"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-400 hover:text-lime-400 transition-all hover:scale-110 transform"
                   aria-label="X"
                 >
@@ -1576,6 +1580,8 @@ export default function Page() {
                 </a>
                 <a
                   href="https://www.linkedin.com/company/hexific/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-400 hover:text-lime-400 transition-all hover:scale-110 transform"
                   aria-label="LinkedIn"
                 >
@@ -1583,6 +1589,8 @@ export default function Page() {
                 </a>
                 <a
                   href="https://discord.gg/5v8v3X9Qhf"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-400 hover:text-lime-400 transition-all hover:scale-110 transform"
                   aria-label="Discord"
                 >
