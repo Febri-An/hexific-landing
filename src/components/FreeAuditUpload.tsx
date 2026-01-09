@@ -15,6 +15,7 @@ import { useSolana } from "@/components/solana-provider";
 import { PaymentCard } from "@/components/PaymentCard";
 import { adaptVPSResponse, DetailedFinding, AuditResult } from './adaptVPSResponse';
 import { WalletOption } from './WalletOption';
+import { generateAuditPDF } from './AuditReportPDF';
 
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB in bytes
@@ -333,20 +334,12 @@ export default function FreeAuditUpload() {
         return 'text-red-500 bg-red-950/70 border-red-500/50';
       case 'major':
         return 'text-red-400 bg-red-950/50 border-red-500/30';
-      case 'high':
-        return 'text-red-400 bg-red-950/50 border-red-500/30';
       case 'medium':
         return 'text-orange-400 bg-orange-950/50 border-orange-500/30';
       case 'minor':
         return 'text-yellow-400 bg-yellow-950/50 border-yellow-500/30';
-      case 'low':
-        return 'text-yellow-400 bg-yellow-950/50 border-yellow-500/30';
-      case 'gas':
-        return 'text-purple-400 bg-purple-950/50 border-purple-500/30';
       case 'informational':
         return 'text-blue-400 bg-blue-950/50 border-blue-500/30';
-      case 'optimization':
-        return 'text-lime-400 bg-lime-950/50 border-lime-500/30';
       default:
         return 'text-gray-400 bg-gray-950/50 border-gray-500/30';
     }
@@ -362,17 +355,43 @@ export default function FreeAuditUpload() {
     return icons[type] || 'ℹ️';
   };
 
-  const downloadReport = () => {
+  const downloadReport = async () => {
     if (!result) return;
 
-    let reportContent = '';
-    let filename = '';
+    try {
+      // Generate PDF filename
+      let filename = '';
+      if (result.results) {
+        filename = `audit-report-${result.projectId || result.analysis_id || Date.now()}.pdf`;
+      } else if (result.contract_name) {
+        filename = `audit-${result.contract_name}-${result.analysis_id || Date.now()}.pdf`;
+      } else {
+        filename = `audit-report-${Date.now()}.pdf`;
+      }
 
-    if (result.results) {
-      reportContent = result.results.rawOutput;
-      filename = `audit-report-${result.projectId || result.analysis_id}.txt`;
-    } else if (result.detailed_audit) {
-      reportContent = `
+      // Generate PDF blob
+      const blob = await generateAuditPDF(result);
+
+      // Download the PDF
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
+      // Fallback to text download if PDF fails
+      let reportContent = '';
+      let filename = '';
+
+      if (result.results) {
+        reportContent = result.results.rawOutput;
+        filename = `audit-report-${result.projectId || result.analysis_id}.txt`;
+      } else if (result.detailed_audit) {
+        reportContent = `
 SMART CONTRACT SECURITY AUDIT REPORT
 =====================================
 
@@ -389,18 +408,19 @@ DETAILED SECURITY ANALYSIS
 
 ${result.detailed_audit}
 `;
-      filename = `audit-${result.contract_name}-${result.analysis_id}.txt`;
-    }
+        filename = `audit-${result.contract_name}-${result.analysis_id}.txt`;
+      }
 
-    const blob = new Blob([reportContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      const blob = new Blob([reportContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
   };
 
   useEffect(() => {
@@ -749,10 +769,10 @@ ${result.detailed_audit}
                       </div>
                       <div className="glass-effect border border-red-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-red-400 mb-1">
-                          {result.results.summary.high ?? result.results.summary.major ?? 0}
+                          {result.results.summary.major ?? 0}
                         </div>
                         <div className="text-sm text-red-400 font-medium">
-                          {'high' in result.results.summary ? 'High' : 'Major'}
+                          Major
                         </div>
                       </div>
                       <div className="glass-effect border border-orange-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
@@ -763,10 +783,10 @@ ${result.detailed_audit}
                       </div>
                       <div className="glass-effect border border-yellow-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
                         <div className="text-3xl font-bold text-yellow-400 mb-1">
-                          {result.results.summary.low ?? result.results.summary.minor ?? 0}
+                          {result.results.summary.minor ?? 0}
                         </div>
                         <div className="text-sm text-yellow-400 font-medium">
-                          {'low' in result.results.summary ? 'Low' : 'Minor'}
+                          Minor
                         </div>
                       </div>
                       <div className="glass-effect border border-blue-500/30 p-4 rounded-lg hover:scale-105 transition-transform">
@@ -812,143 +832,142 @@ ${result.detailed_audit}
                             <div
                               key={index}
                               className="glass-effect border rounded-lg p-4 hover:border-lime-400/40 transition-all hover:scale-[1.01]"
-                          >
-                            <div className="flex items-start justify-between mb-2">
-                              <span
-                                className={`px-3 py-1 rounded-full text-xs font-bold border ${getSeverityColor(
-                                  finding.impact
-                                )}`}
-                              >
-                                {finding.impact.toUpperCase()}
-                              </span>
-                              <span className="text-xs text-gray-400">
-                                Confidence: {finding.confidence}
-                              </span>
-                            </div>
-                            <div className="text-left mb-2">
-                              {(() => {
-                                const lines = finding.description.split('\n');
-                                const sections: Array<{ type: 'text' | 'code', content: string[] }> = [];
-                                let currentSection: { type: 'text' | 'code', content: string[] } = { type: 'text', content: [] };
-                                let insideCode = false;
+                            >
+                              <div className="flex items-start justify-between mb-2">
+                                <span
+                                  className={`px-3 py-1 rounded-full text-xs font-bold border ${getSeverityColor(
+                                    finding.impact
+                                  )}`}
+                                >
+                                  {finding.impact.toUpperCase()}
+                                </span>
+                                <span className="text-xs text-gray-400">
+                                  Confidence: {finding.confidence}
+                                </span>
+                              </div>
+                              <div className="text-left mb-2">
+                                {(() => {
+                                  const lines = finding.description.split('\n');
+                                  const sections: Array<{ type: 'text' | 'code', content: string[] }> = [];
+                                  let currentSection: { type: 'text' | 'code', content: string[] } = { type: 'text', content: [] };
+                                  let insideCode = false;
 
-                                          lines.forEach((line) => {
-                                            if (line === '[SOLIDITY]' || line === '[CODE]') {
-                                              if (currentSection.content.length > 0) sections.push(currentSection);
-                                              currentSection = { type: 'code', content: [] };
-                                            } else if (line === '[/SOLIDITY]' || line === '[/CODE]') {
-                                              if (currentSection.content.length > 0) sections.push(currentSection);
-                                              currentSection = { type: 'text', content: [] };
-                                            } else {
-                                              currentSection.content.push(line);
-                                            }
-                                          });
-                                          if (currentSection.content.length > 0) sections.push(currentSection);
+                                  lines.forEach((line) => {
+                                    if (line === '[SOLIDITY]' || line === '[CODE]') {
+                                      if (currentSection.content.length > 0) sections.push(currentSection);
+                                      currentSection = { type: 'code', content: [] };
+                                    } else if (line === '[/SOLIDITY]' || line === '[/CODE]') {
+                                      if (currentSection.content.length > 0) sections.push(currentSection);
+                                      currentSection = { type: 'text', content: [] };
+                                    } else {
+                                      currentSection.content.push(line);
+                                    }
+                                  });
+                                  if (currentSection.content.length > 0) sections.push(currentSection);
 
-                                          const renderLineWithBold = (text: string) => {
-                                            const parts = text.split(/(\b[A-Z][a-zA-Z\s]+:)/g);
-                                            return parts.map((part, i) => {
-                                              if (/\b[A-Z][a-zA-Z\s]+:/.test(part)) {
-                                                return <span key={i} className="font-bold text-lime-300">{part}</span>;
-                                              }
-                                              return part;
-                                            });
-                                          };
+                                  const renderLineWithBold = (text: string) => {
+                                    const parts = text.split(/(\b[A-Z][a-zA-Z\s]+:)/g);
+                                    return parts.map((part, i) => {
+                                      if (/\b[A-Z][a-zA-Z\s]+:/.test(part)) {
+                                        return <span key={i} className="font-bold text-lime-300">{part}</span>;
+                                      }
+                                      return part;
+                                    });
+                                  };
 
-                                          return sections.map((section, sectionIndex) => {
-                                            if (section.type === 'code') {
-                                              const codeContent = section.content.join('\n');
-                                              return (
-                                                <div key={sectionIndex} className="my-3">
-                                                  <CodeBlock code={codeContent} language="solidity" />
-                                                </div>
-                                              );
-                                            } else {
-                                              const nonEmptyLines = section.content.filter(line => line.trim() !== '');
-                                              if (nonEmptyLines.length === 0) return null;
+                                  return sections.map((section, sectionIndex) => {
+                                    if (section.type === 'code') {
+                                      const codeContent = section.content.join('\n');
+                                      return (
+                                        <div key={sectionIndex} className="my-3">
+                                          <CodeBlock code={codeContent} language="solidity" />
+                                        </div>
+                                      );
+                                    } else {
+                                      const nonEmptyLines = section.content.filter(line => line.trim() !== '');
+                                      if (nonEmptyLines.length === 0) return null;
 
-                                              return (
-                                                <div key={sectionIndex} className="bg-gray-900/50 border border-gray-700/50 rounded-lg p-4 text-sm">
-                                                  {section.content.map((line, lineIndex) => {
-                                                    const isMainIssue = sectionIndex === 0 && lineIndex === 0;
-                                                    const isIndented = line.startsWith('\t') || line.startsWith('  ');
-                                                    const trimmedLine = line.replace(/^\t|^  /, '');
+                                      return (
+                                        <div key={sectionIndex} className="bg-gray-900/50 border border-gray-700/50 rounded-lg p-4 text-sm">
+                                          {section.content.map((line, lineIndex) => {
+                                            const isMainIssue = sectionIndex === 0 && lineIndex === 0;
+                                            const isIndented = line.startsWith('\t') || line.startsWith('  ');
+                                            const trimmedLine = line.replace(/^\t|^  /, '');
 
-                                          return (
-                                            <div
-                                              key={lineIndex}
-                                              className={`${
-                                                isMainIssue
+                                            return (
+                                              <div
+                                                key={lineIndex}
+                                                className={`${isMainIssue
                                                   ? 'text-lime-400 font-semibold mb-2'
                                                   : isIndented
-                                                  ? 'text-gray-400 pl-4 py-0.5'
-                                                  : 'text-gray-300 py-0.5'
-                                              } break-words overflow-wrap-anywhere`}
-                                            >
-                                              {isIndented && !isMainIssue && (
-                                                <span className="text-lime-400/40 mr-2">•</span>
-                                              )}
-                                              <span className="break-all">
-                                                {renderLineWithBold(trimmedLine)}
-                                              </span>
-                                            </div>
-                                          );
-                                        })}
-                                      </div>
-                                    );
-                                  }
-                                });
-                              })()}
-                            </div>
-                            {finding.location && (
-                              <div className="mt-2 text-sm text-gray-400">
-                                {finding.location.filename && (
-                                  <div className="flex items-center space-x-2 mb-1">
-                                    <svg
-                                      className="w-4 h-4 text-lime-400"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                      />
-                                    </svg>
-                                    <span className="font-mono">{finding.location.filename}</span>
-                                  </div>
-                                )}
-                                {finding.location.lines && finding.location.lines.length > 0 && (
-                                  <div className="flex items-center space-x-2">
-                                    <svg
-                                      className="w-4 h-4 text-lime-400"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
-                                      />
-                                    </svg>
-                                    <span>
-                                      Lines: {finding.location.lines.length > 1 
-                                        ? `${finding.location.lines[0]} - ${finding.location.lines[finding.location.lines.length - 1]}`
-                                        : finding.location.lines[0]
-                                      }
-                                    </span>
-                                  </div>
-                                )}
+                                                    ? 'text-gray-400 pl-4 py-0.5'
+                                                    : 'text-gray-300 py-0.5'
+                                                  } break-words overflow-wrap-anywhere`}
+                                              >
+                                                {isIndented && !isMainIssue && (
+                                                  <span className="text-lime-400/40 mr-2">•</span>
+                                                )}
+                                                <span className="break-all">
+                                                  {renderLineWithBold(trimmedLine)}
+                                                </span>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      );
+                                    }
+                                  });
+                                })()}
                               </div>
-                            )}
-                            <p className="text-sm text-lime-400/70 font-mono bg-lime-400/5 px-2 py-1 rounded inline-block mt-2">
-                              Type: {finding.type}
-                            </p>
-                            {/* <button
+                              {finding.location && (
+                                <div className="mt-2 text-sm text-gray-400">
+                                  {finding.location.filename && (
+                                    <div className="flex items-center space-x-2 mb-1">
+                                      <svg
+                                        className="w-4 h-4 text-lime-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        />
+                                      </svg>
+                                      <span className="font-mono">{finding.location.filename}</span>
+                                    </div>
+                                  )}
+                                  {finding.location.lines && finding.location.lines.length > 0 && (
+                                    <div className="flex items-center space-x-2">
+                                      <svg
+                                        className="w-4 h-4 text-lime-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+                                        />
+                                      </svg>
+                                      <span>
+                                        Lines: {finding.location.lines.length > 1
+                                          ? `${finding.location.lines[0]} - ${finding.location.lines[finding.location.lines.length - 1]}`
+                                          : finding.location.lines[0]
+                                        }
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              <p className="text-sm text-lime-400/70 font-mono bg-lime-400/5 px-2 py-1 rounded inline-block mt-2">
+                                Type: {finding.type}
+                              </p>
+                              {/* <button
                               onClick={() => {
                                 setAiModalMode('instant_fix');
                                 setSelectedFinding(finding);
@@ -971,8 +990,8 @@ ${result.detailed_audit}
                               </svg>
                               <span>Get AI Fix Suggestion</span>
                             </button> */}
-                          </div>
-                        ))}
+                            </div>
+                          ))}
                       </div>
                     )}
                     <p className='text-gray-300'>

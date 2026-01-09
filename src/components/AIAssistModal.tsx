@@ -17,11 +17,11 @@ interface AIAssistModalProps {
   onClose: () => void;
   auditResults: {
     summary: {
-      high: number;
+      critical: number;
+      major: number;
       medium: number;
-      low: number;
+      minor: number;
       informational: number;
-      optimization: number;
     };
     detailedFindings: Array<{
       type: string;
@@ -97,7 +97,7 @@ export default function AIAssistModal({
 
   function parseAIResponse(response: string) {
     const parts: Array<{ type: 'text' | 'code'; content: string; language?: string }> = [];
-    
+
     // Match code blocks with ```language
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
     let lastIndex = 0;
@@ -286,13 +286,13 @@ export default function AIAssistModal({
     try {
       // // Dynamic import of x402
       // const { wrapFetchWithPayment } = await import('x402-fetch');
-      
+
       // // Create payment-wrapped fetch
       // const fetchWithPayment = wrapFetchWithPayment(fetch, walletClient as any);
 
       // // Make paid request
       // const res = await fetchWithPayment('https://api.hexific.com/ai-assist', {
-      
+
       // Create payment message
       const paymentMessage = `Pay $0.10 for AI query on Hexific\nTimestamp: ${Date.now()}\nAddress: ${address}`;
 
@@ -500,7 +500,7 @@ export default function AIAssistModal({
                     </svg>
                     <p className="text-xs font-semibold text-lime-400">AI Response:</p>
                   </div>
-                  
+
                   {/* Parse and render response parts */}
                   <div className="space-y-3">
                     {parseAIResponse(item.response).map((part, partIdx) => (
@@ -526,7 +526,7 @@ export default function AIAssistModal({
                   <div className="animate-spin h-4 w-4 border-2 border-lime-400 border-t-transparent rounded-full"></div>
                   <span className="text-gray-300">
                     {paymentProcessing ? 'Processing payment...' : 'AI is thinking...'}
-                    </span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -630,72 +630,72 @@ export default function AIAssistModal({
           {(freeQueriesLeft <= 0) && (
             <div className="mb-4 flex justify-center">
               <ConnectButton.Custom>
-                  {({
-                    account,
-                    chain,
-                    openAccountModal,
-                    openChainModal,
-                    openConnectModal,
-                    mounted,
-                  }) => {
-                    const ready = mounted;
-                    const connected = ready && account && chain;
+                {({
+                  account,
+                  chain,
+                  openAccountModal,
+                  openChainModal,
+                  openConnectModal,
+                  mounted,
+                }) => {
+                  const ready = mounted;
+                  const connected = ready && account && chain;
 
-                    return (
-                      <div
-                        {...(!ready && {
-                          'aria-hidden': true,
-                          'style': {
-                            opacity: 0,
-                            pointerEvents: 'none',
-                            userSelect: 'none',
-                          },
-                        })}
-                      >
-                        {(() => {
-                          if (!connected) {
-                            return (
-                              <button
-                                onClick={openConnectModal}
-                                className="px-6 py-3 bg-lime-400 text-black rounded-lg font-semibold hover:bg-lime-300 pulse-glow transition-all"
-                              >
-                                Connect Wallet
-                              </button>
-                            );
-                          }
-
+                  return (
+                    <div
+                      {...(!ready && {
+                        'aria-hidden': true,
+                        'style': {
+                          opacity: 0,
+                          pointerEvents: 'none',
+                          userSelect: 'none',
+                        },
+                      })}
+                    >
+                      {(() => {
+                        if (!connected) {
                           return (
-                            <div className="flex gap-2">
-                              <button
-                                onClick={openChainModal}
-                                className="px-4 py-2 bg-black/50 text-lime-400 border border-lime-400/30 rounded-lg hover:border-lime-400 transition-all"
-                              >
-                                {chain.hasIcon && chain.iconUrl && (
-                                  <img
-                                    alt={chain.name ?? 'Chain icon'}
-                                    src={chain.iconUrl}
-                                    className="w-5 h-5 inline mr-2"
-                                  />
-                                )}
-                                {chain.name}
-                              </button>
-
-                              <button
-                                onClick={openAccountModal}
-                                className="px-4 py-2 bg-lime-400 text-black rounded-lg font-semibold hover:bg-lime-300 transition-all"
-                              >
-                                {account.displayName}
-                              </button>
-                            </div>
+                            <button
+                              onClick={openConnectModal}
+                              className="px-6 py-3 bg-lime-400 text-black rounded-lg font-semibold hover:bg-lime-300 pulse-glow transition-all"
+                            >
+                              Connect Wallet
+                            </button>
                           );
-                        })()}
-                      </div>
-                    );
-                  }}
-                </ConnectButton.Custom>
+                        }
+
+                        return (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={openChainModal}
+                              className="px-4 py-2 bg-black/50 text-lime-400 border border-lime-400/30 rounded-lg hover:border-lime-400 transition-all"
+                            >
+                              {chain.hasIcon && chain.iconUrl && (
+                                <img
+                                  alt={chain.name ?? 'Chain icon'}
+                                  src={chain.iconUrl}
+                                  className="w-5 h-5 inline mr-2"
+                                />
+                              )}
+                              {chain.name}
+                            </button>
+
+                            <button
+                              onClick={openAccountModal}
+                              className="px-4 py-2 bg-lime-400 text-black rounded-lg font-semibold hover:bg-lime-300 transition-all"
+                            >
+                              {account.displayName}
+                            </button>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  );
+                }}
+              </ConnectButton.Custom>
             </div>
           )}
-          
+
           <div className="flex space-x-3">
             <input
               type="text"
@@ -709,11 +709,10 @@ export default function AIAssistModal({
             <button
               onClick={handleAskQuestion}
               disabled={loading || !question.trim()}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-                loading || !question.trim()
+              className={`px-6 py-3 rounded-lg font-semibold transition-all ${loading || !question.trim()
                   ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                   : 'bg-lime-400 text-black hover:bg-lime-300 hover:cursor-pointer pulse-glow'
-              }`}
+                }`}
             >
               {loading ? (
                 <span className="flex items-center">
@@ -737,7 +736,7 @@ export default function AIAssistModal({
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
             </svg>
             <span>
-              {showQuickActions && mode === 'quick_actions' 
+              {showQuickActions && mode === 'quick_actions'
                 ? '💡 Choose a quick action above or ask a custom question'
                 : freeQueriesLeft > 0
                   ? 'Tip: Ask specific questions about findings, severity, or how to fix issues'
