@@ -172,7 +172,7 @@ function ConnectedPaymentCard({ account, onPaymentSuccess, isAuditing = false, d
             Analyzing...
           </span>
         ) : (
-          'Pay 0.001 SOL mainnet & Start Audit'
+          'Pay 0.01 SOL mainnet & Start Audit'
         )}
       </Button>
 
@@ -190,7 +190,7 @@ function ConnectedPaymentCard({ account, onPaymentSuccess, isAuditing = false, d
                 ✓ Payment Successful!
               </p>
               <a
-                href={`https://explorer.solana.com/tx/${result.signature}?cluster=devnet`}
+                href={`https://explorer.solana.com/tx/${result.signature}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-lime-400/80 hover:text-lime-400 hover:underline break-all transition-colors"

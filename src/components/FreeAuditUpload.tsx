@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { CodeBlock } from './CodeBlock';
 import {
   checkRateLimit,
-  logUsage,
+  // logUsage,
   getClientIP,
   getTimeUntilReset,
   type ServiceType
@@ -167,10 +167,10 @@ export default function FreeAuditUpload() {
             // Pass all results to adapter (handles both single and multi-file)
             const adaptedResult = adaptVPSResponse(data.results.length === 1 ? data.results[0] : data.results);
 
-            await logUsage(ipAddress, serviceType, {
-              ...metaData,
-              success: adaptedResult.success,
-            });
+            // await logUsage(ipAddress, serviceType, {
+            //   ...metaData,
+            //   success: adaptedResult.success,
+            // });
 
             setResult(adaptedResult);
             addStatus("Audit completed successfully!", 'success');
@@ -797,33 +797,8 @@ ${result.detailed_audit}
                       </div>
                     </div>
 
-                    {/* AI Assistant Button */}
-                    {/* <button
-                      onClick={() => {
-                        setAiModalMode('quick_actions');
-                        setSelectedFinding(null);
-                        setShowAIModal(true);
-                      }}
-                      className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black py-4 px-6 rounded-lg font-semibold hover:from-lime-300 hover:to-lime-400 hover:cursor-pointer transition-all shadow-lg flex items-center justify-center space-x-2 pulse-glow"
-                    >
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                        />
-                      </svg>
-                      <span>Ask AI About Your Audit (3 Free Questions)</span>
-                    </button> */}
-
                     {/* Detailed Findings - SAME FOR BOTH MODES */}
-                    {result.results.detailedFindings.length > 0 && (
+                    {result.results.detailedFindings.filter(f => f.impact === 'Critical' || f.impact === 'Major' || f.impact === 'High').length > 0 && (
                       <div className="space-y-4">
                         <h3 className="text-xl font-bold gradient-text">Detailed Findings</h3>
                         {result.results.detailedFindings
@@ -994,9 +969,6 @@ ${result.detailed_audit}
                           ))}
                       </div>
                     )}
-                    <p className='text-gray-300'>
-                      ...checkout the full report below...
-                    </p>
                   </>
                 )}
 
