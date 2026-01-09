@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { CodeBlock } from './CodeBlock';
 import {
   checkRateLimit,
-  logUsage,
+  // logUsage,
   getClientIP,
   getTimeUntilReset,
   type ServiceType
@@ -167,10 +167,10 @@ export default function FreeAuditUpload() {
             // Pass all results to adapter (handles both single and multi-file)
             const adaptedResult = adaptVPSResponse(data.results.length === 1 ? data.results[0] : data.results);
 
-            await logUsage(ipAddress, serviceType, {
-              ...metaData,
-              success: adaptedResult.success,
-            });
+            // await logUsage(ipAddress, serviceType, {
+            //   ...metaData,
+            //   success: adaptedResult.success,
+            // });
 
             setResult(adaptedResult);
             addStatus("Audit completed successfully!", 'success');

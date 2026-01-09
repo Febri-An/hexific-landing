@@ -77,29 +77,29 @@ export async function checkRateLimit(
 /**
  * Log usage to database
  */
-export async function logUsage(
-  ipAddress: string,
-  serviceType: ServiceType,
-  metadata?: Record<string, any>
-): Promise<boolean> {
-  try {
-    const { error } = await supabase.from('audit_usage').insert({
-      ip_address: ipAddress,
-      service_type: serviceType,
-      metadata: metadata || null,
-    });
+// export async function logUsage(
+//   ipAddress: string,
+//   serviceType: ServiceType,
+//   metadata?: Record<string, any>
+// ): Promise<boolean> {
+//   try {
+//     const { error } = await supabase.from('audit_usage').insert({
+//       ip_address: ipAddress,
+//       service_type: serviceType,
+//       metadata: metadata || null,
+//     });
 
-    if (error) {
-      console.error('Error logging usage:', error);
-      return false;
-    }
+//     if (error) {
+//       console.error('Error logging usage:', error);
+//       return false;
+//     }
 
-    return true;
-  } catch (error) {
-    console.error('Error logging usage:', error);
-    return false;
-  }
-}
+//     return true;
+//   } catch (error) {
+//     console.error('Error logging usage:', error);
+//     return false;
+//   }
+// }
 
 /**
  * Get next reset time (midnight UTC)
