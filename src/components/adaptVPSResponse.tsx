@@ -21,13 +21,9 @@ interface AuditResult {
     summary: {
       critical?: number;
       major?: number;
-      high?: number;
       medium?: number;
       minor?: number;
-      low?: number;
       informational?: number;
-      optimization?: number;
-      gas?: number;
     };
     detailedFindings: DetailedFinding[];
     rawOutput: string;
@@ -101,7 +97,6 @@ function adaptVPSResponse(vpsData: any): AuditResult {
       medium: vpsData.summary.medium || 0,
       minor: vpsData.summary.minor || 0,
       informational: vpsData.summary.informational || 0,
-      optimization: 0,
     };
 
     const detailedFindings: DetailedFinding[] = vpsData.findings.map((finding: any) => ({
@@ -139,7 +134,6 @@ function adaptVPSResponse(vpsData: any): AuditResult {
       medium: 0,
       minor: 0,
       informational: 0,
-      optimization: 0,
     };
 
     vpsData.forEach((fileAudit: any) => {
@@ -192,11 +186,11 @@ function adaptVPSResponse(vpsData: any): AuditResult {
     }
 
     const summary = {
-      high: 0,
+      critical: 0,
+      major: 0,
       medium: 0,
-      low: 0,
+      minor: 0,
       informational: 0,
-      optimization: 0,
     };
 
     const detailedFindings: DetailedFinding[] = [];
@@ -207,11 +201,11 @@ function adaptVPSResponse(vpsData: any): AuditResult {
       detectors.forEach((detector: VPSDetector) => {
         const impact = detector.impact.toLowerCase();
 
-        // Count by severity
-        if (impact === 'high') summary.high++;
+        // Count by severity - map to standardized categories
+        if (impact === 'critical') summary.critical++;
+        else if (impact === 'high' || impact === 'major') summary.major++;
         else if (impact === 'medium') summary.medium++;
-        else if (impact === 'low') summary.low++;
-        else if (impact === 'optimization') summary.optimization++;
+        else if (impact === 'low' || impact === 'minor') summary.minor++;
         else summary.informational++;
 
         // Store detailed finding
