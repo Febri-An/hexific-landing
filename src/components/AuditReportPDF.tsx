@@ -336,6 +336,24 @@ const styles = StyleSheet.create({
         flex: 1,
         flexWrap: 'wrap',
     },
+    // Code Block
+    codeBlock: {
+        backgroundColor: '#1e293b',
+        borderRadius: 4,
+        padding: 10,
+        marginTop: 8,
+    },
+    codeText: {
+        fontSize: 8,
+        fontFamily: 'Courier',
+        color: '#e2e8f0',
+        lineHeight: 1.4,
+    },
+    codeLabel: {
+        fontSize: 8,
+        color: colors.textMuted,
+        marginBottom: 4,
+    },
 
     // ==================== SUCCESS BOX ====================
     successBox: {
@@ -469,15 +487,9 @@ const FindingItem = ({ finding, index }: FindingItemProps) => {
             </View>
             <View style={styles.findingBody}>
                 <Text style={styles.findingDescription}>{finding.description}</Text>
-                {finding.location && (
-                    <View style={styles.findingLocation}>
-                        <Text style={styles.locationIcon}>Location:</Text>
-                        <Text style={styles.locationText}>
-                            {finding.location.filename}
-                            {finding.location.lines && finding.location.lines.length > 0 &&
-                                ` : Lines ${finding.location.lines.slice(0, 3).join(', ')}${finding.location.lines.length > 3 ? '...' : ''}`
-                            }
-                        </Text>
+                {finding.source_code && (
+                    <View style={styles.codeBlock}>
+                        <Text style={styles.codeText}>{finding.source_code}</Text>
                     </View>
                 )}
             </View>

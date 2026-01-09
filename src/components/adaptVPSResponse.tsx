@@ -5,6 +5,7 @@ interface DetailedFinding {
   impact: string;
   confidence: string;
   description: string;
+  source_code?: string;
   location: {
     filename?: string;
     lines?: number[];
@@ -79,6 +80,15 @@ interface VPSResponse {
   exit_code: number;
 }
 
+// Helper function to strip description to first line only
+function stripDescription(description: string): string {
+  if (!description) return '';
+  // Get only the first line (before any newline, colon+newline, or bullet point)
+  const firstLine = description.split('\n')[0].trim();
+  // Remove trailing colon if present
+  return firstLine.endsWith(':') ? firstLine.slice(0, -1) : firstLine;
+}
+
 function adaptVPSResponse(vpsData: any): AuditResult {
   // Handle error response
   if (vpsData && vpsData.success === false && vpsData.error) {
@@ -103,7 +113,8 @@ function adaptVPSResponse(vpsData: any): AuditResult {
       type: finding.title || finding.type || 'Unknown',
       impact: finding.severity || finding.impact || 'Unknown',
       confidence: finding.confidence || 'Medium',
-      description: finding.description || '',
+      description: stripDescription(finding.description || ''),
+      source_code: finding.source_code || finding.sourceCode || undefined,
       location: finding.locations ? {
         filename: finding.locations.filename,
         lines: finding.locations.lines,
@@ -152,7 +163,8 @@ function adaptVPSResponse(vpsData: any): AuditResult {
           type: finding.title,
           impact: finding.severity,
           confidence: finding.confidence,
-          description: finding.description,
+          description: stripDescription(finding.description),
+          source_code: finding.source_code || finding.sourceCode || undefined,
           location: {
             filename: finding.locations.filename,
             lines: finding.locations.lines,
@@ -213,7 +225,7 @@ function adaptVPSResponse(vpsData: any): AuditResult {
           type: detector.check,
           impact: detector.impact,
           confidence: detector.confidence,
-          description: detector.description,
+          description: stripDescription(detector.description),
           location: detector.elements[0]?.source_mapping ? {
             filename: detector.elements[0].source_mapping.filename_short,
             lines: detector.elements[0].source_mapping.lines,
