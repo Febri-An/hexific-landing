@@ -11,8 +11,8 @@ import { StandardConnect } from "@wallet-standard/core";
 
 // Create RPC connection
 
-const RPC_ENDPOINT = `https://mainnet.helius-rpc.com/?api-key=${process.env.NEXT_PUBLIC_HELIUS_API_KEY}`;
-const WS_ENDPOINT = `wss://mainnet.helius-rpc.com/?api-key=${process.env.NEXT_PUBLIC_HELIUS_API_KEY}`;
+const RPC_ENDPOINT = `https://mainnet.helius-rpc.com?api-key=${process.env.NEXT_PUBLIC_HELIUS_API_KEY}`;
+const WS_ENDPOINT = `wss://mainnet.helius-rpc.com?api-key=${process.env.NEXT_PUBLIC_HELIUS_API_KEY}`;
 const chain = "solana:mainnet";
 const rpc = createSolanaRpc(RPC_ENDPOINT);
 const ws = createSolanaRpcSubscriptions(WS_ENDPOINT);
