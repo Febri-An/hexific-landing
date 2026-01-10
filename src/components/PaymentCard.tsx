@@ -172,7 +172,7 @@ function ConnectedPaymentCard({ account, onPaymentSuccess, isAuditing = false, d
             Analyzing...
           </span>
         ) : (
-          'Pay 0.01 SOL mainnet & Start Audit'
+          'Pay 0.005 SOL mainnet & Start Audit'
         )}
       </Button>
 
